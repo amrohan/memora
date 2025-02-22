@@ -39,7 +39,6 @@ export const Navbar = () => {
   return (
     <HeroUINavbar maxWidth="lg" position="sticky">
       <NavbarContent className="w-full" justify="center">
-        {" "}
         <NavbarMenuToggle />
         <Input
           endContent={<SearchIcon className="text-default-600" />}
