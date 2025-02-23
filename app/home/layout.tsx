@@ -1,4 +1,6 @@
-export default function DocsLayout({
+import BottomNav from "@/components/bottomNav";
+
+export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -8,6 +10,7 @@ export default function DocsLayout({
       <div className="inline-block max-w-lg text-center justify-center w-full">
         {children}
       </div>
+      <BottomNav />
     </section>
   );
 }

@@ -12,4 +12,13 @@ export type LinkProp = {
   createdAt: string;
   userId: string;
   isShared: boolean;
+  tags: TagProp[];
+};
+
+export type TagProp = {
+  id: number;
+  name: string;
+  userId: string;
+  createdAt: string;
+  isActive: boolean;
 };

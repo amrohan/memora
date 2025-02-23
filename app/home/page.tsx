@@ -4,7 +4,7 @@ import { Button } from "@heroui/button";
 import { OverViewCard } from "@/components/overViewCard";
 import { LinkProp } from "@/types";
 import { LinkCard } from "@/components/linkCard";
-export default function DocsPage() {
+export default function HomePage() {
   const mockLinks: LinkProp[] = [
     {
       id: 1,
@@ -14,6 +14,7 @@ export default function DocsPage() {
       createdAt: "2024-02-22T10:30:00Z",
       userId: "user_1",
       isShared: true,
+      tags: [],
     },
     {
       id: 2,
@@ -23,6 +24,7 @@ export default function DocsPage() {
       createdAt: "2024-02-21T14:15:00Z",
       userId: "user_2",
       isShared: false,
+      tags: [],
     },
     {
       id: 3,
@@ -32,6 +34,7 @@ export default function DocsPage() {
       createdAt: "2024-02-20T18:00:00Z",
       userId: "user_3",
       isShared: true,
+      tags: [],
     },
     {
       id: 4,
@@ -41,6 +44,7 @@ export default function DocsPage() {
       createdAt: "2024-02-19T09:45:00Z",
       userId: "user_4",
       isShared: true,
+      tags: [],
     },
     {
       id: 5,
@@ -50,6 +54,7 @@ export default function DocsPage() {
       createdAt: "2024-02-18T12:00:00Z",
       userId: "user_5",
       isShared: false,
+      tags: [],
     },
   ];
 
@@ -70,9 +75,28 @@ export default function DocsPage() {
             ))}
           </CardBody>
           <CardFooter className="pt-0 m-0">
-            <Button className="w-full text-default-500" variant="light">
+            <Button className="w-full " color="primary" variant="light">
               View All
-              <RightArrow className="text-default-500 size-5" />
+              <RightArrow className="text-primary-400 size-5" />
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+
+      <div className="my-4">
+        <Card className="w-full py-1 min-h-96">
+          <CardHeader className="pb-0">
+            <small className="text-default-500">Your Favorites</small>
+          </CardHeader>
+          <CardBody className="py-2">
+            {mockLinks.map((item, index) => (
+              <LinkCard key={index} {...item} />
+            ))}
+          </CardBody>
+          <CardFooter className="pt-0 m-0">
+            <Button className="w-full " color="primary" variant="light">
+              View All
+              <RightArrow className="text-primary-400 size-5" />
             </Button>
           </CardFooter>
         </Card>

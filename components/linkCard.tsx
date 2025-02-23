@@ -23,12 +23,12 @@ export const LinkCard = ({ title, url }: Partial<LinkProp>) => {
             </p>
           </div>
         </div>
-        <div className="flex justify-end items-center ">
-          <Button isIconOnly variant="light">
-            <MenuIcon className="text-default-500" />
+        <div className="flex justify-end items-center">
+          <Button isIconOnly size="sm" variant="light">
+            <MenuIcon className="text-default-500 size-4" />
           </Button>
-          <Button isIconOnly variant="light">
-            <ArrowUpRight className="text-default-500" />
+          <Button isIconOnly size="sm" variant="light">
+            <ArrowUpRight className="text-default-500 size-4" />
           </Button>
         </div>
       </CardHeader>
