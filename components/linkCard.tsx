@@ -23,7 +23,7 @@ export const LinkCard = ({ title, url }: Partial<LinkProp>) => {
             </p>
           </div>
         </div>
-        <div className="flex justify-end items-center">
+        <div className="flex justify-end items-center w-2/12">
           <Button isIconOnly size="sm" variant="light">
             <MenuIcon className="text-default-500 size-4" />
           </Button>

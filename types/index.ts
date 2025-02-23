@@ -12,6 +12,7 @@ export type LinkProp = {
   createdAt: string;
   userId: string;
   isShared: boolean;
+  isFavorite: boolean;
   tags: TagProp[];
 };
 

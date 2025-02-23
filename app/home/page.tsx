@@ -1,5 +1,6 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
+import { Plus } from "lucide-react";
 
 import { OverViewCard } from "@/components/overViewCard";
 import { LinkProp } from "@/types";
@@ -13,6 +14,7 @@ export default function HomePage() {
       description: "Search the world's information.",
       createdAt: "2024-02-22T10:30:00Z",
       userId: "user_1",
+      isFavorite: false,
       isShared: true,
       tags: [],
     },
@@ -23,6 +25,7 @@ export default function HomePage() {
       description: "Where the world builds software.",
       createdAt: "2024-02-21T14:15:00Z",
       userId: "user_2",
+      isFavorite: false,
       isShared: false,
       tags: [],
     },
@@ -33,6 +36,7 @@ export default function HomePage() {
       description: "Tech news and startup discussions.",
       createdAt: "2024-02-20T18:00:00Z",
       userId: "user_3",
+      isFavorite: false,
       isShared: true,
       tags: [],
     },
@@ -44,6 +48,7 @@ export default function HomePage() {
       createdAt: "2024-02-19T09:45:00Z",
       userId: "user_4",
       isShared: true,
+      isFavorite: false,
       tags: [],
     },
     {
@@ -54,6 +59,7 @@ export default function HomePage() {
       createdAt: "2024-02-18T12:00:00Z",
       userId: "user_5",
       isShared: false,
+      isFavorite: false,
       tags: [],
     },
   ];
@@ -69,7 +75,7 @@ export default function HomePage() {
           <CardHeader className="pb-0">
             <small className="text-default-500">Recently Added</small>
           </CardHeader>
-          <CardBody className="py-2">
+          <CardBody className="my-2 p-0">
             {mockLinks.map((item, index) => (
               <LinkCard key={index} {...item} />
             ))}
@@ -88,7 +94,7 @@ export default function HomePage() {
           <CardHeader className="pb-0">
             <small className="text-default-500">Your Favorites</small>
           </CardHeader>
-          <CardBody className="py-2">
+          <CardBody className="my-2 p-0">
             {mockLinks.map((item, index) => (
               <LinkCard key={index} {...item} />
             ))}
@@ -101,6 +107,14 @@ export default function HomePage() {
           </CardFooter>
         </Card>
       </div>
+      <Button
+        isIconOnly
+        className="fixed bottom-20 right-4 z-10"
+        color="primary"
+        size="lg"
+      >
+        <Plus className="size-5" />
+      </Button>
     </section>
   );
 }

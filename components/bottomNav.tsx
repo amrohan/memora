@@ -35,11 +35,11 @@ export default function BottomNav() {
                 color="foreground"
                 href={item.url}
               >
-                <IconComponent className="size-4" />
+                <IconComponent className="size-5" />
                 <span
                   className={`text-tiny ${isActive ? "text-primary-400" : "text-default-500"}`}
                 >
-                  {item.title}
+                  {/* {item.title} */}
                 </span>
               </Link>
             </NavbarItem>
