@@ -14,7 +14,7 @@ export const LinkCard = ({ title, url }: Partial<LinkProp>) => {
         <div className="flex w-10/12 justify-start items-center gap-3 min-w-0">
           {/*Avatar*/}
           <div>
-            <Avatar name={title?.charAt(0)} size="md" />
+            <Avatar name={title?.charAt(0)} radius="md" size="md" />
           </div>
           <div className="flex flex-col min-w-0">
             <p className="text-sm">{title || "Untitled"}</p>
@@ -24,9 +24,9 @@ export const LinkCard = ({ title, url }: Partial<LinkProp>) => {
           </div>
         </div>
         <div className="flex justify-end items-center w-2/12">
-          <Button isIconOnly size="sm" variant="light">
-            <MenuIcon className="text-default-500 size-4" />
-          </Button>
+          {/* <Button isIconOnly size="sm" variant="light"> */}
+          {/*   <MenuIcon className="text-default-500 size-4" /> */}
+          {/* </Button> */}
           <Button isIconOnly size="sm" variant="light">
             <ArrowUpRight className="text-default-500 size-4" />
           </Button>

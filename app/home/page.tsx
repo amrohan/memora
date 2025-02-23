@@ -5,6 +5,7 @@ import { OverViewCard } from "@/components/overViewCard";
 import { LinkProp } from "@/types";
 import { LinkCard } from "@/components/linkCard";
 import AddLinkComponent from "@/components/addLink";
+import Edit from "@/components/EditLink";
 export default function HomePage() {
   const mockLinks: LinkProp[] = [
     {
@@ -65,7 +66,7 @@ export default function HomePage() {
   ];
 
   return (
-    <section className="mb-20">
+    <section className="mb-20 px-4 pt-4">
       <div className="w-full flex justify-start items-center gap-2">
         <OverViewCard count={269} name="Bookmarks" />
         <OverViewCard count={69} name="Shared Bookmarks" />
@@ -107,6 +108,7 @@ export default function HomePage() {
         </Card>
       </div>
       <AddLinkComponent />
+      <Edit />
     </section>
   );
 }
