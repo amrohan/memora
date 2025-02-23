@@ -59,8 +59,8 @@ export default function HomePage() {
   ];
 
   return (
-    <section>
-      <div className="w-full flex justify-start items-center gap-2 mb-16">
+    <section className="mb-20">
+      <div className="w-full flex justify-start items-center gap-2">
         <OverViewCard count={269} name="Bookmarks" />
         <OverViewCard count={69} name="Shared Bookmarks" />
       </div>
