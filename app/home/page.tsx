@@ -1,10 +1,10 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { Plus } from "lucide-react";
 
 import { OverViewCard } from "@/components/overViewCard";
 import { LinkProp } from "@/types";
 import { LinkCard } from "@/components/linkCard";
+import AddLinkComponent from "@/components/addLink";
 export default function HomePage() {
   const mockLinks: LinkProp[] = [
     {
@@ -88,7 +88,6 @@ export default function HomePage() {
           </CardFooter>
         </Card>
       </div>
-
       <div className="my-4">
         <Card className="w-full py-1 min-h-96">
           <CardHeader className="pb-0">
@@ -107,14 +106,7 @@ export default function HomePage() {
           </CardFooter>
         </Card>
       </div>
-      <Button
-        isIconOnly
-        className="fixed bottom-20 right-4 z-10"
-        color="primary"
-        size="lg"
-      >
-        <Plus className="size-5" />
-      </Button>
+      <AddLinkComponent />
     </section>
   );
 }

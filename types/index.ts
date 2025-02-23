@@ -8,12 +8,22 @@ export type LinkProp = {
   id: number;
   title: string;
   url: string;
+  coverImage?: string[];
   description: string;
+  note?: string;
   createdAt: string;
   userId: string;
   isShared: boolean;
   isFavorite: boolean;
   tags: TagProp[];
+  collection?: CollectionProp;
+};
+
+export type CollectionProp = {
+  id: number;
+  name: string;
+  createdAt: string;
+  isActive: boolean;
 };
 
 export type TagProp = {
