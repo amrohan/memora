@@ -14,7 +14,7 @@ tagRoute.get("/", async (c) => {
         ${tag.name}
         <a href="/tags/bookmarks/${tag.name}">View Bookmarks</a>
       </li>
-    `
+    `,
     )
     .join("");
 
@@ -27,11 +27,11 @@ tagRoute.get("/", async (c) => {
         <input type="text" id="name" name="name" required>
         <button type="submit">Create Tag</button>
       </form>
-      <h2>Existing Tags</h2>
+      <h5>Existing Tags</h5>
       <ul>${tags.length ? tagsHtml : "<p>No tags yet.</p>"}</ul>
     `,
-      "Tags"
-    )
+      "Tags",
+    ),
   );
 });
 
@@ -87,7 +87,7 @@ tagRoute.get("/bookmarks/:name", async (c) => {
         <a class="contrast" href="/bookmarks/delete/${b.id}">Delete</a>
       </div>
     </li>
-  `
+  `,
     )
     .join("");
 
@@ -95,13 +95,12 @@ tagRoute.get("/bookmarks/:name", async (c) => {
     layout(
       `${tagName} Tag`,
       `
-    ${
-      bookmarks.length === 0
+    ${bookmarks.length === 0
         ? "<p>No bookmarks with this tag.</p>"
         : `<ul>${listHtml}</ul>`
-    },
+      },
   `,
-      `Bookmarks with ${tagName} Tag`
-    )
+      `Bookmarks with ${tagName} Tag`,
+    ),
   );
 });

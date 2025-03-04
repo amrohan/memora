@@ -28,7 +28,7 @@ collectionRoute.get("/", async (c) => {
         <input type="text" id="name" name="name" required>
         <button type="submit">Create Collection</button>
       </form>
-      <h2>Existing Collections</h2>
+      <h5>Existing Collections</h5>
       <ul>${collections.length ? collectionsHtml : "<p>No collections yet.</p>"}</ul>
     `,
       "Collections",
