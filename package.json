@@ -1,8 +1,10 @@
 {
   "name": "memora",
   "type": "module",
+  "exports": "./dist/index.mjs",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "build": "pkgroll"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
@@ -16,6 +18,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "pkgroll": "^2.11.2",
     "prisma": "^6.4.1",
     "tsx": "^4.7.1"
   }
