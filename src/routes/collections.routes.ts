@@ -23,7 +23,6 @@ collectionRoute.get("/", async (c) => {
     layout(
       "Collections",
       `
-      <h1>Collections</h1>
       <form action="/collections/new" method="post">
         <label for="name">New Collection Name</label>
         <input type="text" id="name" name="name" required>
@@ -32,6 +31,7 @@ collectionRoute.get("/", async (c) => {
       <h2>Existing Collections</h2>
       <ul>${collections.length ? collectionsHtml : "<p>No collections yet.</p>"}</ul>
     `,
+      "Collections",
     ),
   );
 });

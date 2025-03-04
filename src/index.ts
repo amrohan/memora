@@ -1,8 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { bookmarkRoutes } from "./routes/bookmark.route.js";
-import { prisma } from "./lib/prisma.js";
-import { layout } from "./components/layout.js";
 import { collectionRoute } from "./routes/collections.routes.js";
 import { tagRoute } from "./routes/tags.route.js";
 
