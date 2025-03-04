@@ -1,0 +1,22 @@
+{
+  "name": "memora",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "@prisma/client": "^6.4.1",
+    "got": "^14.4.6",
+    "hono": "^4.7.2",
+    "metascraper": "^5.46.7",
+    "metascraper-description": "^5.46.5",
+    "metascraper-image": "^5.46.5",
+    "metascraper-title": "^5.46.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "prisma": "^6.4.1",
+    "tsx": "^4.7.1"
+  }
+}

@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Bookmark {
+  id          Int      @id @default(autoincrement())
+  url         String   @unique
+  title       String
+  description String?
+  cover       String?
+  collection  String
+  tags        Tag[]
+  isDraft     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Collection {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model Tag {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  bookmarks Bookmark[]
+}
