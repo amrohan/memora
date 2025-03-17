@@ -4,22 +4,42 @@ import {Component} from '@angular/core';
   selector: 'app-bookmark-card',
   imports: [],
   template: `
-    <div class="card card-border bg-base-100">
+    <div class="card card-border bg-base-100 min-h-32">
       <div class="card-body">
         <div class="flex justify-between items-center gap-2 md:gap-0.5 w-full">
-          <div class="avatar w-2/12 md:w-1/12">
+          <div class="avatar w-2/12 ">
             <div class="w-10 rounded">
               <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png"/>
             </div>
           </div>
-          <div class="flex justify-between items-center gap-1 w-10/12 md:w-11/12">
+          <div class="flex justify-between items-center gap-1 w-10/12 ">
             <div class="flex flex-col justify-center items-start gap-0.5">
+              <!-- tags-->
+              <div class="mb-2 flex justify-start items-center gap-2">
+                <a
+                  class="badge badge-ghost badge-xs rounded-md cursor-pointer ">
+                  #UI
+                </a>
+              </div>
               <p class="text-sm font-bold text-neutral-800">
                 Notion
               </p>
-              <p class="text-xs  text-neutral-400">
-                notion.so
+              <p class="text-xs text-primary/40">
+                A new tool that blends your everyday work apps into one. It's the all-in-one workspace for you and your
+                team.
               </p>
+
+              <!--Collection Ui-->
+              <a
+                class="badge badge-ghost badge-sm rounded-md cursor-pointer mt-2 flex justify-start items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="size-3.5">
+                  <path
+                    d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                </svg>
+                <p> Home </p>
+              </a>
             </div>
             <div class="w-10 rounded dropdown dropdown-end">
               <button class="btn btn-square btn-ghost" popovertarget="popover-1" style="anchor-name:--anchor-1">
@@ -45,7 +65,6 @@ import {Component} from '@angular/core';
                     Edit
                   </button>
                 </li>
-
                 <li>
                   <button class="btn btn-ghost btn-error flex justify-start items-center gap-6">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
