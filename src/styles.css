@@ -3,3 +3,26 @@
 @plugin "daisyui" {
   themes: lofi --default;
 }
+
+
+.modal {
+  @apply fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300;
+}
+
+.modal-open {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.modal-box {
+  @apply relative bg-white rounded-lg shadow-lg p-4 w-96 max-w-full z-10;
+  max-height: calc(100vh - 5em);
+  overflow-y: auto;
+}
+
+.modal-action {
+  @apply flex justify-end gap-2 mt-6;
+}
+
+.modal-backdrop {
+  @apply fixed inset-0 bg-black opacity-50 z-0;
+}
