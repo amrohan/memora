@@ -5,7 +5,7 @@ import {Component, input} from '@angular/core';
   imports: [],
   template: `
     <header class="h-20 flex justify-between items-center">
-      <h2 class="text-primary/80 text-lg font-semibold">{{ headerName() }}</h2>
+      <h2 class="text-base-content text-lg font-semibold">{{ headerName() }}</h2>
     </header>
   `,
   styles: ``

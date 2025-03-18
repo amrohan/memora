@@ -1,16 +1,17 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-collection-card',
+  selector: 'app-tags-card',
   imports: [],
   template: `
-    <div class="card card-border bg-base-100 w-full shadow-sm h-64">
+    <div class="card bg-base-100 card-border w-full shadow-sm h-64">
       <figure class="grid place-content-center h-40 ">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             class="size-10 text-base-content/70">
+             class="size-10 text-base-content/80">
           <path
-            d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+            d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/>
+          <circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>
         </svg>
       </figure>
       <div class="card-body">
@@ -64,6 +65,6 @@ import {Component} from '@angular/core';
     </div>
   `,
 })
-export class CollectionCardComponent {
+export class TagsCardComponent {
 
 }

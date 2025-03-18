@@ -21,10 +21,10 @@ import {Component} from '@angular/core';
                   #UI
                 </a>
               </div>
-              <p class="text-sm font-bold text-neutral-800">
+              <p class="text-sm font-bold text-base-content">
                 Notion
               </p>
-              <p class="text-xs text-primary/40">
+              <p class="text-xs text-base-content/80">
                 A new tool that blends your everyday work apps into one. It's the all-in-one workspace for you and your
                 team.
               </p>

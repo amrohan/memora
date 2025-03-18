@@ -1,20 +1,18 @@
-import {Component, inject, signal, viewChild} from '@angular/core';
-import {CollectionCardComponent} from '@components/collection-card/collection-card.component';
+import {Component, signal, viewChild} from '@angular/core';
 import {HeaderComponent} from '@components/header/header.component';
-import {ModalService} from '@services/modal.service';
 import {ModalComponent} from '@components/modal/modal.component';
+import {TagsCardComponent} from '@components/tags-card/tags-card.component';
 
 @Component({
-  selector: 'app-collections',
+  selector: 'app-tags',
   imports: [
     HeaderComponent,
-    CollectionCardComponent,
-    CollectionCardComponent,
-    HeaderComponent,
+    TagsCardComponent,
     ModalComponent,
   ],
   template: `
-    <app-header headerName="Collection"/>
+
+    <app-header headerName="Tags"/>
     <section>
       <div class="h-20 flex justify-end items-center gap-2">
         <label class="input">
@@ -24,12 +22,12 @@ import {ModalComponent} from '@components/modal/modal.component';
               <path d="m21 21-4.3-4.3"></path>
             </g>
           </svg>
-          <input type="search" required placeholder="Search collection..."/>
+          <input type="search" required placeholder="Search tags..."/>
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
       <article class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3">
-        <app-collection-card/>
+        <app-tags-card/>
       </article>
     </section>
 
@@ -44,14 +42,16 @@ import {ModalComponent} from '@components/modal/modal.component';
       (closed)="handleClose()">
       <div class="form-control ">
         <fieldset class="fieldset">
-          <legend class="fieldset-legend">Collection</legend>
-          <input type="text" placeholder="Enter collection name..." class="input input-bordered w-full"/>
+          <legend class="fieldset-legend">Tag</legend>
+          <input type="text" placeholder="Enter tag name..." class="input input-bordered w-full"/>
         </fieldset>
       </div>
     </app-modal>
   `,
+  styles: ``
 })
-export class CollectionsComponent {
+export class TagsComponent {
+
   isEditing = signal<boolean>(false);
 
   customModal = viewChild.required<ModalComponent>('customModal');

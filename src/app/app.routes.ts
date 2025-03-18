@@ -23,6 +23,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/collections/collections.component').then(m => m.CollectionsComponent),
       },
       {
+        path: 'tags',
+        loadComponent: () => import('./pages/tags/tags.component').then(m => m.TagsComponent),
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent),
       }

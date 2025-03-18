@@ -6,7 +6,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
   imports: [RouterLink, RouterLinkActive],
   template: `
     <div class="dock">
-      <!--      Dashboard-->
+      <!--Dashboard-->
       <a routerLinkActive="dock-active" routerLink="/" [routerLinkActiveOptions]="{ exact: true }">
         <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
@@ -20,7 +20,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
         </svg>
         <span class="dock-label">Dashboard</span>
       </a>
-      <!--      Bookmarks-->
+      <!--Bookmarks-->
       <a routerLinkActive="dock-active" routerLink="/bookmarks">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
              stroke="currentColor"
@@ -29,17 +29,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
         </svg>
         <span class="dock-label">Bookmarks</span>
       </a>
-      <!--      Search-->
-      <a routerLinkActive="dock-active" routerLink="/search">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             class="size-[1.2em]">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.3-4.3"/>
-        </svg>
-        <span class="dock-label">Search</span>
-      </a>
-      <!--      Collection-->
+      <!--Collection-->
       <a routerLinkActive="dock-active" routerLink="/collections">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -50,7 +40,19 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
         </svg>
         <span class="dock-label">Collection</span>
       </a>
-      <!--      Settings-->
+      <!--Tags-->
+      <a routerLinkActive="dock-active" routerLink="/tags">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="size-[1.2em]">
+          <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19"/>
+          <path
+            d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"/>
+          <circle cx="6.5" cy="9.5" r=".5" fill="currentColor"/>
+        </svg>
+        <span class="dock-label">Tags</span>
+      </a>
+      <!--Settings-->
       <a routerLinkActive="dock-active" routerLink="/settings">
         <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
