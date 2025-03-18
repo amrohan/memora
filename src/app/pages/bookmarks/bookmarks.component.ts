@@ -1,5 +1,5 @@
 import {Component, signal, viewChild} from '@angular/core';
-import {HeaderComponent} from '../../components/header/header.component';
+import {HeaderComponent} from '@components/header/header.component';
 import {ModalComponent} from '@components/modal/modal.component';
 import {DrawerComponent} from '@components/drawer/drawer.component';
 
@@ -18,7 +18,7 @@ interface ItemData {
   title: string;
   description: string;
   coverImage?: string;
-  collections: Collection[];
+  collection: Collection | null
   tags: Tag[];
 }
 
@@ -116,7 +116,7 @@ export class BookmarksComponent {
       title: "Notion",
       description: "Write. Plan. Collaborate. With a little help from AI. ",
       coverImage: "https://www.notion.com/front-static/meta/default.png",
-      collections: [{id: 1, name: "Work"}],
+      collection: {id: 1, name: "Work"},
       tags: [{id: 1, name: "Important"}, {id: 3, name: "Reference"}]
     },
     {
@@ -124,7 +124,7 @@ export class BookmarksComponent {
       title: "Vacation Planning",
       description: "Notes and links for upcoming summer vacation plans.",
       coverImage: "https://via.placeholder.com/400x200?text=Vacation",
-      collections: [{id: 2, name: "Personal"}],
+      collection: {id: 2, name: "Personal"},
       tags: [{id: 4, name: "Follow-up"}]
     }
   ]);
@@ -157,17 +157,17 @@ export class BookmarksComponent {
     console.log('Drawer closed');
   }
 
-  handleItemSaved(data: { id: number, collections: Collection[], tags: Tag[] }): void {
+  handleItemSaved(data: { id: number, collection: Collection | null, tags: Tag[] }): void {
     console.log('Item saved:', data);
 
     // Update mock data
-    this.mockItems.update(items =>
-      items.map(item =>
-        item.id === data.id
-          ? {...item, collections: data.collections, tags: data.tags}
-          : item
-      )
-    );
+    // this.mockItems.update(items =>
+    //   items.map(item =>
+    //     item.id === data.id
+    //       ? {...item, collections: data.collections, tags: data.tags}
+    //       : item
+    //   )
+    // );
   }
 
   handleItemVisit(id: number): void {

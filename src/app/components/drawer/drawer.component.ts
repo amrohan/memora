@@ -17,7 +17,7 @@ interface ItemData {
   title: string;
   description: string;
   coverImage?: string;
-  collection: Collection | null; // Changed from collections array to single collection
+  collection: Collection | null
   tags: Tag[];
 }
 
@@ -218,7 +218,7 @@ export class DrawerComponent {
     id: number,
     // title: string;
     // description: string;
-    coverImage?: string;
+    // coverImage?: string;
     collection: Collection | null,
     tags: Tag[]
   }>();
