@@ -1,7 +1,7 @@
-import {Component, signal, viewChild} from '@angular/core';
-import {HeaderComponent} from '@components/header/header.component';
-import {ModalComponent} from '@components/modal/modal.component';
-import {DrawerComponent} from '@components/drawer/drawer.component';
+import { Component, signal, viewChild } from '@angular/core';
+import { HeaderComponent } from '@components/header/header.component';
+import { ModalComponent } from '@components/modal/modal.component';
+import { DrawerComponent } from '@components/drawer/drawer.component';
 
 interface Collection {
   id: number;
@@ -16,6 +16,7 @@ interface Tag {
 interface ItemData {
   id: number;
   title: string;
+  url: string;
   description: string;
   coverImage?: string;
   collection: Collection | null
@@ -114,34 +115,36 @@ export class BookmarksComponent {
     {
       id: 1,
       title: "Notion",
+      url: "http://localhost:8080",
       description: "Write. Plan. Collaborate. With a little help from AI. ",
       coverImage: "https://www.notion.com/front-static/meta/default.png",
-      collection: {id: 1, name: "Work"},
-      tags: [{id: 1, name: "Important"}, {id: 3, name: "Reference"}]
+      collection: { id: 1, name: "Work" },
+      tags: [{ id: 1, name: "Important" }, { id: 3, name: "Reference" }]
     },
     {
       id: 2,
       title: "Vacation Planning",
+      url: "http://localhost:8080",
       description: "Notes and links for upcoming summer vacation plans.",
       coverImage: "https://via.placeholder.com/400x200?text=Vacation",
-      collection: {id: 2, name: "Personal"},
-      tags: [{id: 4, name: "Follow-up"}]
+      collection: { id: 2, name: "Personal" },
+      tags: [{ id: 4, name: "Follow-up" }]
     }
   ]);
 
   mockCollections = signal<Collection[]>([
-    {id: 1, name: "Work"},
-    {id: 2, name: "Personal"},
-    {id: 3, name: "Archive"},
-    {id: 4, name: "Projects"}
+    { id: 1, name: "Work" },
+    { id: 2, name: "Personal" },
+    { id: 3, name: "Archive" },
+    { id: 4, name: "Projects" }
   ]);
 
   mockTags = signal<Tag[]>([
-    {id: 1, name: "Important"},
-    {id: 2, name: "Urgent"},
-    {id: 3, name: "Reference"},
-    {id: 4, name: "Follow-up"},
-    {id: 5, name: "Review"}
+    { id: 1, name: "Important" },
+    { id: 2, name: "Urgent" },
+    { id: 3, name: "Reference" },
+    { id: 4, name: "Follow-up" },
+    { id: 5, name: "Review" }
   ]);
 
   openDrawer(id: number): void {
@@ -159,7 +162,6 @@ export class BookmarksComponent {
 
   handleItemSaved(data: { id: number, collection: Collection | null, tags: Tag[] }): void {
     console.log('Item saved:', data);
-
     // Update mock data
     // this.mockItems.update(items =>
     //   items.map(item =>

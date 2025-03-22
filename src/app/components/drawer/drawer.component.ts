@@ -1,6 +1,6 @@
-import {Component, signal, input, output, effect} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import { Component, signal, input, output, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface Collection {
   id: number;
@@ -15,6 +15,7 @@ interface Tag {
 interface ItemData {
   id: number;
   title: string;
+  url: string;
   description: string;
   coverImage?: string;
   collection: Collection | null
@@ -84,11 +85,17 @@ interface ItemData {
               </div>
 
               <!-- Title -->
-              <h2 class="text-xl font-bold mb-2">{{ currentItemData()!.title }}</h2>
+              <input type="text" placeholder="Type here" class="input input-ghost w-full text-xl font-bold mb-1 p-0" [(ngModel)]="currentItemData()!.title" />
 
               <!-- Description -->
-              <p class="text-base-content/70 mb-4">{{ currentItemData()!.description }}</p>
+              <input type="text" placeholder="Type here" class="input input-ghost w-full mb-4 p-0 text-base-content/70" [(ngModel)]="currentItemData()!.description" />
 
+              <fieldset class="fieldset mb-2">
+                <label class="label mb-1">
+                  <span class="label-text text-sm">Url</span>
+                </label>
+                <input type="text" class="input w-full" [(ngModel)]='currentItemData()!.url' placeholder="Enter url here"/>
+              </fieldset>
               <!-- Collection Selection - Single Collection -->
               <div class="form-control w-full mb-4">
                 <label class="label mb-2">
@@ -216,9 +223,10 @@ export class DrawerComponent {
   drawerClosed = output<void>();
   itemSaved = output<{
     id: number,
-    // title: string;
-    // description: string;
-    // coverImage?: string;
+    title: string;
+    url: string;
+    description: string;
+    coverImage?: string;
     collection: Collection | null,
     tags: Tag[]
   }>();
@@ -407,10 +415,15 @@ export class DrawerComponent {
 
   saveChanges(): void {
     const itemData = this.currentItemData();
+    console.log(this.currentItemData())
     if (!itemData) return;
 
     this.itemSaved.emit({
       id: itemData.id,
+      title: itemData.title,
+      url: itemData.url,
+      description: itemData.description,
+      coverImage: itemData.coverImage,
       collection: this.selectedCollection(),
       tags: [...this.selectedTags()]
     });
