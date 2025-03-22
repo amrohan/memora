@@ -1,1 +1,527 @@
-<app-header headerName="Settings"/>
+<app-header headerName="Account Settings" />
+
+<!-- Toast container positioned at top center -->
+<div class="toast toast-top toast-center fixed z-50">
+  <!-- Success Toast -->
+  @if (saveSuccess()) {
+    <div class="alert alert-success shadow-lg flex items-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="stroke-current shrink-0 h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>Settings saved successfully!</span>
+    </div>
+  }
+
+  <!-- Error Toast -->
+  @if (saveError()) {
+    <div class="alert alert-error shadow-lg flex items-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="stroke-current shrink-0 h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>Failed to save settings. Please try again.</span>
+    </div>
+  }
+</div>
+
+<!-- user-settings.component.html -->
+<div class="max-w-5xl mx-auto mb-20">
+  <!-- Status Messages -->
+  <div
+    class="flex flex-col md:flex-row justify-between items-start gap-2 md:gap-8"
+  >
+    <!-- Side navigation -->
+    <div class="w-full md:w-64 shrink-0">
+      <div class="card card-border bg-base-100 shadow-sm">
+        <div class="card-body p-4">
+          <ul class="menu bg-base-100 rounded-box">
+            <li>
+              <a
+                [class.active]="activeSection() === 'profile'"
+                (click)="setActiveSection('profile')"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Profile
+              </a>
+            </li>
+            <li>
+              <a
+                [class.active]="activeSection() === 'appearance'"
+                (click)="setActiveSection('appearance')"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                  <path d="M8 11h8"></path>
+                  <path d="M12 15V7.5"></path>
+                </svg>
+                Appearance
+              </a>
+            </li>
+            <li>
+              <a
+                [class.active]="activeSection() === 'notifications'"
+                (click)="setActiveSection('notifications')"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Notifications
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="flex justify-center items-start w-full">
+      <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+        <div class="card bg-base-100 shadow-sm card-border mx-auto">
+          <div class="card-body">
+            <!-- Profile Section -->
+            @if (activeSection() === "profile") {
+              <div class="space-y-6">
+                <div class="flex flex-col md:flex-row gap-4 items-start">
+                  <div class="avatar">
+                    <div
+                      class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
+                    >
+                      <img
+                        src="https://avatars.githubusercontent.com/u/73811790?v=4"
+                        alt="Avatar"
+                      />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <h2 class="text-xl font-semibold">Profile Picture</h2>
+                    <p class="text-sm text-base-content/70">
+                      Upload a photo to personalize your account.
+                    </p>
+                    <div class="flex gap-2">
+                      <button type="button" class="btn btn-sm btn-primary">
+                        Upload
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline">
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <fieldset class="space-y-5 w-full">
+                  <legend class="text-lg font-semibold pb-2">
+                    Personal Information
+                  </legend>
+                  <p class="text-sm text-base-content/70 pb-3">
+                    Update your personal details and how others see you on the
+                    platform.
+                  </p>
+
+                  <div class="form-control w-full">
+                    <label class="label">
+                      <span class="label-text font-medium">Username</span>
+                    </label>
+                    <div class="flex items-center">
+                      <span
+                        class="bg-base-200 px-3 py-2.5 rounded-l-md border border-r-0 border-base-300 text-base-content/50"
+                        >example.com/</span
+                      >
+                      <input
+                        type="text"
+                        placeholder="username"
+                        class="input input-bordered flex-1 rounded-l-none w-full"
+                        formControlName="username"
+                        [ngClass]="{
+                          'input-error':
+                            settingsForm.get('username')?.invalid &&
+                            settingsForm.get('username')?.touched,
+                        }"
+                      />
+                    </div>
+                    @if (
+                      settingsForm.get("username")?.invalid &&
+                      settingsForm.get("username")?.touched
+                    ) {
+                      <label class="label">
+                        <span class="label-text-alt text-error"
+                          >Username is required (min 3 characters)</span
+                        >
+                      </label>
+                    } @else {
+                      <label class="label">
+                        <span class="label-text-alt text-base-content/70"
+                          >Your unique username for your profile URL.</span
+                        >
+                      </label>
+                    }
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label">
+                      <span class="label-text font-medium">Full Name</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Your full name"
+                      class="input input-bordered w-full"
+                      formControlName="fullName"
+                      [ngClass]="{
+                        'input-error':
+                          settingsForm.get('fullName')?.invalid &&
+                          settingsForm.get('fullName')?.touched,
+                      }"
+                    />
+                    @if (
+                      settingsForm.get("fullName")?.invalid &&
+                      settingsForm.get("fullName")?.touched
+                    ) {
+                      <label class="label">
+                        <span class="label-text-alt text-error"
+                          >Full name is required</span
+                        >
+                      </label>
+                    } @else {
+                      <label class="label">
+                        <span class="label-text-alt text-base-content/70"
+                          >Your name as it appears to others.</span
+                        >
+                      </label>
+                    }
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label">
+                      <span class="label-text font-medium">Email Address</span>
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="Your email"
+                      class="input input-bordered w-full"
+                      formControlName="email"
+                      [ngClass]="{
+                        'input-error':
+                          settingsForm.get('email')?.invalid &&
+                          settingsForm.get('email')?.touched,
+                      }"
+                    />
+                    @if (
+                      settingsForm.get("email")?.invalid &&
+                      settingsForm.get("email")?.touched
+                    ) {
+                      <label class="label">
+                        <span class="label-text-alt text-error"
+                          >Valid email is required</span
+                        >
+                      </label>
+                    } @else {
+                      <label class="label">
+                        <span class="label-text-alt text-base-content/70"
+                          >Used for notifications and account recovery.</span
+                        >
+                      </label>
+                    }
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label">
+                      <span class="label-text font-medium">Bio</span>
+                    </label>
+                    <textarea
+                      placeholder="Tell others about yourself"
+                      class="textarea textarea-bordered w-full h-24"
+                      formControlName="bio"
+                    ></textarea>
+                    <label class="label">
+                      <span class="label-text-alt text-base-content/70"
+                        >Brief description for your profile. Max 160
+                        characters.</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label">
+                      <span class="label-text font-medium"
+                        >Profile Visibility</span
+                      >
+                    </label>
+                    <div class="flex flex-col gap-2">
+                      <label
+                        class="label cursor-pointer justify-start gap-3 p-3 border rounded-md hover:bg-base-200"
+                      >
+                        <input
+                          type="radio"
+                          value="public"
+                          formControlName="profileVisibility"
+                          class="radio radio-primary"
+                        />
+                        <div>
+                          <span class="label-text font-medium">Public</span>
+                          <p class="text-xs text-base-content/70 mt-1">
+                            Anyone can view your profile
+                          </p>
+                        </div>
+                      </label>
+                      <label
+                        class="label cursor-pointer justify-start gap-3 p-3 border rounded-md hover:bg-base-200"
+                      >
+                        <input
+                          type="radio"
+                          value="private"
+                          formControlName="profileVisibility"
+                          class="radio radio-primary"
+                        />
+                        <div>
+                          <span class="label-text font-medium">Private</span>
+                          <p class="text-xs text-base-content/70 mt-1">
+                            Only you can view your profile
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            }
+
+            <!-- Appearance Section -->
+            @if (activeSection() === "appearance") {
+              <div class="space-y-6">
+                <fieldset class="space-y-4">
+                  <legend class="text-lg font-semibold pb-2">
+                    Theme Preferences
+                  </legend>
+                  <p class="text-sm text-base-content/70 pb-3">
+                    Customize how the application looks and feels to you.
+                  </p>
+
+                  <div class="form-control w-full mb-4">
+                    <label class="label">
+                      <span class="label-text font-medium">Select Theme</span>
+                    </label>
+                    <select
+                      class="select select-bordered w-full"
+                      formControlName="theme"
+                    >
+                      @for (theme of themes(); track theme) {
+                        <option [value]="theme">
+                          {{ theme.charAt(0).toUpperCase() + theme.slice(1) }}
+                        </option>
+                      }
+                    </select>
+                    <label class="label">
+                      <span class="label-text-alt text-base-content/70"
+                        >Choose from a variety of themes to personalize your
+                        experience.</span
+                      >
+                    </label>
+                  </div>
+
+                  <!-- Theme Preview -->
+                  <div class="bg-base-300 p-6 rounded-box mt-4">
+                    <h3 class="font-medium mb-3">
+                      Theme Preview
+                      <span class="badge badge-primary ml-2">{{
+                        selectedTheme()
+                      }}</span>
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div class="flex flex-col items-center gap-2">
+                        <div class="w-full h-10 bg-primary rounded"></div>
+                        <span class="text-xs">primary</span>
+                      </div>
+                      <div class="flex flex-col items-center gap-2">
+                        <div class="w-full h-10 bg-secondary rounded"></div>
+                        <span class="text-xs">secondary</span>
+                      </div>
+                      <div class="flex flex-col items-center gap-2">
+                        <div class="w-full h-10 bg-accent rounded"></div>
+                        <span class="text-xs">accent</span>
+                      </div>
+                      <div class="flex flex-col items-center gap-2">
+                        <div class="w-full h-10 bg-neutral rounded"></div>
+                        <span class="text-xs">neutral</span>
+                      </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div class="flex gap-2 flex-wrap">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-accent">Accent</button>
+                      </div>
+                      <div class="flex gap-2 flex-wrap">
+                        <button class="btn btn-info">Info</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-warning">Warning</button>
+                        <button class="btn btn-error">Error</button>
+                      </div>
+                      <div class="flex gap-2 flex-wrap">
+                        <button class="btn btn-ghost">Ghost</button>
+                        <button class="btn btn-link">Link</button>
+                        <button class="btn btn-outline">Outline</button>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            }
+
+            <!-- Notifications Section -->
+            @if (activeSection() === "notifications") {
+              <div class="space-y-6">
+                <fieldset class="space-y-4" formGroupName="notifications">
+                  <legend class="text-lg font-semibold pb-2">
+                    Notification Preferences
+                  </legend>
+                  <p class="text-sm text-base-content/70 pb-3">
+                    Control how and when you receive notifications from the
+                    platform.
+                  </p>
+
+                  <div class="form-control">
+                    <label
+                      class="label cursor-pointer justify-between p-4 border rounded-md hover:bg-base-200"
+                    >
+                      <div>
+                        <span class="font-medium">Email Notifications</span>
+                        <p class="text-xs text-base-content/70 mt-1">
+                          Receive important updates, alerts, and newsletters via
+                          email
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        formControlName="email"
+                      />
+                    </label>
+                  </div>
+
+                  <div class="form-control">
+                    <label
+                      class="label cursor-pointer justify-between p-4 border rounded-md hover:bg-base-200"
+                    >
+                      <div>
+                        <span class="font-medium">Push Notifications</span>
+                        <p class="text-xs text-base-content/70 mt-1">
+                          Get real-time alerts directly in your browser
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        formControlName="push"
+                      />
+                    </label>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <div class="form-control">
+                    <label
+                      class="label cursor-pointer justify-between p-4 border rounded-md hover:bg-base-200"
+                    >
+                      <div>
+                        <span class="font-medium">Newsletter</span>
+                        <p class="text-xs text-base-content/70 mt-1">
+                          Subscribe to our monthly newsletter with updates and
+                          tips
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        formControlName="newsletter"
+                      />
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+            }
+
+            <!-- Action Buttons (always visible) -->
+            <div class="flex justify-end gap-4 mt-8 pt-4 border-t">
+              <button
+                type="button"
+                class="btn btn-outline"
+                [disabled]="isSaving()"
+                (click)="resetForm()"
+              >
+                Discard Changes
+              </button>
+
+              <button type="submit" class="btn btn-primary">
+                @if (isSaving()) {
+                  <span class="loading loading-spinner loading-xs"></span>
+                  Saving...
+                } @else {
+                  Save Changes
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
