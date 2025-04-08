@@ -1,58 +1,67 @@
-import { Component, signal, viewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { DrawerComponent } from '@components/drawer/drawer.component';
-
-interface Collection {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface ItemData {
-  id: number;
-  title: string;
-  url: string;
-  description: string;
-  coverImage?: string;
-  collection: Collection | null;
-  tags: Tag[];
-}
+import { BookmarkService } from '@services/bookmark.service';
+import { Observable } from 'rxjs';
+import { Bookmark } from '@models/bookmark.model'; // Adjust path if needed
+import { ApiResponse } from '@models/ApiResponse'; // Adjust path if needed
+import { AsyncPipe } from '@angular/common';
+import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
+import { Tag } from '@models/tags.model';
+import { Collection } from '@models/collection.model';
 
 @Component({
   selector: 'app-bookmarks',
-  imports: [HeaderComponent, ModalComponent, DrawerComponent],
+  standalone: true, // Add standalone: true
+  imports: [
+    HeaderComponent,
+    ModalComponent,
+    DrawerComponent,
+    AsyncPipe,
+    BookmarkCardComponent,
+  ],
   template: `
     <app-header headerName="Bookmarks" />
 
-    <section>
+    <section class="p-4">
       <div class="h-20 flex justify-end items-center gap-2">
-        <label class="input">
+        <label class="input input-bordered flex items-center gap-2">
           <svg
             class="h-[1em] opacity-50"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <g
-              stroke-linejoin="round"
-              stroke-linecap="round"
-              stroke-width="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </g>
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
           </svg>
-          <input type="search" required placeholder="Search bookmarks..." />
+          <input type="search" class="grow" placeholder="Search bookmarks..." />
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
     </section>
+
+    <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
+      @if (bookMarks$ | async; as response) { @if(response.data &&
+      response.data.length > 0) { @for (item of response.data; track item.id) {
+      <app-bookmark-card [bookmark]="item" />
+      } } @else {
+      <p class="col-span-full text-center text-base-content/70 mt-8">
+        No bookmarks found.
+      </p>
+      } } @else {
+      <!-- Optional: Loading state -->
+      <p class="col-span-full text-center text-base-content/70 mt-8">
+        Loading bookmarks...
+      </p>
+      <!-- Or use skeleton loaders -->
+      }
+    </main>
 
     <!-- Modal-->
     <app-modal
@@ -64,52 +73,46 @@ interface ItemData {
       (confirmed)="handleConfirm()"
       (closed)="handleClose()"
     >
+      <!-- Modal content -->
       <div class="form-control">
-        <legend class="fieldset-legend text-sm text-base-content">URL</legend>
-        <label class="input validator w-full">
+        <legend class="fieldset-legend text-sm text-base-content mb-1">
+          URL *
+        </legend>
+        <label class="input input-bordered flex items-center gap-2 w-full">
           <svg
-            class="h-[1em] opacity-50"
+            class="h-[1em] opacity-50 flex-shrink-0"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-            <g
-              stroke-linejoin="round"
-              stroke-linecap="round"
-              stroke-width="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-              ></path>
-              <path
-                d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-              ></path>
-            </g>
+            <path
+              d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+            ></path>
+            <path
+              d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+            ></path>
           </svg>
           <input
             type="url"
-            class=" w-full"
+            class="grow"
             required
-            placeholder="https://"
-            value="https://"
-            pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9-].*[a-zA-Z0-9])?.)+[a-zA-Z].*$"
-            title="Must be valid URL"
+            placeholder="https://example.com"
+            value=""
+            pattern="https?://.+"
+            title="Must be a valid URL starting with http:// or https://"
           />
         </label>
       </div>
     </app-modal>
 
-    <button class="btn btn-primary" (click)="openDrawer(1)">Open Item 1</button>
-    <button class="btn btn-secondary ml-2" (click)="openDrawer(2)">
-      Open Item 2
-    </button>
-
+    <!-- Drawer (keep as is for now, assuming it works with mock data) -->
     <app-drawer
       [itemId]="selectedItemId()"
       [itemData]="selectedItemData()"
-      [availableCollections]="mockCollections()"
-      [availableTags]="mockTags()"
       (drawerClosed)="handleDrawerClosed()"
       (itemSaved)="handleItemSaved($event)"
       (itemVisit)="handleItemVisit($event)"
@@ -117,10 +120,19 @@ interface ItemData {
     </app-drawer>
   `,
 })
-export class BookmarksComponent {
+export class BookmarksComponent implements OnInit {
   isEditing = signal<boolean>(false);
-
   customModal = viewChild.required<ModalComponent>('customModal');
+  // Make sure the generic type matches the expected API response structure
+  bookMarks$!: Observable<ApiResponse<Bookmark[]>>;
+
+  private bookMarkService = inject(BookmarkService);
+
+  ngOnInit(): void {
+    this.bookMarks$ = this.bookMarkService.listBookmarks();
+    // Optional: Add error handling for the observable
+    // this.bookMarks$.subscribe({ error: err => console.error('Failed to load bookmarks', err) });
+  }
 
   openCustomModal() {
     this.customModal().open();
@@ -128,86 +140,36 @@ export class BookmarksComponent {
 
   handleConfirm() {
     console.log('Modal confirmed');
+    // Add logic to actually save the bookmark
   }
 
   handleClose() {
     console.log('Modal closed');
   }
 
+  // --- Keep your drawer signals and mock data ---
   selectedItemId = signal<number | null>(null);
-  selectedItemData = signal<ItemData | null>(null);
-
-  // Mock data
-  mockItems = signal<ItemData[]>([
-    {
-      id: 1,
-      title: 'Notion',
-      url: 'http://localhost:8080',
-      description: 'Write. Plan. Collaborate. With a little help from AI. ',
-      coverImage: 'https://www.notion.com/front-static/meta/default.png',
-      collection: { id: 1, name: 'Work' },
-      tags: [
-        { id: 1, name: 'Important' },
-        { id: 3, name: 'Reference' },
-      ],
-    },
-    {
-      id: 2,
-      title: 'Vacation Planning',
-      url: 'http://localhost:8080',
-      description: 'Notes and links for upcoming summer vacation plans.',
-      coverImage: 'https://via.placeholder.com/400x200?text=Vacation',
-      collection: { id: 2, name: 'Personal' },
-      tags: [{ id: 4, name: 'Follow-up' }],
-    },
-  ]);
+  selectedItemData = signal<Bookmark | null>(null);
 
   mockCollections = signal<Collection[]>([
-    { id: 1, name: 'Work' },
-    { id: 2, name: 'Personal' },
-    { id: 3, name: 'Archive' },
-    { id: 4, name: 'Projects' },
+    /* ... */
   ]);
-
   mockTags = signal<Tag[]>([
-    { id: 1, name: 'Important' },
-    { id: 2, name: 'Urgent' },
-    { id: 3, name: 'Reference' },
-    { id: 4, name: 'Follow-up' },
-    { id: 5, name: 'Review' },
+    /* ... */
   ]);
 
   openDrawer(id: number): void {
-    this.selectedItemId.set(id);
-    // Find the selected item in our mock data
-    const item = this.mockItems().find((item) => item.id === id);
-    this.selectedItemData.set(item || null);
+    /* ... */
   }
-
   handleDrawerClosed(): void {
-    this.selectedItemId.set(null);
-    this.selectedItemData.set(null);
-    console.log('Drawer closed');
+    /* ... */
   }
-
   handleItemSaved(data: {
-    id: number;
-    collection: Collection | null;
-    tags: Tag[];
+    /* ... */
   }): void {
-    console.log('Item saved:', data);
-    // Update mock data
-    // this.mockItems.update(items =>
-    //   items.map(item =>
-    //     item.id === data.id
-    //       ? {...item, collections: data.collections, tags: data.tags}
-    //       : item
-    //   )
-    // );
+    /* ... */
   }
-
   handleItemVisit(id: number): void {
-    console.log('Visiting item:', id);
-    // Navigate to item page
+    /* ... */
   }
 }

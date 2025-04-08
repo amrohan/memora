@@ -3,9 +3,9 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Auth } from '@models/auth'; // Adjust path if needed
-import { ApiResponse, ApiResponseError } from '@models/ApiResponse'; // Adjust path if needed
-import { AuthUser } from '@models/user'; // Adjust path if needed
+import { Auth } from '@models/auth';
+import { ApiResponse, ApiResponseError } from '@models/ApiResponse';
+import { AuthUser } from '@models/user';
 
 // Define the specific success response structure for login
 export interface LoginSuccessData {
@@ -25,7 +25,7 @@ export class AuthService {
       .post<ApiResponse<LoginSuccessData>>(`${this.apiUrl}/auth/login`, model)
       .pipe(
         tap((response) => console.log('Login API Response:', response)), // Log response
-        catchError(this.handleError), // Centralized basic error logging
+        catchError(this.handleError) // Centralized basic error logging
       );
   }
 
@@ -35,7 +35,7 @@ export class AuthService {
       .post<ApiResponse<any>>(`${this.apiUrl}/auth/register`, model)
       .pipe(
         tap((response) => console.log('Register API Response:', response)), // Log response
-        catchError(this.handleError), // Centralized basic error logging
+        catchError(this.handleError) // Centralized basic error logging
       );
   }
 
