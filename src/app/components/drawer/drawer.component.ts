@@ -1,4 +1,11 @@
-import { Component, signal, input, output, effect } from '@angular/core';
+import {
+  Component,
+  signal,
+  input,
+  output,
+  model,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Bookmark } from '@models/bookmark.model';
@@ -13,19 +20,8 @@ interface Tag {
   name: string;
 }
 
-interface ItemData {
-  id: number;
-  title: string;
-  url: string;
-  description: string;
-  coverImage?: string;
-  collection: Collection | null;
-  tags: Tag[];
-}
-
 @Component({
   selector: 'app-drawer',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
     <div class="drawer drawer-end">
@@ -98,177 +94,183 @@ interface ItemData {
           <!-- Content - Scrollable -->
           <div class="flex-1 p-4 mb-20">
             @if (currentItemData()) {
-            <!-- Cover Image -->
-            <div class="w-full h-48 rounded-lg bg-base-200 mb-4">
-              @if (currentItemData()?.coverImage) {
-              <img
-                [src]="currentItemData()!.coverImage"
-                alt="Cover image"
-                class="w-full h-full object-cover rounded-lg"
-              />
-              } @else {
-              <div
-                class="w-full h-full flex items-center justify-center text-base-content/50"
-              >
-                No image available
-              </div>
-              }
-            </div>
-
-            <!-- Title -->
-            <input
-              type="text"
-              placeholder="Type here"
-              class="input input-ghost w-full text-xl font-bold mb-1 p-0"
-              [(ngModel)]="currentItemData()!.title"
-            />
-
-            <!-- Description -->
-            <input
-              type="text"
-              placeholder="Type here"
-              class="input input-ghost w-full mb-4 p-0 text-base-content/70"
-              [(ngModel)]="currentItemData()!.description"
-            />
-
-            <fieldset class="fieldset mb-2">
-              <label class="label mb-1">
-                <span class="label-text text-sm">Url</span>
-              </label>
-              <input
-                type="text"
-                class="input w-full"
-                [(ngModel)]="currentItemData()!.url"
-                placeholder="Enter url here"
-              />
-            </fieldset>
-            <!-- Collection Selection - Single Collection -->
-            <div class="form-control w-full mb-4">
-              <label class="label mb-2">
-                <span class="label-text text-sm">Collection</span>
-              </label>
-
-              <div class="w-full">
-                <select
-                  class="select select-bordered w-full"
-                  [(ngModel)]="collectionSelection"
-                  (ngModelChange)="updateCollection($event)"
-                >
-                  <option value="">None</option>
-                  @for (collection of availableCollectionsInternal(); track
-                  collection.id) {
-                  <option [value]="collection.id">{{ collection.name }}</option>
-                  }
-                  <option value="new">+ Add new collection</option>
-                </select>
-              </div>
-
-              @if (isAddingNewCollection()) {
-              <div class="mt-2 join w-full">
-                <input
-                  type="text"
-                  class="input input-bordered join-item w-full"
-                  placeholder="New collection name"
-                  [(ngModel)]="newCollectionName"
-                />
-                <button
-                  class="btn btn-primary join-item"
-                  (click)="createAndSetCollection()"
-                >
-                  Create
-                </button>
-              </div>
-              } @if (selectedCollection()) {
-              <div class="flex flex-wrap gap-2 mt-2">
-                <div class="badge badge-secondary gap-1">
-                  {{ selectedCollection()!.name }}
-                  <button (click)="removeCollection()">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-4 h-4"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18 18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              }
-            </div>
-
-            <!-- Tags Selection -->
-            <div class="form-control w-full">
-              <label class="label mb-2">
-                <span class="label-text text-sm">Tags</span>
-              </label>
-
-              <div class="flex flex-wrap gap-2 mb-2">
-                @for (tag of selectedTags(); track tag.id) {
-                <div class="badge badge-primary gap-1">
-                  {{ tag.name }}
-                  <button (click)="removeTag(tag)">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-4 h-4"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18 18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
+              <!-- Cover Image -->
+              <div class="w-full h-48 rounded-lg bg-base-200 mb-4">
+                @if (currentItemData()?.imageUrl) {
+                  <img
+                    [src]="currentItemData()!.imageUrl"
+                    alt="Cover image"
+                    class="w-full h-full object-cover rounded-lg"
+                  />
+                } @else {
+                  <div
+                    class="w-full h-full flex items-center justify-center text-base-content/50"
+                  >
+                    No image available
+                  </div>
                 }
               </div>
 
-              <div class="join w-full">
-                <select
-                  class="select select-bordered join-item w-full"
-                  [(ngModel)]="newTagSelection"
-                  (ngModelChange)="handleTagSelection($event)"
-                >
-                  <option value="" disabled selected>Select a tag</option>
-                  @for (tag of availableTagsInternal(); track tag.id) { @if
-                  (!isTagSelected(tag.id)) {
-                  <option [value]="tag.id">{{ tag.name }}</option>
-                  } }
-                  <option value="new">+ Add new tag</option>
-                </select>
-              </div>
+              <!-- Title -->
+              <input
+                type="text"
+                placeholder="Type here"
+                class="input input-ghost w-full text-xl font-bold mb-1 p-0"
+                [(ngModel)]="currentItemData()!.title"
+              />
 
-              @if (isAddingNewTag()) {
-              <div class="mt-2 join w-full">
+              <!-- Description -->
+              <input
+                type="text"
+                placeholder="Type here"
+                class="input input-ghost w-full mb-4 p-0 text-base-content/70"
+                [(ngModel)]="currentItemData()!.description"
+              />
+
+              <fieldset class="fieldset mb-2">
+                <label class="label mb-1">
+                  <span class="label-text text-sm">Url</span>
+                </label>
                 <input
                   type="text"
-                  class="input input-bordered join-item w-full"
-                  placeholder="New tag name"
-                  [(ngModel)]="newTagName"
+                  class="input w-full"
+                  [(ngModel)]="currentItemData()!.url"
+                  placeholder="Enter url here"
                 />
-                <button
-                  class="btn btn-primary join-item"
-                  (click)="createAndAddTag()"
-                >
-                  Create
-                </button>
+              </fieldset>
+              <!-- Collection Selection - Single Collection -->
+              <div class="form-control w-full mb-4">
+                <label class="label mb-2">
+                  <span class="label-text text-sm">Collection</span>
+                </label>
+
+                <div class="w-full">
+                  <select
+                    class="select select-bordered w-full"
+                    [(ngModel)]="collectionSelection"
+                    (ngModelChange)="updateCollection($event)"
+                  >
+                    <option value="">None</option>
+                    @for (
+                      collection of availableCollectionsInternal();
+                      track collection.id
+                    ) {
+                      <option [value]="collection.id">
+                        {{ collection.name }}
+                      </option>
+                    }
+                    <option value="new">+ Add new collection</option>
+                  </select>
+                </div>
+
+                @if (isAddingNewCollection()) {
+                  <div class="mt-2 join w-full">
+                    <input
+                      type="text"
+                      class="input input-bordered join-item w-full"
+                      placeholder="New collection name"
+                      [(ngModel)]="newCollectionName"
+                    />
+                    <button
+                      class="btn btn-primary join-item"
+                      (click)="createAndSetCollection()"
+                    >
+                      Create
+                    </button>
+                  </div>
+                }
+                @if (selectedCollection()) {
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <div class="badge badge-secondary gap-1">
+                      {{ selectedCollection()!.name }}
+                      <button (click)="removeCollection()">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-4 h-4"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                }
               </div>
-              }
-            </div>
+
+              <!-- Tags Selection -->
+              <div class="form-control w-full">
+                <label class="label mb-2">
+                  <span class="label-text text-sm">Tags</span>
+                </label>
+
+                <div class="flex flex-wrap gap-2 mb-2">
+                  @for (tag of selectedTags(); track tag.id) {
+                    <div class="badge badge-primary gap-1">
+                      {{ tag.name }}
+                      <button (click)="removeTag(tag)">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-4 h-4"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                <div class="join w-full">
+                  <select
+                    class="select select-bordered join-item w-full"
+                    [(ngModel)]="newTagSelection"
+                    (ngModelChange)="handleTagSelection($event)"
+                  >
+                    <option value="" disabled selected>Select a tag</option>
+                    @for (tag of availableTagsInternal(); track tag.id) {
+                      @if (!isTagSelected(tag.id)) {
+                        <option [value]="tag.id">{{ tag.name }}</option>
+                      }
+                    }
+                    <option value="new">+ Add new tag</option>
+                  </select>
+                </div>
+
+                @if (isAddingNewTag()) {
+                  <div class="mt-2 join w-full">
+                    <input
+                      type="text"
+                      class="input input-bordered join-item w-full"
+                      placeholder="New tag name"
+                      [(ngModel)]="newTagName"
+                    />
+                    <button
+                      class="btn btn-primary join-item"
+                      (click)="createAndAddTag()"
+                    >
+                      Create
+                    </button>
+                  </div>
+                }
+              </div>
             } @else {
-            <div class="flex items-center justify-center h-full">
-              <p class="text-base-content/50">No item selected</p>
-            </div>
+              <div class="flex items-center justify-center h-full">
+                <p class="text-base-content/50">No item selected</p>
+              </div>
             }
           </div>
 
@@ -290,29 +292,19 @@ interface ItemData {
     </div>
   `,
 })
-export class DrawerComponent {
+export class DrawerComponent implements OnInit {
   // Input properties
-  itemId = input<number | null>(null);
+  itemId = input<string | null>(null);
   itemData = input<Bookmark | null>(null);
-  availableCollections = input<Collection[]>([]);
-  availableTags = input<Tag[]>([]);
 
   // Output events
   drawerClosed = output<void>();
-  itemSaved = output<{
-    id: number;
-    title: string;
-    url: string;
-    description: string;
-    coverImage?: string;
-    collection: Collection | null;
-    tags: Tag[];
-  }>();
-  itemVisit = output<number>();
+  itemSaved = output<Bookmark>();
+  itemVisit = output<string>();
 
   // State
-  isOpen = signal<boolean>(false);
-  currentItemData = signal<ItemData | null>(null);
+  isOpen = model<boolean>(false);
+  currentItemData = signal<Bookmark | null>(null);
 
   // Collection
   availableCollectionsInternal = signal<Collection[]>([]);
@@ -328,34 +320,9 @@ export class DrawerComponent {
   newTagName = '';
   newTagSelection = '';
 
-  constructor() {
-    // Effect to watch for changes to itemId and itemData
-    // effect(() => {
-    //   const id = this.itemId();
-    //   const data = this.itemData();
-
-    //   if (id && data && data.id === id) {
-    //     this.currentItemData.set(data);
-    //     this.selectedCollection.set(data.collection);
-    //     this.collectionSelection = data.collection ? String(data.collection.id) : '';
-    //     this.selectedTags.set([...data.tags]);
-    //     this.isOpen.set(true);
-    //   } else if (id) {
-    //     // If we have an ID but no data, we could fetch it from a service
-    //     this.isOpen.set(true);
-    //   } else {
-    //     this.currentItemData.set(null);
-    //   }
-    // });
-
-    // Effect to watch for changes to available collections/tags
-    effect(() => {
-      this.availableCollectionsInternal.set([...this.availableCollections()]);
-    });
-
-    effect(() => {
-      this.availableTagsInternal.set([...this.availableTags()]);
-    });
+  ngOnInit(): void {
+    console.log(this.itemData())
+    this.currentItemData.set(this.itemData()!);
   }
 
   openDrawer(): void {
@@ -370,10 +337,9 @@ export class DrawerComponent {
 
   toggleDrawer(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
-    this.isOpen.set(isChecked);
+    this.closeDrawer()
     if (!isChecked) {
-      this.resetNewItemForms();
-      this.drawerClosed.emit();
+      this.closeDrawer()
     }
   }
 
@@ -406,7 +372,7 @@ export class DrawerComponent {
     if (isNaN(collectionId)) return;
 
     const collection = this.availableCollectionsInternal().find(
-      (c) => c.id === collectionId
+      (c) => c.id === collectionId,
     );
     if (collection) {
       this.selectedCollection.set(collection);
@@ -419,7 +385,7 @@ export class DrawerComponent {
     // Generate a new ID (in a real app this would come from the backend)
     const maxId = Math.max(
       0,
-      ...this.availableCollectionsInternal().map((c) => c.id)
+      ...this.availableCollectionsInternal().map((c) => c.id),
     );
     const newCollection: Collection = {
       id: maxId + 1,
@@ -487,7 +453,7 @@ export class DrawerComponent {
 
   removeTag(tagToRemove: Tag): void {
     this.selectedTags.update((tags) =>
-      tags.filter((tag) => tag.id !== tagToRemove.id)
+      tags.filter((tag) => tag.id !== tagToRemove.id),
     );
   }
 
@@ -504,15 +470,15 @@ export class DrawerComponent {
     console.log(this.currentItemData());
     if (!itemData) return;
 
-    this.itemSaved.emit({
-      id: itemData.id,
-      title: itemData.title,
-      url: itemData.url,
-      description: itemData.description,
-      coverImage: itemData.coverImage,
-      collection: this.selectedCollection(),
-      tags: [...this.selectedTags()],
-    });
+    // this.itemSaved.emit({
+    //   id: itemData.id,
+    //   title: itemData.title,
+    //   url: itemData.url,
+    //   description: itemData.description,
+    //   imageUrl: itemData.imageUrl,
+    //   collections: [],
+    //   tags: [],
+    // });
     this.closeDrawer();
   }
 }

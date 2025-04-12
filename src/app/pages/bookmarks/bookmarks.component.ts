@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, model, OnInit, signal, viewChild } from '@angular/core';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { DrawerComponent } from '@components/drawer/drawer.component';
 import { BookmarkService } from '@services/bookmark.service';
 import { Observable } from 'rxjs';
-import { Bookmark } from '@models/bookmark.model'; // Adjust path if needed
-import { ApiResponse } from '@models/ApiResponse'; // Adjust path if needed
+import { Bookmark } from '@models/bookmark.model';
+import { ApiResponse } from '@models/ApiResponse';
 import { AsyncPipe } from '@angular/common';
 import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
 import { Tag } from '@models/tags.model';
@@ -13,7 +13,6 @@ import { Collection } from '@models/collection.model';
 
 @Component({
   selector: 'app-bookmarks',
-  standalone: true, // Add standalone: true
   imports: [
     HeaderComponent,
     ModalComponent,
@@ -47,19 +46,26 @@ import { Collection } from '@models/collection.model';
     </section>
 
     <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
-      @if (bookMarks$ | async; as response) { @if(response.data &&
-      response.data.length > 0) { @for (item of response.data; track item.id) {
-      <app-bookmark-card [bookmark]="item" />
-      } } @else {
-      <p class="col-span-full text-center text-base-content/70 mt-8">
-        No bookmarks found.
-      </p>
-      } } @else {
-      <!-- Optional: Loading state -->
-      <p class="col-span-full text-center text-base-content/70 mt-8">
-        Loading bookmarks...
-      </p>
-      <!-- Or use skeleton loaders -->
+      @if (bookMarks$ | async; as response) {
+        @if (response.data && response.data.length > 0) {
+          @for (item of response.data; track item.id) {
+            <app-bookmark-card
+              [bookmark]="item"
+              (handleEdit)="handleBookmarkEdit($event)"
+              (handleDelete)="bookmarkDelete($event)"
+            />
+          }
+        } @else {
+          <p class="col-span-full text-center text-base-content/70 mt-8">
+            No bookmarks found.
+          </p>
+        }
+      } @else {
+        <!-- Optional: Loading state -->
+        <p class="col-span-full text-center text-base-content/70 mt-8">
+          Loading bookmarks...
+        </p>
+        <!-- Or use skeleton loaders -->
       }
     </main>
 
@@ -109,19 +115,22 @@ import { Collection } from '@models/collection.model';
       </div>
     </app-modal>
 
-    <!-- Drawer (keep as is for now, assuming it works with mock data) -->
+    @if(isDrawerOpen()){
     <app-drawer
       [itemId]="selectedItemId()"
+      [isOpen]="isDrawerOpen()"
       [itemData]="selectedItemData()"
       (drawerClosed)="handleDrawerClosed()"
       (itemSaved)="handleItemSaved($event)"
       (itemVisit)="handleItemVisit($event)"
     >
     </app-drawer>
-  `,
+    }
+    `,
 })
 export class BookmarksComponent implements OnInit {
   isEditing = signal<boolean>(false);
+  isDrawerOpen = signal(false);
   customModal = viewChild.required<ModalComponent>('customModal');
   // Make sure the generic type matches the expected API response structure
   bookMarks$!: Observable<ApiResponse<Bookmark[]>>;
@@ -144,11 +153,12 @@ export class BookmarksComponent implements OnInit {
   }
 
   handleClose() {
+    this.isEditing.set(false)
     console.log('Modal closed');
   }
 
   // --- Keep your drawer signals and mock data ---
-  selectedItemId = signal<number | null>(null);
+  selectedItemId = signal<string | null>(null);
   selectedItemData = signal<Bookmark | null>(null);
 
   mockCollections = signal<Collection[]>([
@@ -158,18 +168,30 @@ export class BookmarksComponent implements OnInit {
     /* ... */
   ]);
 
-  openDrawer(id: number): void {
-    /* ... */
+  handleBookmarkEdit(e: Bookmark): void {
+    this.selectedItemId.set(e.id);
+    console.log(e)
+    this.selectedItemData.set(e)
+    this.toggleDrawer()
   }
+
+  bookmarkDelete(id: string) {
+    console.log(id);
+  }
+
   handleDrawerClosed(): void {
-    /* ... */
+    this.toggleDrawer()
   }
   handleItemSaved(data: {
     /* ... */
   }): void {
     /* ... */
   }
-  handleItemVisit(id: number): void {
+  handleItemVisit(id: string): void {
     /* ... */
+  }
+
+  toggleDrawer() {
+    this.isDrawerOpen.set(!this.isDrawerOpen())
   }
 }
