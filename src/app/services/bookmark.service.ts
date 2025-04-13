@@ -15,4 +15,31 @@ export class BookmarkService {
   listBookmarks(): Observable<ApiResponse<Bookmark[]>> {
     return this.http.get<ApiResponse<Bookmark[]>>(`${this.apiUrl}/bookmarks`);
   }
+  createBookmark(bookmark: Bookmark): Observable<ApiResponse<Bookmark>> {
+    return this.http.post<ApiResponse<Bookmark>>(
+      `${this.apiUrl}/bookmarks`,
+      bookmark
+    );
+  }
+  updateBookmark(bookmark: Bookmark): Observable<ApiResponse<Bookmark>> {
+    return this.http.put<ApiResponse<Bookmark>>(
+      `${this.apiUrl}/bookmarks/${bookmark.id}`,
+      bookmark
+    );
+  }
+  deleteBookmark(bookmarkId: string): Observable<ApiResponse<Bookmark>> {
+    return this.http.delete<ApiResponse<Bookmark>>(
+      `${this.apiUrl}/bookmarks/${bookmarkId}`
+    );
+  }
+  getBookmarkById(bookmarkId: string): Observable<ApiResponse<Bookmark>> {
+    return this.http.get<ApiResponse<Bookmark>>(
+      `${this.apiUrl}/bookmarks/${bookmarkId}`
+    );
+  }
+  getBookmarkByTagId(tagId: string): Observable<ApiResponse<Bookmark[]>> {
+    return this.http.get<ApiResponse<Bookmark[]>>(
+      `${this.apiUrl}/bookmarks/tag/${tagId}`
+    );
+  }
 }

@@ -185,6 +185,7 @@ export class BookmarksComponent implements OnInit {
   handleItemSaved(data: {
     /* ... */
   }): void {
+    console.log(data)
     /* ... */
   }
   handleItemVisit(id: string): void {

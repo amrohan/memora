@@ -1,5 +1,5 @@
-import {Component, input, output, signal,} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { Component, input, output, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
@@ -9,26 +9,34 @@ import {CommonModule} from '@angular/common';
     <div class="modal" [class.modal-open]="isOpen()">
       <div class="modal-box">
         @if (showCloseButton()) {
-          <button (click)="close()" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        <button
+          (click)="close()"
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >
+          ✕
+        </button>
         }
 
         <h3 class="font-bold text-lg">{{ title() }}</h3>
         <div class="py-4">
-          <ng-content/>
+          <ng-content />
         </div>
 
         <div class="modal-action">
           @if (showCancelButton()) {
-            <button class="btn btn-sm" (click)="close()">{{ cancelText() }}</button>
-          }
-          @if (showConfirmButton()) {
-            <button class="btn btn-primary btn-sm" (click)="confirm()">{{ confirmText() }}</button>
+          <button class="btn btn-sm" (click)="close()">
+            {{ cancelText() }}
+          </button>
+          } @if (showConfirmButton()) {
+          <button class="btn btn-primary btn-sm" (click)="confirm()">
+            {{ confirmText() }}
+          </button>
           }
         </div>
       </div>
 
       @if (closeOnBackdropClick()) {
-        <div class="modal-backdrop" (click)="close()"></div>
+      <div class="modal-backdrop" (click)="close()"></div>
       }
     </div>
   `,
@@ -70,4 +78,3 @@ export class ModalComponent {
     this.isOpen.set(false);
   }
 }
-
