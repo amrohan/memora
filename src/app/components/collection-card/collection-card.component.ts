@@ -1,11 +1,22 @@
-import { Component, input, output, signal } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  HostListener,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { Collection } from '@models/collection.model';
 
 @Component({
   selector: 'app-collection-card',
   imports: [],
   template: `
-    <div class="card card-border bg-base-100 w-full shadow-sm h-64">
+    <div
+      #cardContainer
+      class="card card-border bg-base-100 w-full shadow-sm h-64"
+    >
       <figure class="grid place-content-center h-40 ">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -31,8 +42,11 @@ import { Collection } from '@models/collection.model';
             <p class="text-base-content/80">18 items</p>
           </div>
           <div class=" justify-end dropdown dropdown-end relative">
-            <!-- Action Button-->
-            <button class="btn btn-square btn-ghost" (click)="toggleDropdown()">
+            <button
+              #dropdownTrigger
+              class="btn btn-square btn-ghost"
+              (click)="toggleDropdown()"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -52,6 +66,7 @@ import { Collection } from '@models/collection.model';
             </button>
             @if (isDropdownOpen()) {
             <ul
+              #dropdownMenu
               class="dropdown menu w-40 rounded-box bg-base-100 shadow-sm absolute top-10 right-0 z-10"
             >
               <li>
@@ -117,15 +132,40 @@ export class CollectionCardComponent {
   handleOnEdit = output<Collection>();
   handleOnDelete = output<Collection>();
 
-  toggleDropdown() {
-    this.isDropdownOpen.set(!this.isDropdownOpen());
+  @ViewChild('dropdownTrigger') trigger!: ElementRef;
+  @ViewChild('dropdownMenu') menu!: ElementRef;
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: MouseEvent) {
+    if (!this.isDropdownOpen()) {
+      return;
+    }
+
+    const targetElement = event.target as Node;
+    if (!targetElement) {
+      return;
+    }
+    const clickedOnTrigger =
+      this.trigger?.nativeElement.contains(targetElement);
+
+    const clickedOnMenu = this.menu?.nativeElement.contains(targetElement);
+
+    if (!clickedOnTrigger && !clickedOnMenu) {
+      this.isDropdownOpen.set(false);
+    }
   }
+
+  toggleDropdown() {
+    this.isDropdownOpen.update((isOpen) => !isOpen);
+  }
+
   handleEdit() {
     this.handleOnEdit.emit(this.collection());
-    this.toggleDropdown();
+    this.isDropdownOpen.set(false);
   }
+
   handleDelete() {
     this.handleOnDelete.emit(this.collection());
-    this.toggleDropdown();
+    this.isDropdownOpen.set(false);
   }
 }

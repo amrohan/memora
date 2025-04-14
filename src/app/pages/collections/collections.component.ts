@@ -22,7 +22,7 @@ import { AsyncPipe } from '@angular/common';
   ],
   template: `
     <app-header headerName="Collection" />
-    <section>
+    <section class="mb-24">
       <div class="h-20 flex justify-end items-center gap-2">
         <label class="input">
           <svg
@@ -121,7 +121,6 @@ export class CollectionsComponent implements OnInit {
   }
 
   handleCollectionEdit(item: Collection) {
-    console.log('Editing collection:', item);
     this.isEditing.set(true);
     this.setCollection.set(item as Collection);
     this.collectionName.set(item.name);

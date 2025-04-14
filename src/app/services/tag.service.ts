@@ -16,8 +16,8 @@ export class TagService {
     return this.http.get<ApiResponse<Tag[]>>(`${this.apiUrl}/tags`);
   }
 
-  createTag(name: string): Observable<ApiResponse<Tag>> {
-    return this.http.post<ApiResponse<Tag>>(`${this.apiUrl}/tags`, name);
+  createTag(tag: Tag): Observable<ApiResponse<Tag>> {
+    return this.http.post<ApiResponse<Tag>>(`${this.apiUrl}/tags`, tag);
   }
   updateTag(tag: Tag): Observable<ApiResponse<Tag>> {
     return this.http.put<ApiResponse<Tag>>(
