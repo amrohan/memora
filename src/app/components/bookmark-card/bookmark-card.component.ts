@@ -11,7 +11,6 @@ import { Bookmark } from '@models/bookmark.model';
 
 @Component({
   selector: 'app-bookmark-card',
-  imports: [],
   template: `
     <div class="card card-border bg-base-100 min-h-32">
       <div class="card-body">

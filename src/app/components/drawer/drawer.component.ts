@@ -292,7 +292,6 @@ export class DrawerComponent implements OnInit {
 
   // --- Services ---
   private tagService = inject(TagService);
-  private bookmarkService = inject(BookmarkService);
   private collectionService = inject(CollectionService);
 
   // --- Internal State Signals ---
@@ -323,14 +322,15 @@ export class DrawerComponent implements OnInit {
     this.getAllCollections();
     this.getAllTags();
     const currentItem = this.itemData();
+    this.editableItemData.set(currentItem);
+    // set selected tags based on the current item
     if (currentItem) {
-      const itemCopy = {
-        ...currentItem,
-        tags: [...(currentItem.tags ?? [])],
-      };
-      this.editableItemData.set(itemCopy);
-    } else {
-      this.editableItemData.set(null);
+      this.selectedTags.set(currentItem.tags);
+      this.selectedCollectionId.set(currentItem.collections?.[0]?.id ?? null);
+    }
+    // set collection id based on the current item
+    if (currentItem?.collections?.length) {
+      this.selectedCollectionId.set(currentItem.collections[0].id);
     }
   }
 
