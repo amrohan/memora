@@ -1,11 +1,18 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CollectionCardComponent } from '@components/collection-card/collection-card.component';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { CollectionService } from '@services/collection.service';
 import { Collection } from '@models/collection.model';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { ApiResponse } from '@models/ApiResponse';
 import { AsyncPipe } from '@angular/common';
 
@@ -41,16 +48,22 @@ import { AsyncPipe } from '@angular/common';
               <path d="m21 21-4.3-4.3"></path>
             </g>
           </svg>
-          <input type="search" required placeholder="Search collection..." />
+          <input
+            type="search"
+            [(ngModel)]="seachTerm"
+            name="collection"
+            required
+            placeholder="Search collection..."
+          />
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @if (collections$ | async; as response) { @if (response.data &&
-        response.data.length > 0) { @for (item of response.data; track item.id)
-        {
+        @if (filteredCollections$() | async; as response) { @if (response.data
+        && response.data.length > 0) { @for (item of response.data; track
+        item.id) {
         <app-collection-card
           [collection]="item"
           (handleOnEdit)="handleCollectionEdit($event)"
@@ -101,11 +114,32 @@ export class CollectionsComponent implements OnInit {
   collections$!: Observable<ApiResponse<Collection[]>>;
   collectionName = signal<string>('');
   validationError = signal<string | null>(null);
+  seachTerm = signal<string>('');
+
+  filteredCollections$ = computed(() => {
+    const term = this.seachTerm();
+    if (!term) {
+      return this.collections$;
+    }
+    return this.collections$.pipe(
+      map((response) => {
+        const filteredData = response.data?.filter((item: Collection) =>
+          item.name.toLowerCase().includes(term.toLowerCase())
+        );
+        return {
+          ...response,
+          data: filteredData ?? null,
+        };
+      })
+    );
+  });
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
   ngOnInit(): void {
-    this.collections$ = this.collectionService.getUserCollections();
+    this.collections$ = this.collectionService
+      .getUserCollections()
+      .pipe(shareReplay(1));
   }
 
   collectionDelete(item: Collection) {
@@ -191,7 +225,9 @@ export class CollectionsComponent implements OnInit {
     });
   }
   onSuccessAddOrUpdate() {
-    this.collections$ = this.collectionService.getUserCollections();
+    this.collections$ = this.collectionService
+      .getUserCollections()
+      .pipe(shareReplay(1));
     this.customModal().close();
     this.collectionName.set('');
     this.isEditing.set(false);

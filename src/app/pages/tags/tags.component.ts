@@ -1,5 +1,12 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
@@ -7,7 +14,7 @@ import { TagsCardComponent } from '@components/tags-card/tags-card.component';
 import { ApiResponse } from '@models/ApiResponse';
 import { Tag } from '@models/tags.model';
 import { TagService } from '@services/tag.service';
-import { Observable } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 
 @Component({
   selector: 'app-tags',
@@ -20,7 +27,7 @@ import { Observable } from 'rxjs';
   ],
   template: `
     <app-header headerName="Tags" />
-    <section>
+    <section class="mb-24">
       <div class="h-20 flex justify-end items-center gap-2">
         <label class="input">
           <svg
@@ -39,14 +46,21 @@ import { Observable } from 'rxjs';
               <path d="m21 21-4.3-4.3"></path>
             </g>
           </svg>
-          <input type="search" required placeholder="Search tags..." />
+          <input
+            type="search"
+            [(ngModel)]="searchTerm"
+            name="tag"
+            required
+            placeholder="Search tags..."
+          />
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @if (tags$ | async;as tag ) { @for (item of tag.data; track item.id) {
+        @if (filteredTags$() | async ;as tag ) { @for (item of tag.data; track
+        item.id) {
         <app-tags-card
           [tag]="item"
           (handleOnEdit)="handleTagEdit($event)"
@@ -89,11 +103,30 @@ export class TagsComponent implements OnInit {
   tagName = signal<string>('');
   setTag = signal<Tag | null>(null);
   tags$!: Observable<ApiResponse<Tag[]>>;
+  searchTerm = signal<string>('');
+
+  filteredTags$ = computed(() => {
+    const term = this.searchTerm();
+    if (!term) {
+      return this.tags$;
+    }
+    return this.tags$.pipe(
+      map((response) => {
+        const filteredData = response.data?.filter((item) =>
+          item.name.toLowerCase().includes(term.toLowerCase())
+        );
+        return {
+          ...response,
+          data: filteredData ?? null,
+        };
+      })
+    );
+  });
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
   ngOnInit(): void {
-    this.tags$ = this.tagsService.listUserTags();
+    this.tags$ = this.tagsService.listUserTags().pipe(shareReplay(1));
   }
 
   openCustomModal() {

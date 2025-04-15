@@ -1,9 +1,16 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { DrawerComponent } from '@components/drawer/drawer.component';
 import { BookmarkService } from '@services/bookmark.service';
-import { Observable } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { Bookmark } from '@models/bookmark.model';
 import { ApiResponse } from '@models/ApiResponse';
 import { AsyncPipe } from '@angular/common';
@@ -39,14 +46,19 @@ import { FormsModule } from '@angular/forms';
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.3-4.3"></path>
           </svg>
-          <input type="search" class="grow" placeholder="Search bookmarks..." />
+          <input
+            type="search"
+            class="grow"
+            placeholder="Search bookmarks..."
+            [(ngModel)]="searchTerm"
+          />
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
     </section>
 
     <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
-      @if (bookMarks$ | async; as response) { @if (response.data &&
+      @if (searchItem()| async; as response) { @if (response.data &&
       response.data.length > 0) { @for (item of response.data; track item.id) {
       <app-bookmark-card
         [bookmark]="item"
@@ -133,14 +145,32 @@ export class BookmarksComponent implements OnInit {
   bookMarkUrl = signal<string>('');
   selectedItemId = signal<string | null>(null);
   selectedItemData = signal<Bookmark | null>(null);
+  searchTerm = signal<string>('');
 
   bookMarks$!: Observable<ApiResponse<Bookmark[]>>;
 
   private bookMarkService = inject(BookmarkService);
 
   ngOnInit(): void {
-    this.bookMarks$ = this.bookMarkService.listBookmarks();
+    this.bookMarks$ = this.bookMarkService.listBookmarks().pipe(shareReplay(1));
   }
+  searchItem = computed(() => {
+    const term = this.searchTerm();
+    if (!term) {
+      return this.bookMarks$;
+    }
+    return this.bookMarks$.pipe(
+      map((response) => {
+        const filteredData = response.data?.filter((item) =>
+          item.url.toLowerCase().includes(term.toLowerCase())
+        );
+        return {
+          ...response,
+          data: filteredData ?? null,
+        };
+      })
+    );
+  });
 
   openCustomModal() {
     this.customModal().open();
@@ -174,7 +204,15 @@ export class BookmarksComponent implements OnInit {
   }
 
   bookmarkDelete(bookmark: Bookmark) {
-    console.log(bookmark);
+    this.bookMarkService.deleteBookmark(bookmark.id).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.bookMarks$ = this.bookMarkService.listBookmarks();
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
 
   handleDrawerClosed(): void {
