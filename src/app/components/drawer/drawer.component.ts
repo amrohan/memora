@@ -5,20 +5,20 @@ import {
   output,
   model,
   OnInit,
+  inject,
+  computed,
+  effect,
+  ChangeDetectionStrategy,
+  untracked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Bookmark } from '@models/bookmark.model';
-
-interface Collection {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
+import { TagService } from '@services/tag.service';
+import { BookmarkService } from '@services/bookmark.service';
+import { CollectionService } from '@services/collection.service';
+import { Collection } from '@models/collection.model';
+import { Tag } from '@models/tags.model';
 
 @Component({
   selector: 'app-drawer',
@@ -34,7 +34,6 @@ interface Tag {
       />
 
       <div class="drawer-content">
-        <!-- Page content here -->
         <ng-content></ng-content>
       </div>
 
@@ -43,18 +42,22 @@ interface Tag {
           for="item-drawer"
           aria-label="close sidebar"
           class="drawer-overlay"
+          (click)="closeDrawer()"
         ></label>
 
         <div class="bg-base-100 w-full lg:w-[30rem] min-h-full flex flex-col">
-          <!-- Header -->
           <div
             class="p-4 bg-base-100 border-b border-base-content/20 flex justify-between items-center sticky top-0 z-10"
           >
-            <h3 class="text-lg font-medium text-base-content">Bookmark</h3>
+            <h3 class="text-lg font-medium text-base-content">
+              Bookmark Details
+            </h3>
             <div class="flex gap-2">
               <button
-                class="btn btn-active btn-ghost btn-sm"
+                class="btn btn-ghost btn-sm"
                 (click)="visitItem()"
+                [disabled]="!editableItemData()?.url"
+                title="Visit Bookmark URL"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +75,11 @@ interface Tag {
                 </svg>
                 Visit
               </button>
-              <button class="btn btn-ghost btn-sm" (click)="closeDrawer()">
+              <button
+                class="btn btn-ghost btn-sm"
+                (click)="closeDrawer()"
+                title="Close Drawer"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -91,200 +98,183 @@ interface Tag {
             </div>
           </div>
 
-          <!-- Content - Scrollable -->
-          <div class="flex-1 p-4 mb-20">
-            @if (currentItemData()) {
-              <!-- Cover Image -->
-              <div class="w-full h-48 rounded-lg bg-base-200 mb-4">
-                @if (currentItemData()?.imageUrl) {
-                  <img
-                    [src]="currentItemData()!.imageUrl"
-                    alt="Cover image"
-                    class="w-full h-full object-cover rounded-lg"
-                  />
-                } @else {
-                  <div
-                    class="w-full h-full flex items-center justify-center text-base-content/50"
-                  >
-                    No image available
-                  </div>
-                }
+          <div class="flex-1 p-4 overflow-y-auto mb-20">
+            @if (editableItemData(); as item) {
+            <div
+              class="w-full h-48 rounded-lg bg-base-200 mb-4 overflow-hidden"
+            >
+              @if (item.imageUrl) {
+              <img
+                [src]="item.imageUrl"
+                alt="Cover image for {{ item.title }}"
+                class="w-full h-full object-cover"
+              />
+              } @else {
+              <div
+                class="w-full h-full flex items-center justify-center text-base-content/50"
+              >
+                No image available
               </div>
+              }
+            </div>
 
-              <!-- Title -->
+            <input
+              type="text"
+              placeholder="Enter title"
+              class="input input-ghost w-full text-xl font-bold mb-1 p-0 focus:bg-transparent focus:border-none focus:ring-0"
+              [(ngModel)]="item.title"
+            />
+
+            <textarea
+              placeholder="Enter description (optional)"
+              class="textarea textarea-ghost w-full mb-4 p-0 text-base-content/70 focus:bg-transparent focus:border-none focus:ring-0 h-20 resize-none"
+              [(ngModel)]="item.description"
+            ></textarea>
+
+            <fieldset class="fieldset mb-4">
+              <label class="label">
+                <span class="label-text text-sm font-medium">URL</span>
+              </label>
               <input
-                type="text"
-                placeholder="Type here"
-                class="input input-ghost w-full text-xl font-bold mb-1 p-0"
-                [(ngModel)]="currentItemData()!.title"
+                type="url"
+                class="input input-bordered w-full"
+                [(ngModel)]="item.url"
+                placeholder="https://example.com"
+                required
               />
+            </fieldset>
 
-              <!-- Description -->
-              <input
-                type="text"
-                placeholder="Type here"
-                class="input input-ghost w-full mb-4 p-0 text-base-content/70"
-                [(ngModel)]="currentItemData()!.description"
-              />
+            <div class="form-control w-full mb-4">
+              <label class="label">
+                <span class="label-text text-sm font-medium">Collection</span>
+              </label>
+              <select
+                class="select select-bordered w-full"
+                [(ngModel)]="selectedCollectionId"
+                (ngModelChange)="updateCollectionSelection($event)"
+              >
+                <option [ngValue]="null">None</option>
+                @for (collection of availableCollections(); track collection.id)
+                {
+                <option [value]="collection.id">{{ collection.name }}</option>
+                }
+                <option value="--new--">+ Add new collection</option>
+              </select>
 
-              <fieldset class="fieldset mb-2">
-                <label class="label mb-1">
-                  <span class="label-text text-sm">Url</span>
-                </label>
+              @if (isAddingNewCollection()) {
+              <div class="mt-2 join w-full">
                 <input
+                  #newCollectionInput
                   type="text"
-                  class="input w-full"
-                  [(ngModel)]="currentItemData()!.url"
-                  placeholder="Enter url here"
+                  class="input input-bordered join-item w-full"
+                  placeholder="New collection name"
+                  [(ngModel)]="newCollectionName"
+                  (keyup.enter)="createAndSetCollection()"
                 />
-              </fieldset>
-              <!-- Collection Selection - Single Collection -->
-              <div class="form-control w-full mb-4">
-                <label class="label mb-2">
-                  <span class="label-text text-sm">Collection</span>
-                </label>
+                <button
+                  class="btn btn-primary join-item"
+                  (click)="createAndSetCollection()"
+                  [disabled]="!newCollectionName().trim()"
+                >
+                  Create
+                </button>
+              </div>
+              }
+            </div>
 
-                <div class="w-full">
-                  <select
-                    class="select select-bordered w-full"
-                    [(ngModel)]="collectionSelection"
-                    (ngModelChange)="updateCollection($event)"
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text text-sm font-medium">Tags</span>
+              </label>
+
+              <div class="flex flex-wrap gap-2 mb-2 min-h-[2rem]">
+                @for (tag of selectedTags(); track tag.id) {
+                <div class="badge badge-primary gap-1 items-center">
+                  {{ tag.name }}
+                  <button
+                    (click)="removeTag(tag)"
+                    class="ml-1 hover:text-primary-content/70"
                   >
-                    <option value="">None</option>
-                    @for (
-                      collection of availableCollectionsInternal();
-                      track collection.id
-                    ) {
-                      <option [value]="collection.id">
-                        {{ collection.name }}
-                      </option>
-                    }
-                    <option value="new">+ Add new collection</option>
-                  </select>
-                </div>
-
-                @if (isAddingNewCollection()) {
-                  <div class="mt-2 join w-full">
-                    <input
-                      type="text"
-                      class="input input-bordered join-item w-full"
-                      placeholder="New collection name"
-                      [(ngModel)]="newCollectionName"
-                    />
-                    <button
-                      class="btn btn-primary join-item"
-                      (click)="createAndSetCollection()"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-3 h-3"
                     >
-                      Create
-                    </button>
-                  </div>
-                }
-                @if (selectedCollection()) {
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    <div class="badge badge-secondary gap-1">
-                      {{ selectedCollection()!.name }}
-                      <button (click)="removeCollection()">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-4 h-4"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18 18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18 18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                } @empty {
+                <span class="text-xs text-base-content/50 italic"
+                  >No tags added</span
+                >
                 }
               </div>
 
-              <!-- Tags Selection -->
-              <div class="form-control w-full">
-                <label class="label mb-2">
-                  <span class="label-text text-sm">Tags</span>
-                </label>
-
-                <div class="flex flex-wrap gap-2 mb-2">
-                  @for (tag of selectedTags(); track tag.id) {
-                    <div class="badge badge-primary gap-1">
-                      {{ tag.name }}
-                      <button (click)="removeTag(tag)">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-4 h-4"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18 18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+              <div class="join w-full">
+                <select
+                  class="select select-bordered join-item w-full"
+                  [(ngModel)]="tagToAddSelection"
+                  (ngModelChange)="handleTagSelectionChange($event)"
+                >
+                  <option value="" disabled selected>
+                    Add or create a tag...
+                  </option>
+                  @for (tag of availableTagsForSelection(); track tag.id) {
+                  <option [value]="tag.id">{{ tag.name }}</option>
                   }
-                </div>
-
-                <div class="join w-full">
-                  <select
-                    class="select select-bordered join-item w-full"
-                    [(ngModel)]="newTagSelection"
-                    (ngModelChange)="handleTagSelection($event)"
-                  >
-                    <option value="" disabled selected>Select a tag</option>
-                    @for (tag of availableTagsInternal(); track tag.id) {
-                      @if (!isTagSelected(tag.id)) {
-                        <option [value]="tag.id">{{ tag.name }}</option>
-                      }
-                    }
-                    <option value="new">+ Add new tag</option>
-                  </select>
-                </div>
-
-                @if (isAddingNewTag()) {
-                  <div class="mt-2 join w-full">
-                    <input
-                      type="text"
-                      class="input input-bordered join-item w-full"
-                      placeholder="New tag name"
-                      [(ngModel)]="newTagName"
-                    />
-                    <button
-                      class="btn btn-primary join-item"
-                      (click)="createAndAddTag()"
-                    >
-                      Create
-                    </button>
-                  </div>
-                }
+                  <option value="--new--">+ Create new tag</option>
+                </select>
               </div>
+
+              @if (isAddingNewTag()) {
+              <div class="mt-2 join w-full">
+                <input
+                  #newTagInput
+                  type="text"
+                  class="input input-bordered join-item w-full"
+                  placeholder="New tag name"
+                  [(ngModel)]="newTagName"
+                  (keyup.enter)="createAndAddTag()"
+                />
+                <button
+                  class="btn btn-primary join-item"
+                  (click)="createAndAddTag()"
+                  [disabled]="!newTagName().trim()"
+                >
+                  Create & Add
+                </button>
+              </div>
+              }
+            </div>
             } @else {
-              <div class="flex items-center justify-center h-full">
-                <p class="text-base-content/50">No item selected</p>
-              </div>
+            <div class="flex items-center justify-center h-full pt-20">
+              <span
+                class="loading loading-spinner loading-md text-base-content/50"
+              ></span>
+            </div>
             }
           </div>
 
-          <!-- Footer -->
           <div
             class="p-4 border-t border-base-content/20 bg-base-100 sticky bottom-0 flex justify-end gap-2"
           >
-            <button class="btn" (click)="closeDrawer()">Close</button>
+            <button class="btn btn-ghost" (click)="closeDrawer()">
+              Cancel
+            </button>
             <button
               class="btn btn-primary"
               (click)="saveChanges()"
-              [disabled]="!currentItemData()"
+              [disabled]="!editableItemData()"
             >
-              Save
+              Save Changes
             </button>
           </div>
         </div>
@@ -293,192 +283,242 @@ interface Tag {
   `,
 })
 export class DrawerComponent implements OnInit {
-  // Input properties
-  itemId = input<string | null>(null);
   itemData = input<Bookmark | null>(null);
+  isOpen = model<boolean>(false);
 
-  // Output events
   drawerClosed = output<void>();
   itemSaved = output<Bookmark>();
   itemVisit = output<string>();
 
-  // State
-  isOpen = model<boolean>(false);
-  currentItemData = signal<Bookmark | null>(null);
+  // --- Services ---
+  private tagService = inject(TagService);
+  private bookmarkService = inject(BookmarkService);
+  private collectionService = inject(CollectionService);
 
-  // Collection
-  availableCollectionsInternal = signal<Collection[]>([]);
-  selectedCollection = signal<Collection | null>(null);
+  // --- Internal State Signals ---
+  // Holds a *copy* of the item data for editing to avoid modifying the input directly
+  editableItemData = signal<Bookmark | null>(null);
+
+  // Collection State
+  availableCollections = signal<Collection[]>([]);
+  selectedCollectionId = signal<string | null>(null);
   isAddingNewCollection = signal<boolean>(false);
-  newCollectionName = '';
-  collectionSelection = '';
+  newCollectionName = signal<string>('');
 
-  // Tags
-  availableTagsInternal = signal<Tag[]>([]);
-  selectedTags = signal<Tag[]>([]);
+  // Tag State
+  availableTags = signal<Tag[]>([]);
+  selectedTags = signal<Tag[]>([]); // Store the full Tag objects
   isAddingNewTag = signal<boolean>(false);
-  newTagName = '';
-  newTagSelection = '';
+  newTagName = signal<string>('');
+  tagToAddSelection = signal<string>('');
+
+  // --- Computed Signals ---
+  // Filter available tags to exclude already selected ones for the dropdown
+  availableTagsForSelection = computed(() => {
+    const selectedTagIds = new Set(this.selectedTags().map((t) => t.id));
+    return this.availableTags().filter((tag) => !selectedTagIds.has(tag.id));
+  });
 
   ngOnInit(): void {
-    console.log(this.itemData())
-    this.currentItemData.set(this.itemData()!);
+    this.getAllCollections();
+    this.getAllTags();
+    const currentItem = this.itemData();
+    if (currentItem) {
+      const itemCopy = {
+        ...currentItem,
+        tags: [...(currentItem.tags ?? [])],
+      };
+      this.editableItemData.set(itemCopy);
+    } else {
+      this.editableItemData.set(null);
+    }
   }
 
+  // --- Drawer Lifecycle ---
   openDrawer(): void {
     this.isOpen.set(true);
   }
 
   closeDrawer(): void {
-    this.isOpen.set(false);
-    this.resetNewItemForms();
-    this.drawerClosed.emit();
+    if (this.isOpen()) {
+      this.isOpen.set(false);
+      this.resetNewItemForms();
+      this.editableItemData.set(null);
+      this.drawerClosed.emit();
+    }
   }
 
   toggleDrawer(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
-    this.closeDrawer()
+    // The model signal 'isOpen' is already updated by the checkbox binding.
     if (!isChecked) {
-      this.closeDrawer()
+      this.closeDrawer();
     }
   }
 
+  // --- Actions ---
   visitItem(): void {
-    const itemData = this.currentItemData();
-    if (itemData) {
-      this.itemVisit.emit(itemData.id);
+    const item = this.editableItemData();
+    if (item?.url) {
+      window.open(item.url, '_blank');
+      // this.itemVisit.emit(item.id);
     }
   }
 
-  // Check if tag is already selected
-  isTagSelected(id: number): boolean {
-    return this.selectedTags().some((t) => t.id === id);
-  }
-
-  // Collection methods
-  updateCollection(value: string): void {
-    if (value === 'new') {
-      this.isAddingNewCollection.set(true);
-      return;
-    }
-
-    if (value === '') {
-      // Selected "None" - remove collection
-      this.selectedCollection.set(null);
-      return;
-    }
-
-    const collectionId = parseInt(value);
-    if (isNaN(collectionId)) return;
-
-    const collection = this.availableCollectionsInternal().find(
-      (c) => c.id === collectionId,
+  saveChanges(): void {
+    const editedItem = this.editableItemData();
+    if (!editedItem) return;
+    const collection = this.availableCollections().find(
+      (c) => c.id === this.selectedCollectionId()
     );
-    if (collection) {
-      this.selectedCollection.set(collection);
+
+    if (!collection) {
+      console.error('Selected collection not found in available collections.');
+      return;
+    }
+
+    // Prepare the final bookmark data to save/emit
+    const finalBookmark: Bookmark = {
+      ...editedItem,
+      tags: this.selectedTags(),
+      collections: [collection],
+    };
+
+    console.log('Saving:', finalBookmark);
+    this.itemSaved.emit(finalBookmark);
+    this.closeDrawer();
+  }
+
+  // --- Collection Management ---
+  getAllCollections() {
+    this.collectionService.getUserCollections().subscribe({
+      next: ({ data }) => {
+        this.availableCollections.set(data ?? []);
+      },
+      error: (error) => console.error('Error fetching collections:', error),
+    });
+  }
+
+  updateCollectionSelection(value: string | null): void {
+    console.log('Collection selected:', value);
+    this.isAddingNewCollection.set(false);
+    if (value === '--new--') {
+      this.selectedCollectionId.set(null);
+      this.isAddingNewCollection.set(true);
+      // Optionally focus the input field #newCollectionInput here
+    } else {
+      // Value is either a collection ID or null (for "None")
+      this.selectedCollectionId.set(value);
     }
   }
 
   createAndSetCollection(): void {
-    if (!this.newCollectionName.trim()) return;
+    const name = this.newCollectionName().trim();
+    if (!name) return;
 
-    // Generate a new ID (in a real app this would come from the backend)
-    const maxId = Math.max(
-      0,
-      ...this.availableCollectionsInternal().map((c) => c.id),
-    );
-    const newCollection: Collection = {
-      id: maxId + 1,
-      name: this.newCollectionName.trim(),
-    };
+    const newCollection: Partial<Collection> = { name };
 
-    // Add to available collections
-    this.availableCollectionsInternal.update((collections) => [
-      ...collections,
-      newCollection,
-    ]);
-
-    // Set as the selected collection
-    this.selectedCollection.set(newCollection);
-    this.collectionSelection = String(newCollection.id);
-
-    // Reset
-    this.newCollectionName = '';
-    this.isAddingNewCollection.set(false);
+    // Call API
+    this.collectionService
+      .createCollection(newCollection as Collection)
+      .subscribe({
+        next: ({ data: createdCollection }) => {
+          if (createdCollection) {
+            // Add to available list
+            this.availableCollections.update((list) => [
+              ...list,
+              createdCollection,
+            ]);
+            // Select the newly created collection
+            this.selectedCollectionId.set(createdCollection.id);
+            this.resetNewItemForms(); // Clear name input and hide form
+          } else {
+            console.error('Collection creation API did not return data.');
+            // Handle error feedback to user
+          }
+        },
+        error: (err) => {
+          console.error('Error creating collection:', err);
+          // Handle error feedback to user
+        },
+      });
   }
 
-  removeCollection(): void {
-    this.selectedCollection.set(null);
-    this.collectionSelection = '';
+  // No removeCollection method needed for single selection, just select "None".
+
+  // --- Tag Management ---
+  getAllTags() {
+    this.tagService.listUserTags().subscribe({
+      next: ({ data }) => {
+        this.availableTags.set(data ?? []);
+      },
+      error: (error) => console.error('Error fetching tags:', error),
+    });
   }
 
-  // Tag methods
-  handleTagSelection(value: string): void {
-    if (value === 'new') {
+  handleTagSelectionChange(value: string): void {
+    this.isAddingNewTag.set(false); // Hide add form
+
+    if (value === '--new--') {
       this.isAddingNewTag.set(true);
-      return;
-    }
-
-    const tagId = parseInt(value);
-    if (isNaN(tagId)) return;
-
-    const tag = this.availableTagsInternal().find((t) => t.id === tagId);
-    if (tag && !this.isTagSelected(tagId)) {
-      this.selectedTags.update((tags) => [...tags, tag]);
-      // Reset selection after adding
-      this.newTagSelection = '';
+      this.tagToAddSelection.set(''); // Reset dropdown
+      // Optionally focus the input field #newTagInput
+    } else if (value) {
+      const selectedTag = this.availableTags().find((t) => t.id === value);
+      if (selectedTag && !this.isTagSelected(selectedTag.id)) {
+        this.selectedTags.update((currentTags) => [
+          ...currentTags,
+          selectedTag,
+        ]);
+      }
+      this.tagToAddSelection.set('');
     }
   }
 
   createAndAddTag(): void {
-    if (!this.newTagName.trim()) return;
+    const name = this.newTagName().trim();
+    if (!name) return;
 
-    // Generate a new ID (in a real app this would come from the backend)
-    const maxId = Math.max(0, ...this.availableTagsInternal().map((t) => t.id));
-    const newTag: Tag = {
-      id: maxId + 1,
-      name: this.newTagName.trim(),
-    };
+    const newTag: Partial<Tag> = { name };
 
-    // Add to available tags
-    this.availableTagsInternal.update((tags) => [...tags, newTag]);
-
-    // Add to selected tags
-    this.selectedTags.update((tags) => [...tags, newTag]);
-
-    // Reset
-    this.newTagName = '';
-    this.isAddingNewTag.set(false);
+    this.tagService.createTag(newTag as Tag).subscribe({
+      next: ({ data: createdTag }) => {
+        if (createdTag) {
+          if (!this.availableTags().some((t) => t.id === createdTag.id)) {
+            this.availableTags.update((list) => [...list, createdTag]);
+          }
+          // Add to selected list if not already selected
+          if (!this.isTagSelected(createdTag.id)) {
+            this.selectedTags.update((list) => [...list, createdTag]);
+          }
+          this.resetNewItemForms(); // Clear name input and hide form
+        } else {
+          console.error('Tag creation API did not return data.');
+          // Handle error feedback to user
+        }
+      },
+      error: (err) => {
+        console.error('Error creating tag:', err);
+      },
+    });
   }
 
   removeTag(tagToRemove: Tag): void {
     this.selectedTags.update((tags) =>
-      tags.filter((tag) => tag.id !== tagToRemove.id),
+      tags.filter((tag) => tag.id !== tagToRemove.id)
     );
   }
 
+  isTagSelected(id: string): boolean {
+    return this.selectedTags().some((t) => t.id === id);
+  }
+
+  // --- Utility ---
   resetNewItemForms(): void {
     this.isAddingNewCollection.set(false);
     this.isAddingNewTag.set(false);
-    this.newCollectionName = '';
-    this.newTagName = '';
-    this.newTagSelection = '';
-  }
-
-  saveChanges(): void {
-    const itemData = this.currentItemData();
-    console.log(this.currentItemData());
-    if (!itemData) return;
-
-    // this.itemSaved.emit({
-    //   id: itemData.id,
-    //   title: itemData.title,
-    //   url: itemData.url,
-    //   description: itemData.description,
-    //   imageUrl: itemData.imageUrl,
-    //   collections: [],
-    //   tags: [],
-    // });
-    this.closeDrawer();
+    this.newCollectionName.set('');
+    this.newTagName.set('');
+    this.tagToAddSelection.set(''); // Reset tag dropdown too
   }
 }

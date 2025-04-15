@@ -1,4 +1,4 @@
-import { Component, computed, inject, model, OnInit, signal, viewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { DrawerComponent } from '@components/drawer/drawer.component';
@@ -8,8 +8,7 @@ import { Bookmark } from '@models/bookmark.model';
 import { ApiResponse } from '@models/ApiResponse';
 import { AsyncPipe } from '@angular/common';
 import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
-import { Tag } from '@models/tags.model';
-import { Collection } from '@models/collection.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-bookmarks',
@@ -19,6 +18,7 @@ import { Collection } from '@models/collection.model';
     DrawerComponent,
     AsyncPipe,
     BookmarkCardComponent,
+    FormsModule,
   ],
   template: `
     <app-header headerName="Bookmarks" />
@@ -46,26 +46,23 @@ import { Collection } from '@models/collection.model';
     </section>
 
     <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
-      @if (bookMarks$ | async; as response) {
-        @if (response.data && response.data.length > 0) {
-          @for (item of response.data; track item.id) {
-            <app-bookmark-card
-              [bookmark]="item"
-              (handleEdit)="handleBookmarkEdit($event)"
-              (handleDelete)="bookmarkDelete($event)"
-            />
-          }
-        } @else {
-          <p class="col-span-full text-center text-base-content/70 mt-8">
-            No bookmarks found.
-          </p>
-        }
-      } @else {
-        <!-- Optional: Loading state -->
-        <p class="col-span-full text-center text-base-content/70 mt-8">
-          Loading bookmarks...
-        </p>
-        <!-- Or use skeleton loaders -->
+      @if (bookMarks$ | async; as response) { @if (response.data &&
+      response.data.length > 0) { @for (item of response.data; track item.id) {
+      <app-bookmark-card
+        [bookmark]="item"
+        (handleOnEdit)="handleBookmarkEdit($event)"
+        (handleOnDelete)="bookmarkDelete($event)"
+      />
+      } } @else {
+      <p class="col-span-full text-center text-base-content/70 mt-8">
+        No bookmarks found.
+      </p>
+      } } @else {
+      <!-- Optional: Loading state -->
+      <p class="col-span-full text-center text-base-content/70 mt-8">
+        Loading bookmarks...
+      </p>
+      <!-- Or use skeleton loaders -->
       }
     </main>
 
@@ -105,6 +102,8 @@ import { Collection } from '@models/collection.model';
           <input
             type="url"
             class="grow"
+            name="url"
+            [(ngModel)]="bookMarkUrl"
             required
             placeholder="https://example.com"
             value=""
@@ -117,7 +116,6 @@ import { Collection } from '@models/collection.model';
 
     @if(isDrawerOpen()){
     <app-drawer
-      [itemId]="selectedItemId()"
       [isOpen]="isDrawerOpen()"
       [itemData]="selectedItemData()"
       (drawerClosed)="handleDrawerClosed()"
@@ -126,21 +124,22 @@ import { Collection } from '@models/collection.model';
     >
     </app-drawer>
     }
-    `,
+  `,
 })
 export class BookmarksComponent implements OnInit {
   isEditing = signal<boolean>(false);
   isDrawerOpen = signal(false);
   customModal = viewChild.required<ModalComponent>('customModal');
-  // Make sure the generic type matches the expected API response structure
+  bookMarkUrl = signal<string>('');
+  selectedItemId = signal<string | null>(null);
+  selectedItemData = signal<Bookmark | null>(null);
+
   bookMarks$!: Observable<ApiResponse<Bookmark[]>>;
 
   private bookMarkService = inject(BookmarkService);
 
   ngOnInit(): void {
     this.bookMarks$ = this.bookMarkService.listBookmarks();
-    // Optional: Add error handling for the observable
-    // this.bookMarks$.subscribe({ error: err => console.error('Failed to load bookmarks', err) });
   }
 
   openCustomModal() {
@@ -148,51 +147,67 @@ export class BookmarksComponent implements OnInit {
   }
 
   handleConfirm() {
-    console.log('Modal confirmed');
-    // Add logic to actually save the bookmark
+    const url = this.bookMarkUrl().trim();
+    if (!url) {
+      console.error('URL is required');
+      return;
+    }
+    // partial just get url and pass to createbookmark
+    const bookmark: Partial<Bookmark> = {
+      url,
+    };
+    this.createBookMark(bookmark as Bookmark);
+    this.bookMarkUrl.set('');
+    this.customModal().close();
+    this.isEditing.set(false);
   }
 
   handleClose() {
-    this.isEditing.set(false)
+    this.isEditing.set(false);
     console.log('Modal closed');
   }
 
-  // --- Keep your drawer signals and mock data ---
-  selectedItemId = signal<string | null>(null);
-  selectedItemData = signal<Bookmark | null>(null);
-
-  mockCollections = signal<Collection[]>([
-    /* ... */
-  ]);
-  mockTags = signal<Tag[]>([
-    /* ... */
-  ]);
-
   handleBookmarkEdit(e: Bookmark): void {
     this.selectedItemId.set(e.id);
-    console.log(e)
-    this.selectedItemData.set(e)
-    this.toggleDrawer()
+    this.selectedItemData.set(e);
+    this.toggleDrawer();
   }
 
-  bookmarkDelete(id: string) {
-    console.log(id);
+  bookmarkDelete(bookmark: Bookmark) {
+    console.log(bookmark);
   }
 
   handleDrawerClosed(): void {
-    this.toggleDrawer()
+    this.toggleDrawer();
   }
-  handleItemSaved(data: {
-    /* ... */
-  }): void {
-    console.log(data)
-    /* ... */
+  handleItemSaved(data: Bookmark): void {
+    this.bookMarkService.updateBookmark(data).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.bookMarks$ = this.bookMarkService.listBookmarks();
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
   handleItemVisit(id: string): void {
     /* ... */
   }
 
   toggleDrawer() {
-    this.isDrawerOpen.set(!this.isDrawerOpen())
+    this.isDrawerOpen.set(!this.isDrawerOpen());
+  }
+
+  createBookMark(b: Bookmark) {
+    this.bookMarkService.createBookmark(b).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.bookMarks$ = this.bookMarkService.listBookmarks();
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
 }
