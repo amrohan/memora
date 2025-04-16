@@ -189,7 +189,34 @@ export class BookmarksComponent implements OnInit {
 
   bookmarkDelete(bookmark: Bookmark) {
     this.bookMarkService.deleteBookmark(bookmark.id).subscribe({
-      next: (res) => {},
+      next: (res) => {
+        if (res.status !== 200) {
+          console.error('Failed to delete bookmark:', res);
+          return;
+        }
+        this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
+          if (!prev?.data || !Array.isArray(prev.data)) {
+            console.warn(
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
+            );
+            return prev;
+          }
+
+          const updatedDataArray = prev.data.filter(
+            (item) => item.id !== bookmark.id
+          );
+          return {
+            ...prev,
+            data: updatedDataArray,
+            metadata: prev.metadata
+              ? { ...prev.metadata, totalCount: prev.metadata.totalCount - 1 }
+              : null,
+          };
+        });
+        this.selectedItemId.set(null);
+        this.selectedItemData.set(null);
+        this.isDrawerOpen.set(false);
+      },
       error: (err) => {
         console.error(err);
       },
@@ -201,7 +228,31 @@ export class BookmarksComponent implements OnInit {
   }
   handleItemSaved(data: Bookmark): void {
     this.bookMarkService.updateBookmark(data).subscribe({
-      next: (res) => {},
+      next: (res) => {
+        if (res.status !== 200) {
+          console.error('Failed to update bookmark:', res);
+          return;
+        }
+        this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
+          if (!prev?.data || !Array.isArray(prev.data)) {
+            console.warn(
+              'Cannot update bookmark optimistically: previous data state is invalid or missing.'
+            );
+            return prev;
+          }
+
+          const updatedDataArray = prev.data.map((item) =>
+            item.id === data.id ? { ...item, ...data } : item
+          );
+          return {
+            ...prev,
+            data: updatedDataArray,
+          };
+        });
+        this.selectedItemId.set(null);
+        this.selectedItemData.set(null);
+        this.isDrawerOpen.set(false);
+      },
       error: (err) => {
         console.error(err);
       },
@@ -216,10 +267,39 @@ export class BookmarksComponent implements OnInit {
   }
 
   createBookMark(b: Bookmark) {
+    // Assuming the service returns the created bookmark *within* an ApiResponse
     this.bookMarkService.createBookmark(b).subscribe({
-      next: (res) => {},
+      next: (res: ApiResponse<Bookmark>) => {
+        const newBookmark = res.data;
+
+        if (!newBookmark) {
+          console.error('Create bookmark response did not contain data.', res);
+          return;
+        }
+
+        this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
+          if (!prev?.data || !Array.isArray(prev.data)) {
+            console.warn(
+              'Cannot add bookmark optimistically: previous data state is invalid or missing.'
+            );
+            return prev;
+          }
+
+          const updatedDataArray: Bookmark[] = [newBookmark, ...prev.data];
+          this.handleBookmarkEdit(newBookmark);
+          return {
+            ...prev,
+            data: updatedDataArray, // Override the data property
+            // Optional: You might want to update metadata like totalCount if applicable
+            metadata: prev.metadata
+              ? { ...prev.metadata, totalCount: prev.metadata.totalCount + 1 }
+              : null,
+          };
+        });
+      },
       error: (err) => {
-        console.error(err);
+        console.error('Failed to create bookmark:', err);
+        // Handle error appropriately - show user feedback
       },
     });
   }
