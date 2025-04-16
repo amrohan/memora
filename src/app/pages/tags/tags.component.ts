@@ -1,12 +1,5 @@
-import { AsyncPipe } from '@angular/common';
-import {
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
@@ -15,19 +8,14 @@ import { ApiResponse } from '@models/ApiResponse';
 import { Tag } from '@models/tags.model';
 import { TagService } from '@services/tag.service';
 import { map, Observable, shareReplay } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tags',
-  imports: [
-    HeaderComponent,
-    TagsCardComponent,
-    ModalComponent,
-    AsyncPipe,
-    FormsModule,
-  ],
+  imports: [HeaderComponent, TagsCardComponent, ModalComponent, FormsModule],
   template: `
     <app-header headerName="Tags" />
-    <section class="mb-24">
+    <section class="mb-36">
       <div class="h-20 flex justify-end items-center gap-2">
         <label class="input">
           <svg
@@ -59,14 +47,13 @@ import { map, Observable, shareReplay } from 'rxjs';
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @if (filteredTags$() | async ;as tag ) { @for (item of tag.data; track
-        item.id) {
+        @for (item of data.value()?.data; track item.id) {
         <app-tags-card
           [tag]="item"
           (handleOnEdit)="handleTagEdit($event)"
           (handleOnDelete)="handleTagDelete($event)"
         />
-        } }
+        }
       </article>
     </section>
 
@@ -103,25 +90,17 @@ export class TagsComponent implements OnInit {
   tagName = signal<string>('');
   setTag = signal<Tag | null>(null);
   tags$!: Observable<ApiResponse<Tag[]>>;
-  searchTerm = signal<string>('');
 
-  filteredTags$ = computed(() => {
-    const term = this.searchTerm();
-    if (!term) {
-      return this.tags$;
-    }
-    return this.tags$.pipe(
-      map((response) => {
-        const filteredData = response.data?.filter((item) =>
-          item.name.toLowerCase().includes(term.toLowerCase())
-        );
-        return {
-          ...response,
-          data: filteredData ?? null,
-        };
-      })
-    );
-  });
+  searchTerm = signal<string>('');
+  pageSize = signal<number>(20);
+  page = signal<number>(1);
+
+  data = httpResource<ApiResponse<Tag[]>>(
+    () =>
+      `${
+        environment.API_URL
+      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+  );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 

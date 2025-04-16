@@ -14,7 +14,8 @@ import { Collection } from '@models/collection.model';
 import { FormsModule } from '@angular/forms';
 import { map, Observable, shareReplay } from 'rxjs';
 import { ApiResponse } from '@models/ApiResponse';
-import { AsyncPipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-collections',
@@ -24,12 +25,11 @@ import { AsyncPipe } from '@angular/common';
     CollectionCardComponent,
     HeaderComponent,
     ModalComponent,
-    AsyncPipe,
     FormsModule,
   ],
   template: `
     <app-header headerName="Collection" />
-    <section class="mb-24">
+    <section class="mb-36">
       <div class="h-20 flex justify-end items-center gap-2">
         <label class="input">
           <svg
@@ -50,7 +50,7 @@ import { AsyncPipe } from '@angular/common';
           </svg>
           <input
             type="search"
-            [(ngModel)]="seachTerm"
+            [(ngModel)]="searchTerm"
             name="collection"
             required
             placeholder="Search collection..."
@@ -61,22 +61,29 @@ import { AsyncPipe } from '@angular/common';
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @if (filteredCollections$() | async; as response) { @if (response.data
-        && response.data.length > 0) { @for (item of response.data; track
-        item.id) {
+        @for (item of data.value()?.data; track item.id) {
         <app-collection-card
           [collection]="item"
           (handleOnEdit)="handleCollectionEdit($event)"
           (handleOnDelete)="collectionDelete($event)"
         />
-        } } @else {
-        <p class="col-span-full text-center text-base-content/70 mt-8">
-          No collections found.
+        }
+        <div>
+          @if (data.value()?.metadata?.hasNextPage) {
+          <button class="btn btn-primary" (click)="page.set(page() + 1)">
+            Load More
+          </button>
+          }
+        </div>
+
+        @if (data.value()?.data?.length === 0) {
+        <p class="text-center">No collections found</p>
+        } @if (validationError() !== null) {
+        <p class="text-center text-red-500">
+          {{ validationError() }}
         </p>
-        } } @else {
-        <p class="col-span-full text-center text-base-content/70 mt-8">
-          Loading collections...
-        </p>
+        } @if(data.isLoading()){
+        <p>data loading</p>
         }
       </article>
     </section>
@@ -114,25 +121,17 @@ export class CollectionsComponent implements OnInit {
   collections$!: Observable<ApiResponse<Collection[]>>;
   collectionName = signal<string>('');
   validationError = signal<string | null>(null);
-  seachTerm = signal<string>('');
 
-  filteredCollections$ = computed(() => {
-    const term = this.seachTerm();
-    if (!term) {
-      return this.collections$;
-    }
-    return this.collections$.pipe(
-      map((response) => {
-        const filteredData = response.data?.filter((item: Collection) =>
-          item.name.toLowerCase().includes(term.toLowerCase())
-        );
-        return {
-          ...response,
-          data: filteredData ?? null,
-        };
-      })
-    );
-  });
+  searchTerm = signal<string>('');
+  pageSize = signal<number>(20);
+  page = signal<number>(1);
+
+  data = httpResource<ApiResponse<Collection[]>>(
+    () =>
+      `${
+        environment.API_URL
+      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+  );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
@@ -145,8 +144,9 @@ export class CollectionsComponent implements OnInit {
   collectionDelete(item: Collection) {
     this.collectionService.deleteCollection(item.id).subscribe({
       next: (response) => {
-        console.log('Collection deleted successfully:', response);
-        this.collections$ = this.collectionService.getUserCollections();
+        this.collections$ = this.collectionService
+          .getUserCollections()
+          .pipe(shareReplay(1));
       },
       error: (error) => {
         console.error('Error deleting collection:', error);

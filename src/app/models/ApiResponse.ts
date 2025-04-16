@@ -18,8 +18,8 @@ export type ApiResponseMetadata = {
   hasPreviousPage: boolean;
   nextPage: number | null;
   previousPage: number | null;
-  items: any[];
 };
+
 export type ApiResponseError = {
   status: number;
   message: string;

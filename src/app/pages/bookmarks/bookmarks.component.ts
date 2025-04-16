@@ -13,9 +13,10 @@ import { BookmarkService } from '@services/bookmark.service';
 import { map, Observable, shareReplay } from 'rxjs';
 import { Bookmark } from '@models/bookmark.model';
 import { ApiResponse } from '@models/ApiResponse';
-import { AsyncPipe } from '@angular/common';
 import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
 import { FormsModule } from '@angular/forms';
+import { httpResource } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-bookmarks',
@@ -23,14 +24,12 @@ import { FormsModule } from '@angular/forms';
     HeaderComponent,
     ModalComponent,
     DrawerComponent,
-    AsyncPipe,
     BookmarkCardComponent,
     FormsModule,
   ],
   template: `
     <app-header headerName="Bookmarks" />
-
-    <section class="p-4">
+    <section class="mb-36">
       <div class="h-20 flex justify-end items-center gap-2">
         <label class="input input-bordered flex items-center gap-2">
           <svg
@@ -55,29 +54,17 @@ import { FormsModule } from '@angular/forms';
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
+
+      <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
+        @for (item of data.value()?.data; track item.id) {
+        <app-bookmark-card
+          [bookmark]="item"
+          (handleOnEdit)="handleBookmarkEdit($event)"
+          (handleOnDelete)="bookmarkDelete($event)"
+        />
+        }
+      </main>
     </section>
-
-    <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
-      @if (searchItem()| async; as response) { @if (response.data &&
-      response.data.length > 0) { @for (item of response.data; track item.id) {
-      <app-bookmark-card
-        [bookmark]="item"
-        (handleOnEdit)="handleBookmarkEdit($event)"
-        (handleOnDelete)="bookmarkDelete($event)"
-      />
-      } } @else {
-      <p class="col-span-full text-center text-base-content/70 mt-8">
-        No bookmarks found.
-      </p>
-      } } @else {
-      <!-- Optional: Loading state -->
-      <p class="col-span-full text-center text-base-content/70 mt-8">
-        Loading bookmarks...
-      </p>
-      <!-- Or use skeleton loaders -->
-      }
-    </main>
-
     <!-- Modal-->
     <app-modal
       #customModal
@@ -145,7 +132,17 @@ export class BookmarksComponent implements OnInit {
   bookMarkUrl = signal<string>('');
   selectedItemId = signal<string | null>(null);
   selectedItemData = signal<Bookmark | null>(null);
+
   searchTerm = signal<string>('');
+  pageSize = signal<number>(20);
+  page = signal<number>(1);
+
+  data = httpResource<ApiResponse<Bookmark[]>>(
+    () =>
+      `${
+        environment.API_URL
+      }/bookmarks?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+  );
 
   bookMarks$!: Observable<ApiResponse<Bookmark[]>>;
 
