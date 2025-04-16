@@ -1,21 +1,14 @@
-import {
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CollectionCardComponent } from '@components/collection-card/collection-card.component';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { CollectionService } from '@services/collection.service';
 import { Collection } from '@models/collection.model';
 import { FormsModule } from '@angular/forms';
-import { map, Observable, shareReplay } from 'rxjs';
 import { ApiResponse } from '@models/ApiResponse';
 import { httpResource } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { PaginationComponent } from '../../components/pagination.component';
 
 @Component({
   selector: 'app-collections',
@@ -26,6 +19,7 @@ import { environment } from 'src/environments/environment';
     HeaderComponent,
     ModalComponent,
     FormsModule,
+    PaginationComponent,
   ],
   template: `
     <app-header headerName="Collection" />
@@ -67,16 +61,7 @@ import { environment } from 'src/environments/environment';
           (handleOnEdit)="handleCollectionEdit($event)"
           (handleOnDelete)="collectionDelete($event)"
         />
-        }
-        <div>
-          @if (data.value()?.metadata?.hasNextPage) {
-          <button class="btn btn-primary" (click)="page.set(page() + 1)">
-            Load More
-          </button>
-          }
-        </div>
-
-        @if (data.value()?.data?.length === 0) {
+        } @if (data.value()?.data?.length === 0) {
         <p class="text-center">No collections found</p>
         } @if (validationError() !== null) {
         <p class="text-center text-red-500">
@@ -86,8 +71,12 @@ import { environment } from 'src/environments/environment';
         <p>data loading</p>
         }
       </article>
+      <div class="flex justify-center items-center mt-4">
+        @if(data.value()?.metadata ){
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        }
+      </div>
     </section>
-
     <!-- Modal-->
     <app-modal
       #customModal
@@ -118,12 +107,11 @@ export class CollectionsComponent implements OnInit {
 
   isEditing = signal<boolean>(false);
   setCollection = signal<Collection | null>(null);
-  collections$!: Observable<ApiResponse<Collection[]>>;
   collectionName = signal<string>('');
   validationError = signal<string | null>(null);
 
   searchTerm = signal<string>('');
-  pageSize = signal<number>(20);
+  pageSize = signal<number>(10);
   page = signal<number>(1);
 
   data = httpResource<ApiResponse<Collection[]>>(
@@ -135,19 +123,11 @@ export class CollectionsComponent implements OnInit {
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void {
-    this.collections$ = this.collectionService
-      .getUserCollections()
-      .pipe(shareReplay(1));
-  }
+  ngOnInit(): void {}
 
   collectionDelete(item: Collection) {
     this.collectionService.deleteCollection(item.id).subscribe({
-      next: (response) => {
-        this.collections$ = this.collectionService
-          .getUserCollections()
-          .pipe(shareReplay(1));
-      },
+      next: (response) => {},
       error: (error) => {
         console.error('Error deleting collection:', error);
       },
@@ -225,9 +205,6 @@ export class CollectionsComponent implements OnInit {
     });
   }
   onSuccessAddOrUpdate() {
-    this.collections$ = this.collectionService
-      .getUserCollections()
-      .pipe(shareReplay(1));
     this.customModal().close();
     this.collectionName.set('');
     this.isEditing.set(false);

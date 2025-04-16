@@ -17,6 +17,7 @@ import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.c
 import { FormsModule } from '@angular/forms';
 import { httpResource } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { PaginationComponent } from '../../components/pagination.component';
 
 @Component({
   selector: 'app-bookmarks',
@@ -26,6 +27,7 @@ import { environment } from 'src/environments/environment';
     DrawerComponent,
     BookmarkCardComponent,
     FormsModule,
+    PaginationComponent,
   ],
   template: `
     <app-header headerName="Bookmarks" />
@@ -64,6 +66,12 @@ import { environment } from 'src/environments/environment';
         />
         }
       </main>
+
+      <div class="flex justify-center items-center mt-4">
+        @if(data.value()?.metadata ){
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        }
+      </div>
     </section>
     <!-- Modal-->
     <app-modal
@@ -144,30 +152,9 @@ export class BookmarksComponent implements OnInit {
       }/bookmarks?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 
-  bookMarks$!: Observable<ApiResponse<Bookmark[]>>;
-
   private bookMarkService = inject(BookmarkService);
 
-  ngOnInit(): void {
-    this.bookMarks$ = this.bookMarkService.listBookmarks().pipe(shareReplay(1));
-  }
-  searchItem = computed(() => {
-    const term = this.searchTerm();
-    if (!term) {
-      return this.bookMarks$;
-    }
-    return this.bookMarks$.pipe(
-      map((response) => {
-        const filteredData = response.data?.filter((item) =>
-          item.url.toLowerCase().includes(term.toLowerCase())
-        );
-        return {
-          ...response,
-          data: filteredData ?? null,
-        };
-      })
-    );
-  });
+  ngOnInit(): void {}
 
   openCustomModal() {
     this.customModal().open();
@@ -202,10 +189,7 @@ export class BookmarksComponent implements OnInit {
 
   bookmarkDelete(bookmark: Bookmark) {
     this.bookMarkService.deleteBookmark(bookmark.id).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.bookMarks$ = this.bookMarkService.listBookmarks();
-      },
+      next: (res) => {},
       error: (err) => {
         console.error(err);
       },
@@ -217,10 +201,7 @@ export class BookmarksComponent implements OnInit {
   }
   handleItemSaved(data: Bookmark): void {
     this.bookMarkService.updateBookmark(data).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.bookMarks$ = this.bookMarkService.listBookmarks();
-      },
+      next: (res) => {},
       error: (err) => {
         console.error(err);
       },
@@ -236,10 +217,7 @@ export class BookmarksComponent implements OnInit {
 
   createBookMark(b: Bookmark) {
     this.bookMarkService.createBookmark(b).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.bookMarks$ = this.bookMarkService.listBookmarks();
-      },
+      next: (res) => {},
       error: (err) => {
         console.error(err);
       },

@@ -7,12 +7,19 @@ import { TagsCardComponent } from '@components/tags-card/tags-card.component';
 import { ApiResponse } from '@models/ApiResponse';
 import { Tag } from '@models/tags.model';
 import { TagService } from '@services/tag.service';
-import { map, Observable, shareReplay } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { PaginationComponent } from '../../components/pagination.component';
 
 @Component({
   selector: 'app-tags',
-  imports: [HeaderComponent, TagsCardComponent, ModalComponent, FormsModule],
+  imports: [
+    HeaderComponent,
+    TagsCardComponent,
+    ModalComponent,
+    FormsModule,
+    PaginationComponent,
+  ],
   template: `
     <app-header headerName="Tags" />
     <section class="mb-36">
@@ -55,6 +62,12 @@ import { environment } from 'src/environments/environment';
         />
         }
       </article>
+
+      <div class="flex justify-center items-center mt-4">
+        @if(data.value()?.metadata ){
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        }
+      </div>
     </section>
 
     <!-- Modal-->
@@ -89,7 +102,6 @@ export class TagsComponent implements OnInit {
   isEditing = signal<boolean>(false);
   tagName = signal<string>('');
   setTag = signal<Tag | null>(null);
-  tags$!: Observable<ApiResponse<Tag[]>>;
 
   searchTerm = signal<string>('');
   pageSize = signal<number>(20);
@@ -104,9 +116,7 @@ export class TagsComponent implements OnInit {
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void {
-    this.tags$ = this.tagsService.listUserTags().pipe(shareReplay(1));
-  }
+  ngOnInit(): void {}
 
   openCustomModal() {
     this.customModal().open();
@@ -151,10 +161,7 @@ export class TagsComponent implements OnInit {
     };
 
     this.tagsService.createTag(tag).subscribe({
-      next: (response) => {
-        console.log('Tag created successfully:', response);
-        this.tags$ = this.tagsService.listUserTags();
-      },
+      next: (response) => {},
       error: (error) => {
         console.error('Error creating tag:', error);
       },
@@ -178,7 +185,6 @@ export class TagsComponent implements OnInit {
     this.tagsService.updateTag(tag).subscribe({
       next: (response) => {
         console.log('Tag updated successfully:', response);
-        this.tags$ = this.tagsService.listUserTags();
       },
       error: (error) => {
         console.error('Error updating tag:', error);
@@ -188,10 +194,7 @@ export class TagsComponent implements OnInit {
 
   deleteTag(tagId: string) {
     this.tagsService.deleteTag(tagId).subscribe({
-      next: (response) => {
-        console.log('Tag deleted successfully:', response);
-        this.tags$ = this.tagsService.listUserTags();
-      },
+      next: (response) => {},
       error: (error) => {
         console.error('Error deleting tag:', error);
       },
