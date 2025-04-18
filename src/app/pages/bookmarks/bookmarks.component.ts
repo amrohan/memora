@@ -11,7 +11,6 @@ import { httpResource } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { PaginationComponent } from '../../components/pagination.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-bookmarks',
