@@ -12,40 +12,66 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./pages/dashboard/dashboard.component').then(
-            (m) => m.DashboardComponent,
+            (m) => m.DashboardComponent
           ),
       },
       {
         path: 'bookmarks',
         loadComponent: () =>
           import('./pages/bookmarks/bookmarks.component').then(
-            (m) => m.BookmarksComponent,
+            (m) => m.BookmarksComponent
           ),
       },
       {
         path: 'search',
         loadComponent: () =>
           import('./pages/search/search.component').then(
-            (m) => m.SearchComponent,
+            (m) => m.SearchComponent
           ),
       },
       {
         path: 'collections',
-        loadComponent: () =>
-          import('./pages/collections/collections.component').then(
-            (m) => m.CollectionsComponent,
-          ),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/collections/collections.component').then(
+                (m) => m.CollectionsComponent
+              ),
+          },
+          {
+            path: ':collectionId',
+            loadComponent: () =>
+              import(
+                './pages/bookmarks/collection-detail/collection-detail.component'
+              ).then((m) => m.CollectionDetailComponent),
+          },
+        ],
       },
       {
         path: 'tags',
-        loadComponent: () =>
-          import('./pages/tags/tags.component').then((m) => m.TagsComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/tags/tags.component').then(
+                (m) => m.TagsComponent
+              ),
+          },
+          {
+            path: ':tagId',
+            loadComponent: () =>
+              import('./pages/tags/tag-detail/tag-detail.component').then(
+                (m) => m.TagDetailComponent
+              ),
+          },
+        ],
       },
       {
         path: 'settings',
         loadComponent: () =>
           import('./pages/settings/settings.component').then(
-            (m) => m.SettingsComponent,
+            (m) => m.SettingsComponent
           ),
       },
     ],

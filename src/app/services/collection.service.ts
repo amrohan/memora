@@ -43,4 +43,11 @@ export class CollectionService {
       `${this.apiUrl}/collections/${collectionId}`
     );
   }
+  getBookmarksByCollection(
+    collectionId: string
+  ): Observable<ApiResponse<Collection[]>> {
+    return this.http.get<ApiResponse<Collection[]>>(
+      `${this.apiUrl}/collections/${collectionId}/bookmarks`
+    );
+  }
 }

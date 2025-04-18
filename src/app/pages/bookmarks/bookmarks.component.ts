@@ -1,16 +1,8 @@
-import {
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { DrawerComponent } from '@components/drawer/drawer.component';
 import { BookmarkService } from '@services/bookmark.service';
-import { map, Observable, shareReplay } from 'rxjs';
 import { Bookmark } from '@models/bookmark.model';
 import { ApiResponse } from '@models/ApiResponse';
 import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
@@ -18,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { httpResource } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { PaginationComponent } from '../../components/pagination.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-bookmarks',
@@ -142,19 +135,29 @@ export class BookmarksComponent implements OnInit {
   selectedItemData = signal<Bookmark | null>(null);
 
   searchTerm = signal<string>('');
-  pageSize = signal<number>(20);
+  pageSize = signal<number>(10);
   page = signal<number>(1);
+  collectionId = signal<string>('');
+  tagId = signal<string>('');
 
   data = httpResource<ApiResponse<Bookmark[]>>(
     () =>
       `${
         environment.API_URL
-      }/bookmarks?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+      }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 
   private bookMarkService = inject(BookmarkService);
+  private activatedRoute = inject(ActivatedRoute);
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((params) => {
+      const collectionId = params['collectionId'];
+      this.collectionId.set(collectionId);
+      const tagId = params['tagId'];
+      this.tagId.set(tagId);
+    });
+  }
 
   openCustomModal() {
     this.customModal().open();
@@ -299,7 +302,6 @@ export class BookmarksComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to create bookmark:', err);
-        // Handle error appropriately - show user feedback
       },
     });
   }

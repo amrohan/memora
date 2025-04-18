@@ -7,10 +7,12 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Bookmark } from '@models/bookmark.model';
 
 @Component({
   selector: 'app-bookmark-card',
+  imports: [RouterLink],
   template: `
     <div class="card card-border bg-base-100 min-h-32">
       <div class="card-body">
@@ -26,6 +28,8 @@ import { Bookmark } from '@models/bookmark.model';
               <div class="mb-2 flex justify-start items-center gap-2">
                 @for (tag of bookmark().tags; track tag.id) {
                 <a
+                  [routerLink]="['/bookmarks']"
+                  [queryParams]="{ tagId: tag.id }"
                   class="badge badge-ghost badge-xs rounded-md cursor-pointer "
                 >
                   #{{ tag.name }}
@@ -42,6 +46,8 @@ import { Bookmark } from '@models/bookmark.model';
               <!--Collection Ui-->
               @for (collection of bookmark().collections; track collection.id) {
               <a
+                [routerLink]="['/bookmarks']"
+                [queryParams]="{ collectionId: collection.id }"
                 class="badge badge-ghost badge-sm rounded-md cursor-pointer mt-2 flex justify-start items-center gap-2"
               >
                 <svg
