@@ -10,7 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { httpResource } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { PaginationComponent } from '../../components/pagination.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-bookmarks',
@@ -50,6 +51,25 @@ import { ActivatedRoute } from '@angular/router';
         <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
 
+      <!-- Filter -->
+      <div>
+        @if(collectionName()||tagName()){
+        <form class="filter">
+          <input
+            class="btn btn-square btn-xs"
+            type="reset"
+            value="×"
+            (click)="clearQueryParams()"
+          />
+          <input
+            class="btn btn-secondary input-xs"
+            type="radio"
+            name="frameworks"
+            [ariaLabel]="collectionName() ? collectionName() : tagName()"
+          />
+        </form>
+        }
+      </div>
       <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
         @for (item of data.value()?.data; track item.id) {
         <app-bookmark-card
@@ -139,6 +159,8 @@ export class BookmarksComponent implements OnInit {
   page = signal<number>(1);
   collectionId = signal<string>('');
   tagId = signal<string>('');
+  collectionName = signal<string>('');
+  tagName = signal<string>('');
 
   data = httpResource<ApiResponse<Bookmark[]>>(
     () =>
@@ -149,13 +171,14 @@ export class BookmarksComponent implements OnInit {
 
   private bookMarkService = inject(BookmarkService);
   private activatedRoute = inject(ActivatedRoute);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
-      const collectionId = params['collectionId'];
-      this.collectionId.set(collectionId);
-      const tagId = params['tagId'];
-      this.tagId.set(tagId);
+      this.collectionName.set(params['collectionName']);
+      this.tagName.set(params['tagName']);
+      this.collectionId.set(params['collectionId']);
+      this.tagId.set(params['tagId']);
     });
   }
 
@@ -303,6 +326,18 @@ export class BookmarksComponent implements OnInit {
       error: (err) => {
         console.error('Failed to create bookmark:', err);
       },
+    });
+  }
+
+  clearQueryParams() {
+    this.router.navigate([], {
+      queryParams: {
+        collectionId: null,
+        tagId: null,
+        tagName: null,
+        collectionName: null,
+      },
+      queryParamsHandling: 'merge',
     });
   }
 }

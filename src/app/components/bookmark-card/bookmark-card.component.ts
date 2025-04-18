@@ -29,7 +29,7 @@ import { Bookmark } from '@models/bookmark.model';
                 @for (tag of bookmark().tags; track tag.id) {
                 <a
                   [routerLink]="['/bookmarks']"
-                  [queryParams]="{ tagId: tag.id }"
+                  [queryParams]="{ tagId: tag.id, tagName: tag.name }"
                   class="badge badge-ghost badge-xs rounded-md cursor-pointer "
                 >
                   #{{ tag.name }}
@@ -47,7 +47,10 @@ import { Bookmark } from '@models/bookmark.model';
               @for (collection of bookmark().collections; track collection.id) {
               <a
                 [routerLink]="['/bookmarks']"
-                [queryParams]="{ collectionId: collection.id }"
+                [queryParams]="{
+                  collectionId: collection.id,
+                  collectionName: collection.name
+                }"
                 class="badge badge-ghost badge-sm rounded-md cursor-pointer mt-2 flex justify-start items-center gap-2"
               >
                 <svg

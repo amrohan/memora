@@ -7,37 +7,49 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Tag } from '@models/tags.model';
 
 @Component({
   selector: 'app-tags-card',
+  imports: [RouterLink],
   template: `
     <div class="card bg-base-100 card-border w-full shadow-sm h-64">
-      <figure class="grid place-content-center h-40 ">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-10 text-base-content/80"
-        >
-          <path
-            d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
-          />
-          <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
-        </svg>
-      </figure>
+      <a
+        [routerLink]="['/bookmarks']"
+        [queryParams]="{ tagId: tag().id, tagName: tag().name }"
+      >
+        <figure class="grid place-content-center h-40 ">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="size-10 text-base-content/80"
+          >
+            <path
+              d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+            />
+            <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+          </svg>
+        </figure>
+      </a>
       <div class="card-body">
         <div class="flex justify-between items-center gap-2">
-          <div class="flex flex-col gap-1 items-start justify-center">
-            <h2 class="card-title text-sm">{{ tag().name }}</h2>
-            <p class="text-base-content/80">18 items</p>
-          </div>
+          <a
+            [routerLink]="['/bookmarks']"
+            [queryParams]="{ tagId: tag().id, tagName: tag().name }"
+          >
+            <div class="flex flex-col gap-1 items-start justify-center">
+              <h2 class="card-title text-sm">{{ tag().name }}</h2>
+              <p class="text-base-content/80">18 items</p>
+            </div>
+          </a>
           <div class=" justify-end dropdown dropdown-end relative">
             <button
               #dropdownTrigger

@@ -7,40 +7,57 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Collection } from '@models/collection.model';
 
 @Component({
   selector: 'app-collection-card',
-  imports: [],
+  imports: [RouterLink],
   template: `
     <div
       #cardContainer
       class="card card-border bg-base-100 w-full shadow-sm h-64"
     >
-      <figure class="grid place-content-center h-40 ">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-10 text-base-content/70"
-        >
-          <path
-            d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-          />
-        </svg>
-      </figure>
+      <a
+        [routerLink]="['/bookmarks']"
+        [queryParams]="{
+          collectionId: collection().id,
+          collectionName: collection().name
+        }"
+      >
+        <figure class="grid place-content-center h-40 ">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="size-10 text-base-content/70"
+          >
+            <path
+              d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+            />
+          </svg>
+        </figure>
+      </a>
       <div class="card-body">
         <div class="flex justify-between items-center gap-2">
-          <div class="flex flex-col gap-1 items-start justify-center">
-            <h2 class="card-title text-sm">{{ collection().name }}</h2>
-            <p class="text-base-content/80">18 items</p>
-          </div>
+          <a
+            [routerLink]="['/bookmarks']"
+            [queryParams]="{
+              collectionId: collection().id,
+              collectionName: collection().name
+            }"
+          >
+            <div class="flex flex-col gap-1 items-start justify-center">
+              <h2 class="card-title text-sm">{{ collection().name }}</h2>
+              <p class="text-base-content/80">18 items</p>
+            </div>
+          </a>
           <div class=" justify-end dropdown dropdown-end relative">
             <button
               #dropdownTrigger

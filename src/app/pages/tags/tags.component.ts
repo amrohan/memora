@@ -7,7 +7,6 @@ import { TagsCardComponent } from '@components/tags-card/tags-card.component';
 import { ApiResponse } from '@models/ApiResponse';
 import { Tag } from '@models/tags.model';
 import { TagService } from '@services/tag.service';
-import { Observable, shareReplay } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { PaginationComponent } from '../../components/pagination.component';
 
