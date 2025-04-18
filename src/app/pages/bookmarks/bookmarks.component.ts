@@ -77,6 +77,7 @@ import { NgClass } from '@angular/common';
         </button>
         }
       </div>
+
       <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
         @for (item of data.value()?.data; track item.id) {
         <app-bookmark-card
@@ -84,6 +85,14 @@ import { NgClass } from '@angular/common';
           (handleOnEdit)="handleBookmarkEdit($event)"
           (handleOnDelete)="bookmarkDelete($event)"
         />
+        } @if(data.value()?.data?.length === 0){
+        <div
+          class="col-span-1 sm:col-span-2 h-52 flex justify-center items-center"
+        >
+          <p class="text-center text-gray-500">
+            No recods found. Please add a bookmark.
+          </p>
+        </div>
         }
       </main>
 
