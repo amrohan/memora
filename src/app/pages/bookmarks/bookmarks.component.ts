@@ -54,20 +54,27 @@ import { NgClass } from '@angular/common';
       <!-- Filter -->
       <div>
         @if(collectionName()||tagName()){
-        <form class="filter">
-          <input
-            class="btn btn-square btn-xs"
-            type="reset"
-            value="×"
-            (click)="clearQueryParams()"
-          />
-          <input
-            class="btn btn-secondary input-xs"
-            type="radio"
-            name="frameworks"
-            [ariaLabel]="collectionName() ? collectionName() : tagName()"
-          />
-        </form>
+        <button
+          class="btn btn-active btn-primary btn-xs"
+          (click)="clearQueryParams()"
+        >
+          {{ collectionName() ? collectionName() : tagName() }}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="size-3.5"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
         }
       </div>
       <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
