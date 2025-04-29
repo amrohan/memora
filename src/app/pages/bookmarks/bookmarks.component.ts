@@ -92,13 +92,26 @@ import { ToastService } from '@services/toast.service';
         <div
           class="col-span-1 sm:col-span-2 h-52 flex justify-center items-center"
         >
-          <p class="text-center text-gray-500">
+          <p class="text-center text-gray-500 text-sm">
             No recods found. Please add a bookmark.
           </p>
         </div>
         }
       </main>
 
+      <!--Loading    -->
+      @if(data.isLoading()){
+      <div class="w-full grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-4">
+        @for (item of [1,2,3,4,5,6]; track $index) {
+        <div class="flex w-full flex-col gap-4">
+          <div class="skeleton h-32 w-full"></div>
+          <div class="skeleton h-4 w-28"></div>
+          <div class="skeleton h-4 w-full"></div>
+          <div class="skeleton h-4 w-full"></div>
+        </div>
+        }
+      </div>
+      }
       <div class="flex justify-center items-center mt-4">
         @if(data.value()?.metadata ){
         <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
@@ -180,7 +193,7 @@ export class BookmarksComponent implements OnInit {
   isAddingBookmark = signal(false);
 
   searchTerm = signal<string>('');
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(20);
   page = signal<number>(1);
   collectionId = signal<string>('');
   tagId = signal<string>('');

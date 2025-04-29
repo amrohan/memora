@@ -62,7 +62,14 @@ import { ToastService } from '@services/toast.service';
         />
         }
       </article>
-
+      <!-- Skeleton -->
+      @if(data.isLoading()){
+      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
+        @for (item of [1,2,3,4,5,6]; track $index) {
+        <div class="skeleton h-18 w-full"></div>
+        }
+      </div>
+      }
       <div class="flex justify-center items-center mt-4">
         @if(data.value()?.metadata ){
         <app-pagination [(page)]="page" [data]="data.value()?.metadata" />

@@ -84,7 +84,8 @@ import { Collection } from '@models/collection.model';
         <div class="dropdown dropdown-end flex-shrink-0">
           <button
             #dropdownTrigger
-            class="btn btn-sm btn-ghost btn-circle"
+            [disabled]="!collection().isSytem"
+            class="btn btn-sm btn-ghost btn-circle disabled:cursor-not-allowed"
             (click)="toggleDropdown()"
           >
             <svg

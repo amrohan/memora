@@ -62,16 +62,24 @@ import { ToastService } from '@services/toast.service';
           (handleOnEdit)="handleCollectionEdit($event)"
           (handleOnDelete)="collectionDelete($event)"
         />
-        } @if (data.value()?.data?.length === 0) {
-        <p class="text-center">No collections found</p>
-        } @if (validationError() !== null) {
-        <p class="text-center text-red-500">
-          {{ validationError() }}
-        </p>
-        } @if(data.isLoading()){
-        <p>data loading</p>
         }
       </article>
+
+      @if (data.value()?.data?.length === 0) {
+      <p class="text-center">No collections found</p>
+      } @if (validationError() !== null) {
+      <p class="text-center text-red-500">
+        {{ validationError() }}
+      </p>
+      }
+      <!-- Skeleton -->
+      @if(data.isLoading()){
+      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
+        @for (item of [1,2,3,4,5,6]; track $index) {
+        <div class="skeleton h-18 w-full"></div>
+        }
+      </div>
+      }
       <div class="flex justify-center items-center mt-4">
         @if(data.value()?.metadata ){
         <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
@@ -157,6 +165,7 @@ export class CollectionsComponent implements OnInit {
     this.setCollection.set({
       id: this.setCollection()?.id || '',
       name: this.collectionName() || this.setCollection()?.name || '',
+      isSytem: false,
       description: this.setCollection()?.description || '',
       userId: '',
       createdAt: new Date(),
