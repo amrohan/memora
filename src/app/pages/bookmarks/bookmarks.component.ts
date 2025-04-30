@@ -252,7 +252,6 @@ export class BookmarksComponent implements OnInit {
   bookmarkDelete(bookmark: Bookmark) {
     this.bookMarkService.deleteBookmark(bookmark.id).subscribe({
       next: (res) => {
-        this.toast.success(res.message);
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
@@ -288,7 +287,6 @@ export class BookmarksComponent implements OnInit {
   handleItemSaved(data: Bookmark): void {
     this.bookMarkService.updateBookmark(data).subscribe({
       next: (res) => {
-        this.toast.success(res.message);
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
@@ -353,8 +351,6 @@ export class BookmarksComponent implements OnInit {
               : null,
           };
         });
-
-        this.toast.success(res.message);
       },
       error: (error) => {
         this.toast.error(error.error.message);
