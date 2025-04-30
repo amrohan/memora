@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CollectionCardComponent } from '@components/collection-card/collection-card.component';
-import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { CollectionService } from '@services/collection.service';
 import { Collection } from '@models/collection.model';
@@ -14,17 +13,14 @@ import { ToastService } from '@services/toast.service';
 @Component({
   selector: 'app-collections',
   imports: [
-    HeaderComponent,
     CollectionCardComponent,
     CollectionCardComponent,
-    HeaderComponent,
     ModalComponent,
     FormsModule,
     PaginationComponent,
   ],
   template: `
-    <app-header headerName="Collection" />
-    <section class="mb-36">
+    <section class="mb-36 mt-10">
       <div class="h-16 flex justify-end items-start gap-2">
         <label class="input">
           <svg
@@ -57,32 +53,33 @@ import { ToastService } from '@services/toast.service';
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
         @for (item of data.value()?.data; track item.id) {
-        <app-collection-card
-          [collection]="item"
-          (handleOnEdit)="handleCollectionEdit($event)"
-          (handleOnDelete)="collectionDelete($event)"
-        />
+          <app-collection-card
+            [collection]="item"
+            (handleOnEdit)="handleCollectionEdit($event)"
+            (handleOnDelete)="collectionDelete($event)"
+          />
         }
       </article>
 
       @if (data.value()?.data?.length === 0) {
-      <p class="text-center">No collections found</p>
-      } @if (validationError() !== null) {
-      <p class="text-center text-red-500">
-        {{ validationError() }}
-      </p>
+        <p class="text-center">No collections found</p>
+      }
+      @if (validationError() !== null) {
+        <p class="text-center text-red-500">
+          {{ validationError() }}
+        </p>
       }
       <!-- Skeleton -->
-      @if(data.isLoading()){
-      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
-        @for (item of [1,2,3,4,5,6]; track $index) {
-        <div class="skeleton h-18 w-full"></div>
-        }
-      </div>
+      @if (data.isLoading()) {
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
+          @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+            <div class="skeleton h-18 w-full"></div>
+          }
+        </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if(data.value()?.metadata ){
-        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        @if (data.value()?.metadata) {
+          <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -126,14 +123,13 @@ export class CollectionsComponent implements OnInit {
 
   data = httpResource<ApiResponse<Collection[]>>(
     () =>
-      `${
-        environment.API_URL
-      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+      `${environment.API_URL
+      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   collectionDelete(item: Collection) {
     this.collectionService.deleteCollection(item.id).subscribe({

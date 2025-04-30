@@ -1,7 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HeaderComponent } from '@components/header/header.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { TagsCardComponent } from '@components/tags-card/tags-card.component';
 import { ApiResponse } from '@models/ApiResponse';
@@ -14,15 +13,13 @@ import { ToastService } from '@services/toast.service';
 @Component({
   selector: 'app-tags',
   imports: [
-    HeaderComponent,
     TagsCardComponent,
     ModalComponent,
     FormsModule,
     PaginationComponent,
   ],
   template: `
-    <app-header headerName="Tags" />
-    <section class="mb-36">
+    <section class="mb-36 mt-10">
       <div class="h-16 flex justify-end items-start gap-2">
         <label class="input">
           <svg
@@ -55,24 +52,24 @@ import { ToastService } from '@services/toast.service';
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
         @for (item of data.value()?.data; track item.id) {
-        <app-tags-card
-          [tag]="item"
-          (handleOnEdit)="handleTagEdit($event)"
-          (handleOnDelete)="handleTagDelete($event)"
-        />
+          <app-tags-card
+            [tag]="item"
+            (handleOnEdit)="handleTagEdit($event)"
+            (handleOnDelete)="handleTagDelete($event)"
+          />
         }
       </article>
       <!-- Skeleton -->
-      @if(data.isLoading()){
-      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
-        @for (item of [1,2,3,4,5,6]; track $index) {
-        <div class="skeleton h-18 w-full"></div>
-        }
-      </div>
+      @if (data.isLoading()) {
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
+          @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+            <div class="skeleton h-18 w-full"></div>
+          }
+        </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if(data.value()?.metadata ){
-        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        @if (data.value()?.metadata) {
+          <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -117,14 +114,13 @@ export class TagsComponent implements OnInit {
 
   data = httpResource<ApiResponse<Tag[]>>(
     () =>
-      `${
-        environment.API_URL
-      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+      `${environment.API_URL
+      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   openCustomModal() {
     this.customModal().open();
