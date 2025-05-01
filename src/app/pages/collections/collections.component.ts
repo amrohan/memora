@@ -53,33 +53,32 @@ import { ToastService } from '@services/toast.service';
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
         @for (item of data.value()?.data; track item.id) {
-          <app-collection-card
-            [collection]="item"
-            (handleOnEdit)="handleCollectionEdit($event)"
-            (handleOnDelete)="collectionDelete($event)"
-          />
+        <app-collection-card
+          [collection]="item"
+          (handleOnEdit)="handleCollectionEdit($event)"
+          (handleOnDelete)="collectionDelete($event)"
+        />
         }
       </article>
 
       @if (data.value()?.data?.length === 0) {
-        <p class="text-center">No collections found</p>
-      }
-      @if (validationError() !== null) {
-        <p class="text-center text-red-500">
-          {{ validationError() }}
-        </p>
+      <p class="text-center">No collections found</p>
+      } @if (validationError() !== null) {
+      <p class="text-center text-red-500">
+        {{ validationError() }}
+      </p>
       }
       <!-- Skeleton -->
       @if (data.isLoading()) {
-        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
-          @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
-            <div class="skeleton h-18 w-full"></div>
-          }
-        </div>
+      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
+        @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+        <div class="skeleton h-18 w-full"></div>
+        }
+      </div>
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-          <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -123,13 +122,14 @@ export class CollectionsComponent implements OnInit {
 
   data = httpResource<ApiResponse<Collection[]>>(
     () =>
-      `${environment.API_URL
-      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
+      `${
+        environment.API_URL
+      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   collectionDelete(item: Collection) {
     this.collectionService.deleteCollection(item.id).subscribe({

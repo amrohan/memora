@@ -1,6 +1,7 @@
 @import "tailwindcss";
+@import "tailwindcss-animated";
 
 @plugin "daisyui" {
-  /*themes: all;*/
+  /* themes: all; */
   themes: lofi --default;
 }

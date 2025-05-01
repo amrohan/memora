@@ -16,7 +16,7 @@ import { Collection } from '@models/collection.model';
   template: `
     <div
       #cardContainer
-      class="card bg-base-100 w-full  hover:shadow-lg transition-all duration-300 border border-base-200 rounded-lg"
+      class="card bg-base-100 w-full  hover:shadow-lg transition-all duration-300 border border-base-200 rounded-lg animate-fade"
     >
       <div class="card-body p-3 flex flex-row items-center">
         <!-- Icon on left -->

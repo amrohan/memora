@@ -52,24 +52,24 @@ import { ToastService } from '@services/toast.service';
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
         @for (item of data.value()?.data; track item.id) {
-          <app-tags-card
-            [tag]="item"
-            (handleOnEdit)="handleTagEdit($event)"
-            (handleOnDelete)="handleTagDelete($event)"
-          />
+        <app-tags-card
+          [tag]="item"
+          (handleOnEdit)="handleTagEdit($event)"
+          (handleOnDelete)="handleTagDelete($event)"
+        />
         }
       </article>
       <!-- Skeleton -->
       @if (data.isLoading()) {
-        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2">
-          @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
-            <div class="skeleton h-18 w-full"></div>
-          }
-        </div>
+      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
+        @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+        <div class="skeleton h-18 w-full"></div>
+        }
+      </div>
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-          <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -114,13 +114,14 @@ export class TagsComponent implements OnInit {
 
   data = httpResource<ApiResponse<Tag[]>>(
     () =>
-      `${environment.API_URL
-      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
+      `${
+        environment.API_URL
+      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   openCustomModal() {
     this.customModal().open();

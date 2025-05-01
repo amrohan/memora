@@ -47,7 +47,7 @@ import { ToastService } from '@services/toast.service';
             [(ngModel)]="searchTerm"
           />
         </label>
-        <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
+        <button class="btn btn-neutral" (click)="openCustomModal()">Add</button>
       </div>
 
       <!-- Filter -->
@@ -97,7 +97,9 @@ import { ToastService } from '@services/toast.service';
 
       <!--Loading    -->
       @if (data.isLoading()) {
-      <div class="w-full grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-4">
+      <div
+        class="w-full grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-4 animate-fade"
+      >
         @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
         <div class="flex w-full flex-col gap-4">
           <div class="skeleton h-32 w-full"></div>

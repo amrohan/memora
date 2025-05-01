@@ -14,7 +14,7 @@ import { Bookmark } from '@models/bookmark.model';
   selector: 'app-bookmark-card',
   imports: [RouterLink],
   template: `
-    <div class="card card-border bg-base-100 h-80 md:h-[24.5rem]">
+    <div class="card card-border bg-base-100 h-80 md:h-[24.5rem] animate-fade">
       <div class="card-body w-full p-3 md:p-5">
         <div class="flex-col flex gap-2 w-full">
           <div class="avatar">

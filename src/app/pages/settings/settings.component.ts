@@ -9,8 +9,8 @@ import {
 import { User } from '@models/user';
 import { ApiResponse } from '@models/ApiResponse';
 import { AuthService } from '@services/auth.service';
-import { HeaderComponent } from '../../components/header/header.component';
 import { AuthStateService } from '@services/auth-state.service';
+import { HeaderComponent } from '@components/header/header.component';
 
 @Component({
   selector: 'app-settings',
