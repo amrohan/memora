@@ -18,6 +18,7 @@
     "@angular/platform-browser-dynamic": "^19.2.9",
     "@angular/pwa": "^19.2.10",
     "@angular/router": "^19.2.9",
+    "@angular/service-worker": "^19.2.9",
     "@tailwindcss/postcss": "^4.0.14",
     "daisyui": "^5.0.4",
     "dotenv": "^16.5.0",
