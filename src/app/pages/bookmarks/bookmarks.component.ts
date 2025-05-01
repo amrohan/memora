@@ -174,9 +174,9 @@ import { ToastService } from '@services/toast.service';
     }
 
     <!-- Loading screen      -->
-    @defer (when isAddingBookmark()) { @if (isAddingBookmark()) {
+    @if (isAddingBookmark()) {
     <app-loading />
-    } }
+    }
   `,
 })
 export class BookmarksComponent implements OnInit {

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ShareTargetComponent } from '@components/share-target.component';
 import { authGuard } from '@core/guards/auth.guard';
 import { MainLayoutComponent } from '@core/layout/main-layout/main-layout.component';
 
@@ -8,6 +9,7 @@ export const routes: Routes = [
     pathMatch: 'full',
     redirectTo: 'bookmarks',
   },
+  { path: 'share-target', component: ShareTargetComponent },
   {
     path: '',
     component: MainLayoutComponent,
