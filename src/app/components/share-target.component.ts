@@ -8,7 +8,6 @@ import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-share-target',
-  imports: [],
   template: `<p>Adding bookmarks</p>`,
 })
 export class ShareTargetComponent implements OnInit, OnDestroy {
