@@ -1,5 +1,5 @@
 {
-  "name": "Memora Bookmark App",
+  "name": "Memora",
   "short_name": "Memora",
   "theme_color": "#ffffff",
   "background_color": "#fff",
@@ -66,8 +66,7 @@
   ],
   "share_target": {
     "action": "/share-target",
-    "method": "POST",
-    "enctype": "multipart/form-data",
+    "method": "GET",
     "params": {
       "title": "title",
       "text": "text",
