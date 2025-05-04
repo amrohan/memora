@@ -125,7 +125,7 @@ import { Bookmark } from '@models/bookmark.model';
                 @if (isDropdownOpen()) {
                 <ul
                   #dropdownMenu
-                  class="dropdown menu w-40 rounded-box bg-base-100 shadow-sm absolute top-10 right-0 z-10"
+                  class="dropdown menu w-40 rounded-box bg-base-100 shadow-sm absolute top-10 right-0 z-50"
                 >
                   <li>
                     <button

@@ -1,7 +1,19 @@
 @import "tailwindcss";
-@import "tailwindcss-animated";
 
 @plugin "daisyui" {
   /* themes: all; */
   themes: lofi --default;
+}
+
+.animate-fade {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

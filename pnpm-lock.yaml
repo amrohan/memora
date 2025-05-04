@@ -53,9 +53,6 @@ importers:
       tailwindcss:
         specifier: ^4.0.14
         version: 4.0.14
-      tailwindcss-animated:
-        specifier: ^2.0.0
-        version: 2.0.0(tailwindcss@4.0.14)
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -3997,11 +3994,6 @@ packages:
   symbol-observable@4.0.0:
     resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
     engines: {node: '>=0.10'}
-
-  tailwindcss-animated@2.0.0:
-    resolution: {integrity: sha512-anNNGpxNgjydD8p1lcJjxxH+XbjW6KR8Xs29owTrbcf3tOJ6IRblpyFob43HBkfxFJJTAfFQqugoEG2b1EsR0A==}
-    peerDependencies:
-      tailwindcss: '>=3.1.0 || >=4.0.0'
 
   tailwindcss@4.0.14:
     resolution: {integrity: sha512-92YT2dpt671tFiHH/e1ok9D987N9fHD5VWoly1CdPD/Cd1HMglvZwP3nx2yTj2lbXDAHt8QssZkxTLCCTNL+xw==}
@@ -8582,10 +8574,6 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   symbol-observable@4.0.0: {}
-
-  tailwindcss-animated@2.0.0(tailwindcss@4.0.14):
-    dependencies:
-      tailwindcss: 4.0.14
 
   tailwindcss@4.0.14: {}
 

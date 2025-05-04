@@ -293,7 +293,6 @@ export class DrawerComponent implements OnInit {
   private toast = inject(ToastService);
 
   // --- Internal State Signals ---
-  // Holds a *copy* of the item data for editing to avoid modifying the input directly
   editableItemData = signal<Bookmark | null>(null);
 
   // Collection State
@@ -304,7 +303,7 @@ export class DrawerComponent implements OnInit {
 
   // Tag State
   availableTags = signal<Tag[]>([]);
-  selectedTags = signal<Tag[]>([]); // Store the full Tag objects
+  selectedTags = signal<Tag[]>([]);
   isAddingNewTag = signal<boolean>(false);
   newTagName = signal<string>('');
   tagToAddSelection = signal<string>('');
