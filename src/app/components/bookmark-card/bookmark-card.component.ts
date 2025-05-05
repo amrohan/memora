@@ -1,196 +1,307 @@
 import {
   Component,
-  ElementRef,
-  HostListener,
   input,
   output,
+  computed,
   signal,
+  inject,
   ViewChild,
+  ElementRef,
+  HostListener,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { Bookmark } from '@models/bookmark.model';
+import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bookmark-card',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [FormsModule, DatePipe],
   template: `
-    <div class="card card-border bg-base-100 h-80 md:h-[24.5rem] animate-fade">
-      <div class="card-body w-full p-3 md:p-5">
-        <div class="flex-col flex gap-2 w-full">
-          <div class="avatar">
-            <div class="h-36 md:h-48 w-full rounded-md">
-              <a [href]="bookmark().url" target="_blank" class="w-full h-full">
-                @if(bookmark().imageUrl){
-                <img [src]="bookmark().imageUrl" class="object-cover" />
-                }@else {
-                <div
-                  class="w-full h-full text-base-content/60 grid place-content-center"
-                >
-                  No image found for this url...
-                </div>
-
-                }
-              </a>
+    <div
+      class="card bg-base-100 overflow-hidden border border-base-200"
+      [class.pulse]="isLoading()"
+    >
+      <div class="card-body p-4 pb-3 gap-1">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            @if (bookmark().imageUrl) {
+            <div class="relative flex-shrink-0">
+              <img
+                [src]="bookmark().imageUrl"
+                alt="Favicon"
+                class="w-6 h-6 rounded-sm object-cover bg-base-200"
+                loading="lazy"
+                (error)="handleImageError($event)"
+              />
+              <div
+                class="absolute inset-0 bg-base-200 opacity-0 rounded-sm"
+              ></div>
             </div>
-          </div>
-          <div class="flex flex-col w-full">
-            <div class="flex flex-col justify-center items-start gap-0.5">
-              <!-- tags-->
-
+            } @else {
+            <div
+              class="w-6 h-6 rounded-sm flex items-center justify-center bg-base-200 text-base-content flex-shrink-0"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                ></path>
+                <path
+                  d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                ></path>
+              </svg>
+            </div>
+            }
+            <div class="text-sm font-medium line-clamp-1">
               <a
                 [href]="bookmark().url"
                 target="_blank"
-                class="w-full h-full flex flex-col gap-1.5 mt-2"
+                rel="noopener noreferrer"
+                class="hover:underline underline-offset-1 decoration-wavy decoration-accent"
               >
-                <p
-                  class="text-sm md:text-base font-bold text-base-content line-clamp-1 hover:underline underline-offset-2 decoration-wavy decoration-accent"
-                >
-                  @if (!bookmark().title) { Untitled }
-                  {{ bookmark().title }}
-                </p>
-                <p
-                  class="text-xs md:text-sm text-base-content/80 line-clamp-2 hover:underline underline-offset-2 decoration-wavy decoration-accent"
-                >
-                  {{ bookmark().description }}
-                </p>
+                {{ bookmark().title || 'Untitled' }}
               </a>
+            </div>
+          </div>
 
-              <!--tags  -->
-              <div class="h-4 mb-2 mt-3 flex justify-start items-center gap-2">
-                @for (tag of bookmark().tags; track tag.id) {
-                <a
-                  [routerLink]="['/bookmarks']"
-                  [queryParams]="{ tagId: tag.id, tagName: tag.name }"
-                  class="badge badge-outline badge-sm rounded-md cursor-pointer "
-                >
-                  #{{ tag.name }}
-                </a>
-                }
-              </div>
-              <div
-                class="flex w-full justify-between items-center dropdown dropdown-end relative"
+          <div class="flex gap-1">
+            <div #dropdownTrigger class=" relative">
+              <button
+                (click)="isDropdownOpen.set(!isDropdownOpen())"
+                tabindex="0"
+                role="button"
+                class="btn btn-ghost btn-xs btn-square opacity-40 hover:opacity-100"
               >
-                <!--Collection Ui-->
-                @for (collection of bookmark().collections; track collection.id)
-                {
-                <a
-                  [routerLink]="['/bookmarks']"
-                  [queryParams]="{
-                    collectionId: collection.id,
-                    collectionName: collection.name
-                  }"
-                  class="badge badge-primary badge-sm rounded-md cursor-pointer flex justify-start items-center gap-2"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="size-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="size-3.5"
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </button>
+              @if (isDropdownOpen()) {
+              <ul
+                #dropdownMenu
+                tabindex="0"
+                class="animte-fade z-10 menu absolute p-2 shadow bg-base-100 rounded-box w-52 -left-48"
+              >
+                <li><a (click)="onEdit(bookmark())">Edit</a></li>
+                <li>
+                  <a (click)="onDelete(bookmark())" class="text-error"
+                    >Delete</a
                   >
-                    <path
-                      d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-                    />
-                  </svg>
-                  <p>{{ collection.name }}</p>
-                </a>
-                }
-                <button
-                  #dropdownTrigger
-                  class="btn btn-sm btn-ghost btn-circle"
-                  (click)="toggleDropdown()"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="size-5"
-                  >
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="19" cy="12" r="1" />
-                    <circle cx="5" cy="12" r="1" />
-                  </svg>
-                </button>
-                @if (isDropdownOpen()) {
-                <ul
-                  #dropdownMenu
-                  class="dropdown menu w-40 rounded-box bg-base-100 shadow-sm absolute top-10 right-0 z-50"
-                >
-                  <li>
-                    <button
-                      (click)="handleEdit()"
-                      class="flex items-center gap-3 p-2 hover:bg-base-200 rounded-lg transition-all duration-200"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="size-4"
-                      >
-                        <path
-                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-                        />
-                        <path d="m15 5 4 4" />
-                      </svg>
-                      Rename
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      (click)="handleDelete()"
-                      class="flex items-center gap-3 p-2 text-error hover:bg-error/10 rounded-lg transition-all duration-200"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="size-4"
-                      >
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                      Remove
-                    </button>
-                  </li>
-                </ul>
-                }
-              </div>
+                </li>
+              </ul>
+              }
             </div>
           </div>
         </div>
+
+        <!-- Card content -->
+        <div class="mt-1 mb-1">
+          <a [href]="bookmark().url" target="_blank" rel="noopener noreferrer">
+            @if (bookmark().description) {
+            <p class="text-xs text-base-content/70 line-clamp-2 min-h-8">
+              {{ bookmark().description }}
+            </p>
+            } @else {
+            <p class="text-xs text-base-content/50 line-clamp-2 min-h-8 italic">
+              No description
+            </p>
+            }
+          </a>
+        </div>
+
+        <!-- Link -->
+        <a
+          [href]="bookmark().url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-primary/80 hover:text-primary truncate inline-block"
+        >
+          {{ formattedUrl() }}
+        </a>
+
+        <!-- Tags as clickable buttons -->
+        <div class="mt-1">
+          <!-- Collection - if present, make it clickable -->
+          @if (bookmark().collections) { @for (item of bookmark().collections;
+          track item.id) {
+          <div class="mt-1">
+            <button
+              class=" cursor-pointer text-xs flex items-center gap-1 text-secondary/90 hover:text-secondary transition-colors"
+              (click)="navigateToCollection(item.id, item.name)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-3 text-primary relative"
+              >
+                <path
+                  d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+                />
+              </svg>
+              {{ item.name }}
+            </button>
+          </div>
+          } }
+        </div>
       </div>
+
+      <!-- Card footer -->
+      <div
+        class="flex items-center justify-between bg-base-100 px-4 py-2 border-t border-base-200"
+      >
+        <div class="flex flex-wrap gap-1 max-w-48 overflow-hidden">
+          @for (tag of bookmark().tags; track tag.id) {
+          <button
+            class="badge badge-sm badge-ghost text-xs hover:bg-base-200 cursor-pointer rounded-sm"
+            (click)="navigateToTag(tag.id, tag.name)"
+          >
+            # {{ tag.name }}
+          </button>
+          } @if (bookmark().tags && bookmark().tags.length > 2) {
+          <div class="dropdown dropdown-top">
+            <div
+              tabindex="0"
+              role="button"
+              class="badge badge-sm badge-ghost text-xs cursor-pointer"
+            >
+              +{{ bookmark().tags.length - 2 }}
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content z-10 menu p-2 shadow bg-base-100 rounded-box w-52 max-h-64 overflow-y-auto"
+            >
+              @for (tag of bookmark().tags.slice(2); track tag.id) {
+              <li>
+                <a (click)="navigateToTag(tag.id, tag.name)">{{ tag.name }}</a>
+              </li>
+              }
+            </ul>
+          </div>
+          }
+        </div>
+
+        <!-- Date -->
+        <div class="text-xs text-base-content/50">
+          {{ bookmark().createdAt | date : 'MMM d' }}
+        </div>
+      </div>
+
+      <!-- Touch-friendly overlay version for larger screens only -->
+      <!-- <div
+        class="absolute inset-0 bg-base-300/30 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex items-center justify-center gap-3 backdrop-blur-sm"
+      >
+        <button
+          class="btn btn-circle btn-sm btn-ghost"
+          (click)="onEdit(bookmark())"
+          title="Edit"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+            ></path>
+            <path
+              d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+            ></path>
+          </svg>
+        </button>
+        <a
+          [href]="bookmark().url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-circle btn-sm btn-primary"
+          title="Visit"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+            ></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <button
+          class="btn btn-circle btn-sm btn-ghost text-error"
+          (click)="onDelete(bookmark())"
+          title="Delete"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+            ></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </button>
+      </div> -->
     </div>
   `,
 })
 export class BookmarkCardComponent {
   bookmark = input.required<Bookmark>();
-  isDropdownOpen = signal(false);
   handleOnEdit = output<Bookmark>();
   handleOnDelete = output<Bookmark>();
+  handleOnVisit = output<string>();
+  tagClick = output<{ id: string; name: string }>();
+  collectionClick = output<{ id: string; name: string }>();
+
+  isLoading = signal<boolean>(false);
+  private router = inject(Router);
+
+  isDropdownOpen = signal(false);
 
   @ViewChild('dropdownTrigger') trigger!: ElementRef;
   @ViewChild('dropdownMenu') menu!: ElementRef;
@@ -215,17 +326,57 @@ export class BookmarkCardComponent {
     }
   }
 
-  toggleDropdown() {
-    this.isDropdownOpen.set(!this.isDropdownOpen());
+  formattedUrl = computed(() => {
+    try {
+      const urlObj = new URL(this.bookmark().url);
+      return urlObj.hostname;
+    } catch (e) {
+      return this.bookmark().url;
+    }
+  });
+
+  onEdit(bookmark: Bookmark): void {
+    this.isDropdownOpen.set(false);
+    this.handleOnEdit.emit(bookmark);
   }
 
-  handleEdit() {
-    this.handleOnEdit.emit(this.bookmark());
+  onDelete(bookmark: Bookmark): void {
     this.isDropdownOpen.set(false);
+    this.handleOnDelete.emit(bookmark);
   }
 
-  handleDelete() {
-    this.handleOnDelete.emit(this.bookmark());
-    this.isDropdownOpen.set(false);
+  // onVisit(bookmark: Bookmark): void {
+  //   this.handleOnVisit.emit(bookmark.id);
+  // }
+
+  navigateToTag(tagId: string, tagName: string): void {
+    this.tagClick.emit({ id: tagId, name: tagName });
+    this.router.navigate([], {
+      queryParams: {
+        tagId,
+        tagName,
+        collectionId: null,
+        collectionName: null,
+      },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  navigateToCollection(collectionId: string, collectionName: string): void {
+    this.collectionClick.emit({ id: collectionId, name: collectionName });
+    this.router.navigate([], {
+      queryParams: {
+        collectionId,
+        collectionName,
+        tagId: null,
+        tagName: null,
+      },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  handleImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    target.style.display = 'none';
   }
 }

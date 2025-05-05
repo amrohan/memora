@@ -19,14 +19,14 @@ export const routes: Routes = [
         path: 'bookmarks',
         loadComponent: () =>
           import('./pages/bookmarks/bookmarks.component').then(
-            (m) => m.BookmarksComponent
+            (m) => m.BookmarksComponent,
           ),
       },
       {
         path: 'search',
         loadComponent: () =>
           import('./pages/search/search.component').then(
-            (m) => m.SearchComponent
+            (m) => m.SearchComponent,
           ),
       },
       {
@@ -36,7 +36,7 @@ export const routes: Routes = [
             path: '',
             loadComponent: () =>
               import('./pages/collections/collections.component').then(
-                (m) => m.CollectionsComponent
+                (m) => m.CollectionsComponent,
               ),
           },
           {
@@ -55,14 +55,14 @@ export const routes: Routes = [
             path: '',
             loadComponent: () =>
               import('./pages/tags/tags.component').then(
-                (m) => m.TagsComponent
+                (m) => m.TagsComponent,
               ),
           },
           {
             path: ':tagId',
             loadComponent: () =>
               import('./pages/tags/tag-detail/tag-detail.component').then(
-                (m) => m.TagDetailComponent
+                (m) => m.TagDetailComponent,
               ),
           },
         ],
@@ -71,7 +71,7 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () =>
           import('./pages/settings/settings.component').then(
-            (m) => m.SettingsComponent
+            (m) => m.SettingsComponent,
           ),
       },
     ],

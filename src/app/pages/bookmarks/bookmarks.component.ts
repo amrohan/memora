@@ -77,7 +77,7 @@ import { ToastService } from '@services/toast.service';
         }
       </div>
 
-      <main class="grid grid-cols-1 sm:grid-cols-2  gap-4 p-4">
+      <main class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4">
         @for (item of data.value()?.data; track item.id) {
         <app-bookmark-card
           [bookmark]="item"
@@ -98,14 +98,17 @@ import { ToastService } from '@services/toast.service';
       <!--Loading    -->
       @if (data.isLoading()) {
       <div
-        class="w-full grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-4 animate-fade"
+        class="w-full grid grid-cols-1 md:grid-cols-3 md:gap-4 gap-4 animate-fade"
       >
-        @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
-        <div class="flex w-full flex-col gap-4">
-          <div class="skeleton h-32 w-full"></div>
-          <div class="skeleton h-4 w-28"></div>
+        @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
+        <div class="flex w-full flex-col gap-2">
+          <div class="skeleton h-10 w-full"></div>
           <div class="skeleton h-4 w-full"></div>
           <div class="skeleton h-4 w-full"></div>
+          <div class=" flex justify-between items-center mt-6">
+            <div class="skeleton h-4 w-28"></div>
+            <div class="skeleton h-4 w-28"></div>
+          </div>
         </div>
         }
       </div>
