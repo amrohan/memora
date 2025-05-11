@@ -1,7 +1,7 @@
 export interface Collection {
   id: string;
   name: string;
-  isSytem: boolean;
+  isSystem: boolean;
   description: string;
   createdAt: Date;
   updatedAt: Date;

@@ -24,7 +24,7 @@ import { Collection } from '@models/collection.model';
           [routerLink]="['/bookmarks']"
           [queryParams]="{
             collectionId: collection().id,
-            collectionName: collection().name
+            collectionName: collection().name,
           }"
           class="flex-shrink-0 mr-3"
         >
@@ -54,7 +54,7 @@ import { Collection } from '@models/collection.model';
           [routerLink]="['/bookmarks']"
           [queryParams]="{
             collectionId: collection().id,
-            collectionName: collection().name
+            collectionName: collection().name,
           }"
           class="flex-grow hover:opacity-80 transition-opacity duration-200"
         >
@@ -82,78 +82,79 @@ import { Collection } from '@models/collection.model';
 
         <!-- Action button on right -->
         <div class="dropdown dropdown-end flex-shrink-0">
-          <button
-            #dropdownTrigger
-            [disabled]="!collection().isSytem"
-            class="btn btn-sm btn-ghost btn-circle disabled:cursor-not-allowed"
-            (click)="toggleDropdown()"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="size-4"
+          @if (!collection().isSystem) {
+            <button
+              #dropdownTrigger
+              class="btn btn-sm btn-ghost btn-circle disabled:cursor-not-allowed"
+              (click)="toggleDropdown()"
             >
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="19" cy="12" r="1" />
-              <circle cx="5" cy="12" r="1" />
-            </svg>
-          </button>
-          @if (isDropdownOpen()) {
-          <ul
-            #dropdownMenu
-            class="dropdown-content menu p-2 w-44 rounded-box bg-base-100 shadow-lg absolute top-10 right-0 z-10 border border-base-200"
-          >
-            <li>
-              <button
-                (click)="handleEdit()"
-                class="flex items-center gap-3 p-2 hover:bg-base-200 rounded-lg transition-all duration-200"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-4"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="size-4"
-                >
-                  <path
-                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-                  />
-                  <path d="m15 5 4 4" />
-                </svg>
-                <span>Rename</span>
-              </button>
-            </li>
-            <li class="mt-1">
-              <button
-                (click)="handleDelete()"
-                class="flex items-center gap-3 p-2 text-error hover:bg-error/10 rounded-lg transition-all duration-200"
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="19" cy="12" r="1" />
+                <circle cx="5" cy="12" r="1" />
+              </svg>
+            </button>
+            @if (isDropdownOpen()) {
+              <ul
+                #dropdownMenu
+                class="dropdown-content menu p-2 w-44 rounded-box bg-base-100 shadow-lg absolute top-10 right-0 z-10 border border-base-200"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="size-4"
-                >
-                  <path d="M3 6h18" />
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                </svg>
-                <span>Remove</span>
-              </button>
-            </li>
-          </ul>
+                <li>
+                  <button
+                    (click)="handleEdit()"
+                    class="flex items-center gap-3 p-2 hover:bg-base-200 rounded-lg transition-all duration-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="size-4"
+                    >
+                      <path
+                        d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                      />
+                      <path d="m15 5 4 4" />
+                    </svg>
+                    <span>Rename</span>
+                  </button>
+                </li>
+                <li class="mt-1">
+                  <button
+                    (click)="handleDelete()"
+                    class="flex items-center gap-3 p-2 text-error hover:bg-error/10 rounded-lg transition-all duration-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="size-4"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                    <span>Remove</span>
+                  </button>
+                </li>
+              </ul>
+            }
           }
         </div>
       </div>
