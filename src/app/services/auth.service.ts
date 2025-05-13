@@ -1,4 +1,3 @@
-// src/app/core/services/auth.service.ts
 import { inject, Injectable } from '@angular/core';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -35,6 +34,21 @@ export class AuthService {
       .post<ApiResponse<any>>(`${this.apiUrl}/auth/register`, model)
       .pipe(
         tap((response) => console.log('Register API Response:', response)), // Log response
+        catchError(this.handleError) // Centralized basic error logging
+      );
+  }
+
+  resetPassword({
+    currentPassword,
+    newPassword,
+  }: any): Observable<ApiResponse<any>> {
+    return this.http
+      .post<ApiResponse<any>>(`${this.apiUrl}/auth/resetpassword`, {
+        currentPassword,
+        newPassword,
+      })
+      .pipe(
+        tap((response) => console.log('Reset Password Response:', response)),
         catchError(this.handleError) // Centralized basic error logging
       );
   }
