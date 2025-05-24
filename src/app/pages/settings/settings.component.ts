@@ -5,17 +5,24 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
+  FormsModule
 } from '@angular/forms';
 import { User } from '@models/user';
 import { ApiResponse } from '@models/ApiResponse';
 import { AuthService } from '@services/auth.service';
 import { AuthStateService } from '@services/auth-state.service';
 import { ToastService } from '@services/toast.service';
+import { ThemeSelectorComponent } from '@shared/components/theme-selector/theme-selector.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    FormsModule,
+    ThemeSelectorComponent
+  ],
   template: `
     <section class="mb-26">
       <div class="flex w-full flex-col">
@@ -183,6 +190,19 @@ import { ToastService } from '@services/toast.service';
                       </button>
                     </div>
                   </form>
+                </fieldset>
+
+                <!-- Theme Selector -->
+                <fieldset class="fieldset mt-8">
+                  <legend class="fieldset-legend text-base md:text-lg">
+                    Appearance
+                  </legend>
+                  <div class="card bg-base-200 p-4 rounded-box">
+                    <app-theme-selector></app-theme-selector>
+                    <div class="text-sm text-base-content/70 mt-2">
+                      Choose your preferred theme for the application.
+                    </div>
+                  </div>
                 </fieldset>
               </div>
             </div>

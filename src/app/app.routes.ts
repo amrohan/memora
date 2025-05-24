@@ -82,6 +82,11 @@ export const routes: Routes = [
       import('./pages/auth/auth.component').then((m) => m.AuthComponent),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./pages/auth/forgot-password/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+  },
+  {
     path: '**',
     redirectTo: 'bookmarks',
     pathMatch: 'full',

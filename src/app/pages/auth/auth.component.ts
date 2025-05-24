@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService, LoginSuccessData } from '@services/auth.service';
 import { AuthStateService } from '@services/auth-state.service';
@@ -9,7 +9,7 @@ import { ApiResponse, ApiResponseError, ApiError } from '@models/ApiResponse';
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   template: `
     <div
       class="min-h-screen bg-gradient-to-br from-base-200 to-base-300 flex items-center justify-center p-4"
@@ -246,7 +246,7 @@ import { ApiResponse, ApiResponseError, ApiError } from '@models/ApiResponse';
                 </div>
                 <label class="label">
                   <a
-                    href="#"
+                    [routerLink]="['/forgot-password']"
                     class="label-text-alt link link-hover link-primary"
                   >
                     Forgot password?
