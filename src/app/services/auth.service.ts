@@ -60,6 +60,17 @@ export class AuthService {
     return this.http.post<ApiResponse<User>>(`${this.apiUrl}/user`, model);
   }
 
+  // Forgot password request
+  forgotPassword(email: string): Observable<ApiResponse<{ message: string }>> {
+    return this.http.post<ApiResponse<{ message: string }>>(
+      `${this.apiUrl}/auth/forgot-password`,
+      { email }
+    ).pipe(
+      tap((response) => console.log('Forgot Password Response:', response)),
+      catchError(this.handleError)
+    );
+  }
+
   // Basic error handler (can be expanded)
   private handleError(error: HttpErrorResponse) {
     console.error('API Error:', error);
