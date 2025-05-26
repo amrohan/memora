@@ -34,13 +34,10 @@ type ProcessingState = 'loading' | 'success' | 'error' | 'info';
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
-              <h2 class="card-title text-2xl text-success">Bookmark Saved!</h2>
+              <h2 class="card-title text-2xl ">Bookmark Saved!</h2>
               <p class="text-base-content/70">
                 Your content has been successfully saved as a bookmark.
               </p>
-              <div class="w-full">
-                <div class="progress progress-success w-full"></div>
-              </div>
             </div>
           }
 
