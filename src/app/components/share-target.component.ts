@@ -26,7 +26,8 @@ export class ShareTargetComponent implements OnInit, OnDestroy {
         const title = params.get('title');
         const text = params.get('text');
 
-        const hasShareParameters = params.has('url') || params.has('title') || params.has('text');
+        const hasShareParameters =
+          params.has('url') || params.has('title') || params.has('text');
 
         if (hasShareParameters) {
           if (url) {
@@ -44,12 +45,17 @@ export class ShareTargetComponent implements OnInit, OnDestroy {
                   this.router.navigate(['/bookmarks']);
                 },
                 error: (error) => {
-                  this.toast.error('Error saving bookmark: ' + (error.message || 'Unknown error'));
+                  this.toast.error(
+                    'Error saving bookmark: ' +
+                    (error.message || 'Unknown error'),
+                  );
                   this.router.navigate(['/bookmarks']);
                 },
               });
           } else {
-            this.toast.info('To save a bookmark, please share a URL.');
+            this.toast.info(
+              ` To save a bookmark, text ${text}.title:${title}, url: ${url}`,
+            );
             this.router.navigate(['/bookmarks']);
           }
         } else {
