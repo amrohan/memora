@@ -4,17 +4,18 @@ import { authGuard } from '@core/guards/auth.guard';
 import { MainLayoutComponent } from '@core/layout/main-layout/main-layout.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'bookmarks',
-  },
   { path: 'share-target', component: ShareTargetComponent },
+
   {
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
     children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'bookmarks',
+      },
       {
         path: 'bookmarks',
         loadComponent: () =>
@@ -76,6 +77,7 @@ export const routes: Routes = [
       },
     ],
   },
+
   {
     path: 'auth',
     loadComponent: () =>
@@ -84,13 +86,12 @@ export const routes: Routes = [
   {
     path: 'forgot-password',
     loadComponent: () =>
-      import('./pages/auth/forgot-password.component').then(
-        (m) => m.ForgotPasswordComponent,
+      import('./pages/auth/forgot-password.component').then((m) => m.ForgotPasswordComponent,
       ),
   },
+
   {
     path: '**',
-    redirectTo: 'bookmarks',
-    pathMatch: 'full',
+    redirectTo: 'bookmarks', pathMatch: 'full',
   },
 ];

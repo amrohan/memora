@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-share-target',
-  template: `<p>Adding bookmarks</p>`,
+  template: `<p>Processing shared content...</p>`,
 })
 export class ShareTargetComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -26,28 +26,34 @@ export class ShareTargetComponent implements OnInit, OnDestroy {
         const title = params.get('title');
         const text = params.get('text');
 
-        if (url) {
-          const newBookmark: Partial<Bookmark> = {
-            url: url,
-            title: title || url,
-            description: text || '',
-          };
+        const hasShareParameters = params.has('url') || params.has('title') || params.has('text');
 
-          this.bookmarkService
-            .createBookmark(newBookmark as Bookmark)
-            .subscribe({
-              next: (response) => {
-                console.log('Bookmark saved successfully via share:', response);
-                this.router.navigate(['/']);
-              },
-              error: (error) => {
-                console.error('Error saving bookmark via share:', error);
-                this.toast.error('Error saving bookmark via share:', error);
-                this.router.navigate(['/']);
-              },
-            });
+        if (hasShareParameters) {
+          if (url) {
+            const newBookmark: Partial<Bookmark> = {
+              url: url,
+              title: title || url,
+              description: text || '',
+            };
+
+            this.bookmarkService
+              .createBookmark(newBookmark as Bookmark)
+              .subscribe({
+                next: (response) => {
+                  this.toast.success('Bookmark added successfully!');
+                  this.router.navigate(['/bookmarks']);
+                },
+                error: (error) => {
+                  this.toast.error('Error saving bookmark: ' + (error.message || 'Unknown error'));
+                  this.router.navigate(['/bookmarks']);
+                },
+              });
+          } else {
+            this.toast.info('To save a bookmark, please share a URL.');
+            this.router.navigate(['/bookmarks']);
+          }
         } else {
-          this.router.navigate(['/']);
+          this.router.navigate(['/bookmarks']);
         }
       });
   }
