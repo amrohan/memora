@@ -1,59 +1,105 @@
-# Issue
+# Memora
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.3.
+Memora is a web application designed to manage bookmarks, collections, and tags efficiently. It provides a user-friendly interface for organizing and accessing your saved content.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Authentication**: Secure login and registration system.
+- **Bookmark Management**: Add, edit, and delete bookmarks.
+- **Collections**: Organize bookmarks into collections.
+- **Tags**: Add tags to bookmarks for better categorization.
+- **Search**: Quickly find bookmarks using the search feature.
+- **Responsive Design**: Optimized for both desktop and mobile devices.
 
-```bash
-ng serve
+## Project Structure
+
+The project is built using Angular and follows a modular structure:
+
+- `src/app/components`: Reusable UI components.
+- `src/app/core`: Core functionalities like guards, interceptors, and layouts.
+- `src/app/models`: TypeScript models for data structures.
+- `src/app/pages`: Page components for different views (e.g., Dashboard, Bookmarks, Collections).
+- `src/app/services`: Services for handling API calls and state management.
+- `src/environments`: Environment-specific configurations.
+
+## Prerequisites
+
+Before setting up the project, ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [PNPM](https://pnpm.io/) (Package manager)
+
+## Setup Instructions
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   cd memora
+   ```
+
+2. Install dependencies using PNPM:
+
+   ```bash
+   pnpm install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   pnpm start
+   ```
+
+   The application will be available at `http://localhost:4200`.
+
+4. Run tests (optional):
+   ```bash
+   pnpm test
+   ```
+
+## Configuration
+
+### Environment Variables
+
+#### Development
+
+Set the following variables in `src/environments/environment.development.ts`:
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: "http://localhost:3000/api", //  where your backend application is runing...
+  authTokenKey: "auth_token",
+  enableDebug: true,
+};
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+#### Production
 
-## Code scaffolding
+Create a `.env` file in the root directory and set the following variables:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+API_URL=https://your-production-api.com/api
+AUTH_TOKEN_KEY=auth_token
+ENABLE_DEBUG=false
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Additional Configuration
+
+- Update environment-specific settings in `src/environments/`.
+- Modify `angular.json` for build and project configurations.
+
+## Deployment
+
+To build the project for production:
 
 ```bash
-ng generate --help
+pnpm build
 ```
 
-## Building
+The production-ready files will be available in the `dist/` directory.
 
-To build the project run:
+## License
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This project is licensed under the MIT License. See the LICENSE file for details.
+\*\*
