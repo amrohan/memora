@@ -24,7 +24,7 @@ export class AuthService {
       .post<ApiResponse<LoginSuccessData>>(`${this.apiUrl}/auth/login`, model)
       .pipe(
         tap((response) => console.log('Login API Response:', response)), // Log response
-        catchError(this.handleError) // Centralized basic error logging
+        catchError(this.handleError), // Centralized basic error logging
       );
   }
 
@@ -34,7 +34,7 @@ export class AuthService {
       .post<ApiResponse<any>>(`${this.apiUrl}/auth/register`, model)
       .pipe(
         tap((response) => console.log('Register API Response:', response)), // Log response
-        catchError(this.handleError) // Centralized basic error logging
+        catchError(this.handleError), // Centralized basic error logging
       );
   }
 
@@ -49,7 +49,18 @@ export class AuthService {
       })
       .pipe(
         tap((response) => console.log('Reset Password Response:', response)),
-        catchError(this.handleError) // Centralized basic error logging
+        catchError(this.handleError), // Centralized basic error logging
+      );
+  }
+
+  forgotPassword(email: string): Observable<ApiResponse<{ message: string }>> {
+    return this.http
+      .post<
+        ApiResponse<{ message: string }>
+      >(`${this.apiUrl}/auth/forgot-password`, { email })
+      .pipe(
+        tap((response) => console.log('Forgot Password Response:', response)),
+        catchError(this.handleError),
       );
   }
 
