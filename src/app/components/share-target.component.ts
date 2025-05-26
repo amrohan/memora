@@ -22,19 +22,15 @@ export class ShareTargetComponent implements OnInit, OnDestroy {
     this.route.queryParamMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        const url = params.get('url');
-        const title = params.get('title');
         const text = params.get('text');
 
         const hasShareParameters =
           params.has('url') || params.has('title') || params.has('text');
 
         if (hasShareParameters) {
-          if (url) {
+          if (text) {
             const newBookmark: Partial<Bookmark> = {
-              url: url,
-              title: title || url,
-              description: text || '',
+              url: text,
             };
 
             this.bookmarkService
@@ -54,7 +50,8 @@ export class ShareTargetComponent implements OnInit, OnDestroy {
               });
           } else {
             this.toast.info(
-              ` To save a bookmark, text ${text}.title:${title}, url: ${url}`,
+              ` To save a bookmark, please share a URL`,
+
             );
             this.router.navigate(['/bookmarks']);
           }
