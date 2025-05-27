@@ -77,7 +77,7 @@ import { ToastService } from '@services/toast.service';
         }
       </div>
 
-      <main class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4">
+      <main class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         @for (item of data.value()?.data; track item.id) {
         <app-bookmark-card
           [bookmark]="item"
@@ -203,8 +203,7 @@ export class BookmarksComponent implements OnInit {
 
   data = httpResource<ApiResponse<Bookmark[]>>(
     () =>
-      `${
-        environment.API_URL
+      `${environment.API_URL
       }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 
