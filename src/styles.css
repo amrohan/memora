@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  /* themes: all; */
-  themes: synthwave --default;
+  themes: all;
+  /* themes: dracula --default; */
 }
 
 .animate-fade {

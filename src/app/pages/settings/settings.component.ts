@@ -12,11 +12,12 @@ import { AuthService } from '@services/auth.service';
 import { AuthStateService } from '@services/auth-state.service';
 import { ToastService } from '@services/toast.service';
 import { HeaderComponent } from '../../components/header/header.component';
+import { ThemeSelectorComponent } from '@components/theme-selector.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeaderComponent],
+  imports: [ReactiveFormsModule, HeaderComponent, ThemeSelectorComponent],
   template: `
     <section class="mb-26">
       <app-header headerName="Settings" />
@@ -102,6 +103,13 @@ import { HeaderComponent } from '../../components/header/header.component';
           </fieldset>
         </div>
 
+        <!-- Themes -->
+        <input type="radio" name="my_tabs_2" class="tab" aria-label="Themes" />
+        <div class="tab-content bg-base-100">
+          <app-theme-selector />
+        </div>
+
+        <!-- Authentication -->
         <input
           type="radio"
           name="my_tabs_2"
@@ -202,15 +210,16 @@ import { HeaderComponent } from '../../components/header/header.component';
               </div>
             </form>
           </fieldset>
-        </div>
-      </div>
-      <div class="flex w-full flex-col">
-        <div class="divider">OR</div>
 
-        <div class="card rounded-box grid h-20 place-items-center">
-          <button class="btn btn-active btn-error" (click)="authState.logout()">
-            Logout
-          </button>
+          <div class="flex w-full flex-col">
+            <div class="divider">OR</div>
+
+            <div class="card rounded-box grid h-20 place-items-center">
+              <button class="btn btn-error " (click)="authState.logout()">
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
