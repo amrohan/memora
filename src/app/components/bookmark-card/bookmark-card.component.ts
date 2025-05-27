@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
       [class.pulse]="isLoading()"
     >
       <div class="card-body p-4 pb-3 gap-1">
-        <div class="flex items-center justify-between">
+        <div class="flex items-start justify-between">
           <div class="flex items-center gap-2 flex-1 min-w-0">
             @if (bookmark().imageUrl) {
             <div class="relative flex-shrink-0">
@@ -41,7 +41,7 @@ import { Router } from '@angular/router';
             </div>
             } @else {
             <div
-              class="w-6 h-6 rounded-sm flex items-center justify-center bg-base-200 text-base-content flex-shrink-0"
+              class="w-6 h-6 rounded-sm flex items-center justify-start sbg-base-200 text-base-content flex-shrink-0"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +62,8 @@ import { Router } from '@angular/router';
               </svg>
             </div>
             }
-            <div class="text-sm font-medium line-clamp-1">
+            <div class="flex flex-col items-start ">
+            <div class="text-base font-medium line-clamp-1">
               <a
                 [href]="bookmark().url"
                 target="_blank"
@@ -72,15 +73,25 @@ import { Router } from '@angular/router';
                 {{ bookmark().title || 'Untitled' }}
               </a>
             </div>
+              <!-- Link -->
+              <a
+                [href]="bookmark().url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm hover:text-accent truncate inline-block text-base-content/70 ml-0.5"
+              >
+                {{ formattedUrl() }}
+              </a>
+            </div>
           </div>
 
-          <div class="flex gap-1">
+          <div class="flex gap-1 items-start">
             <div #dropdownTrigger class=" relative">
               <button
                 (click)="isDropdownOpen.set(!isDropdownOpen())"
                 tabindex="0"
                 role="button"
-                class="btn btn-ghost btn-xs btn-square opacity-40 hover:opacity-100"
+                class="btn btn-ghost btn-sm btn-square opacity-70 hover:opacity-100"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -116,10 +127,10 @@ import { Router } from '@angular/router';
         </div>
 
         <!-- Card content -->
-        <div class="mt-1 mb-1">
+        <div class="mt-2.5 mb-1.5">
           <a [href]="bookmark().url" target="_blank" rel="noopener noreferrer">
             @if (bookmark().description) {
-            <p class="text-xs text-base-content/70 line-clamp-2 min-h-8">
+            <p class="text-sm text-base-content line-clamp-2 min-h-10">
               {{ bookmark().description }}
             </p>
             } @else {
@@ -130,55 +141,11 @@ import { Router } from '@angular/router';
           </a>
         </div>
 
-        <!-- Link -->
-        <a
-          [href]="bookmark().url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-xs text-primary/80 hover:text-primary truncate inline-block"
-        >
-          {{ formattedUrl() }}
-        </a>
-
         <!-- Tags as clickable buttons -->
-        <div class="mt-1">
-          <!-- Collection - if present, make it clickable -->
-          @if (bookmark().collections) { @for (item of bookmark().collections;
-          track item.id) {
-          <div class="mt-1">
-            <button
-              class=" cursor-pointer text-xs flex items-center gap-1 text-secondary/90 hover:text-secondary transition-colors"
-              (click)="navigateToCollection(item.id, item.name)"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="size-3 text-primary relative"
-              >
-                <path
-                  d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-                />
-              </svg>
-              {{ item.name }}
-            </button>
-          </div>
-          } }
-        </div>
-      </div>
-
-      <!-- Card footer -->
-      <div
-        class="flex items-center justify-between bg-base-100 px-4 py-2 border-t border-base-200"
-      >
-        <div class="flex flex-wrap gap-1 max-w-48 overflow-hidden">
+        <div class="mt-1 h-6">
           @for (tag of bookmark().tags; track tag.id) {
           <button
-            class="badge badge-sm badge-ghost text-xs hover:bg-base-200 cursor-pointer rounded-sm"
+            class="badge badge-sm badge-ghost text-xs hover:bg-base-200 cursor-pointer "
             (click)="navigateToTag(tag.id, tag.name)"
           >
             # {{ tag.name }}
@@ -205,10 +172,44 @@ import { Router } from '@angular/router';
           </div>
           }
         </div>
+      </div>
+
+      <!-- Card footer -->
+      <div
+        class="flex items-center justify-between bg-base-100 px-4 py-2 border-t border-base-200"
+      >
+        <div class="flex flex-wrap gap-1 max-w-48 overflow-hidden">
+          <!-- Collection - if present, make it clickable -->
+          @if (bookmark().collections) { @for (item of bookmark().collections;
+          track item.id) {
+          <div class="mt-1">
+            <button
+              class="cursor-pointer text-sm flex items-center gap-1 hover:text-secondary transition-colors badge badge-ghost badge-sm"
+              (click)="navigateToCollection(item.id, item.name)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-3 relative"
+              >
+                <path
+                  d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+                />
+              </svg>
+              {{ item.name }}
+            </button>
+          </div>
+          } }
+        </div>
 
         <!-- Date -->
         <div class="text-xs text-base-content/50">
-          {{ bookmark().createdAt | date : 'MMM d' }}
+          {{ bookmark().createdAt | date : 'MMM d yyyy' }}
         </div>
       </div>
 

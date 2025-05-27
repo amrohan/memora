@@ -47,7 +47,7 @@ import { ToastService } from '@services/toast.service';
             [(ngModel)]="searchTerm"
           />
         </label>
-        <button class="btn btn-neutral" (click)="openCustomModal()">Add</button>
+        <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
       </div>
 
       <!-- Filter -->
@@ -77,7 +77,7 @@ import { ToastService } from '@services/toast.service';
         }
       </div>
 
-      <main class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <main class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         @for (item of data.value()?.data; track item.id) {
         <app-bookmark-card
           [bookmark]="item"
