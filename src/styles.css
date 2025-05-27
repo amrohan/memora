@@ -2,7 +2,7 @@
 
 @plugin "daisyui" {
   /* themes: all; */
-  themes: lofi --default;
+  themes: synthwave --default;
 }
 
 .animate-fade {
