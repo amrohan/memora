@@ -1,8 +1,8 @@
 {
   "name": "Memora",
   "short_name": "Memora",
-  "theme_color": "#ffffff",
-  "background_color": "#fff",
+  "theme_color": "#121212",
+  "background_color": "#121212",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
