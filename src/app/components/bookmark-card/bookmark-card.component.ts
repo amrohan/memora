@@ -134,7 +134,7 @@ import { Router } from '@angular/router';
               {{ bookmark().description }}
             </p>
             } @else {
-            <p class="text-xs text-base-content/50 line-clamp-2 min-h-8 italic">
+            <p class="text-xs text-base-content/50 line-clamp-2 min-h-10 italic">
               No description
             </p>
             }
