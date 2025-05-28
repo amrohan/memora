@@ -97,7 +97,7 @@ import { Tag } from '@models/tags.model';
           @if (isDropdownOpen()) {
           <ul
             #dropdownMenu
-            class="dropdown-content menu p-2 w-44 rounded-box bg-base-100 shadow-lg absolute top-10 right-0 z-10 border border-base-200"
+            class="dropdown-content menu p-2 w-44 rounded-box bg-base-100 shadow-lg absolute top-10 right-0 z-10 border border-base-content/20"
           >
             <li>
               <button
