@@ -143,7 +143,7 @@ import { ToastService } from '@services/toast.service';
 
               <div class="form-control w-full mb-4">
                 <label class="label">
-                  <span class="label-text text-sm font-medium">Collection</span>
+                  <span class="label-text text-sm font-medium mb-1">Collection</span>
                 </label>
                 <select
                   class="select select-bordered w-full"
@@ -188,7 +188,7 @@ import { ToastService } from '@services/toast.service';
                   <span class="label-text text-sm font-medium">Tags</span>
                 </label>
 
-                <div class="flex flex-wrap gap-2 mb-2 min-h-[2rem]">
+                <div class="flex flex-wrap gap-2 my-2 min-h-[2rem]">
                   @for (tag of selectedTags(); track tag.id) {
                     <div class="badge badge-primary gap-1 items-center">
                       {{ tag.name }}

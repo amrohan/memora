@@ -175,8 +175,7 @@ import { ToastService } from '@services/toast.service';
       (drawerClosed)="handleDrawerClosed()"
       (itemSaved)="handleItemSaved($event)"
       (itemVisit)="handleItemVisit($event)"
-    >
-    </app-drawer>
+    />
     }
 
     <!-- Loading screen      -->

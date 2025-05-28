@@ -112,11 +112,11 @@ import { Router } from '@angular/router';
               <ul
                 #dropdownMenu
                 tabindex="0"
-                class="animte-fade z-10 menu absolute p-2 shadow bg-base-100 rounded-box w-52 -left-48"
+                class="animte-fade z-10 menu w-44 absolute p-2 shadow bg-base-100 rounded-box -left-38 border border-base-content/20"
               >
-                <li><a (click)="onEdit(bookmark())">Edit</a></li>
+                <li><a class="p-2.5 md:p-2" (click)="onEdit(bookmark())">Edit</a></li>
                 <li>
-                  <a (click)="onDelete(bookmark())" class="text-error"
+                  <a (click)="onDelete(bookmark())" class="text-error p-2.5 md:p-2"
                     >Delete</a
                   >
                 </li>
