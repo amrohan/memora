@@ -51,8 +51,9 @@ import { ToastService } from '@services/toast.service';
       </div>
 
       <!-- Filter -->
-      <div>
-        @if (collectionName() || tagName()) {
+      @if (collectionName() || tagName()) {
+      <div class="h-12 flex justify-start items-center gap-2">
+       <p class="text-base-content text-sm">Filters:</p>
         <button
           class="btn btn-active btn-primary btn-xs"
           (click)="clearQueryParams()"
@@ -74,8 +75,8 @@ import { ToastService } from '@services/toast.service';
             <path d="m6 6 12 12" />
           </svg>
         </button>
-        }
       </div>
+      }
 
       <main class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         @for (item of data.value()?.data; track item.id) {

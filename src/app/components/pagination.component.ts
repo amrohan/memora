@@ -4,7 +4,7 @@ import { ApiResponseMetadata } from '@models/ApiResponse';
   selector: 'app-pagination',
   template: `
     @if (totalPages() > 1) {
-    <div class="mx-auto flex items-center justify-center">
+    <div class="mx-auto flex items-center justify-center h-24">
       <div class="join">
         <!-- Previous Button -->
         <button
@@ -49,7 +49,7 @@ import { ApiResponseMetadata } from '@models/ApiResponse';
     </div>
 
     } @else if (totalCount() > 0) {
-    <div class="text-center text-sm text-gray-500">
+    <div class="flex justify-center items-center text-sm text-base-content/70 h-24">
       All items shown on this page.
     </div>
     }

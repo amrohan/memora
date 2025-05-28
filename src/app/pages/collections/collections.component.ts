@@ -62,7 +62,7 @@ import { ToastService } from '@services/toast.service';
       </article>
 
       @if (data.value()?.data?.length === 0) {
-        <p class="text-center">No collections found</p>
+        <p class="text-center text-base-content">No collections found</p>
       }
       @if (validationError() !== null) {
         <p class="text-center text-red-500">
