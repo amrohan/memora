@@ -47,7 +47,23 @@ import { ToastService } from '@services/toast.service';
             placeholder="Search collection..."
           />
         </label>
-        <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
+        <button class="btn btn-primary" (click)="openCustomModal()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-4 text-current"
+            >
+              <path
+                d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+              />
+            </svg>
+          Add
+        </button>
       </div>
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"

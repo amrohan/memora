@@ -47,7 +47,10 @@ import { ToastService } from '@services/toast.service';
             [(ngModel)]="searchTerm"
           />
         </label>
-        <button class="btn btn-primary" (click)="openCustomModal()">Add</button>
+        <button class="btn btn-primary" (click)="openCustomModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 text-current"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><line x1="12" x2="12" y1="7" y2="13"/><line x1="15" x2="9" y1="10" y2="10"/></svg>
+          Add
+        </button>
       </div>
 
       <!-- Filter -->
@@ -85,18 +88,20 @@ import { ToastService } from '@services/toast.service';
           (handleOnEdit)="handleBookmarkEdit($event)"
           (handleOnDelete)="bookmarkDelete($event)"
         />
-        } @if (data.value()?.data?.length === 0) {
+        }
+      </main>
+
+        @if (data.value()?.data?.length === 0) {
         <div
-          class="col-span-1 sm:col-span-2 h-52 flex justify-center items-center"
+          class="col-span-1 sm:col-span-2 h-96 flex justify-center items-center"
         >
           <p class="text-center text-gray-500 text-sm">
             No recods found. Please add a bookmark.
           </p>
         </div>
         }
-      </main>
 
-      <!--Loading    -->
+      <!--Loading -->
       @if (data.isLoading()) {
       <div
         class="w-full grid grid-cols-1 md:grid-cols-3 md:gap-4 gap-4 animate-fade"
