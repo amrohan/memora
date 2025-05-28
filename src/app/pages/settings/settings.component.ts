@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -13,6 +12,7 @@ import { AuthStateService } from '@services/auth-state.service';
 import { ToastService } from '@services/toast.service';
 import { HeaderComponent } from '../../components/header/header.component';
 import { ThemeSelectorComponent } from '@components/theme-selector.component';
+import { TabService } from '@services/tab.service';
 
 @Component({
   selector: 'app-settings',
@@ -28,7 +28,8 @@ import { ThemeSelectorComponent } from '@components/theme-selector.component';
           name="my_tabs_2"
           class="tab"
           aria-label="Profile"
-          checked="checked"
+          [checked]="this.tabService.selectedTab() === 'Profile'"
+          (change)="this.tabService.setSelectedTab('Profile')"
         />
         <div class="tab-content bg-base-100 p-2">
           <fieldset class="fieldset">
@@ -104,7 +105,10 @@ import { ThemeSelectorComponent } from '@components/theme-selector.component';
         </div>
 
         <!-- Themes -->
-        <input type="radio" name="my_tabs_2" class="tab" aria-label="Themes" />
+        <input type="radio" name="my_tabs_2" class="tab" aria-label="Themes"
+          [checked]="this.tabService.selectedTab() === 'Themes'"
+          (change)="this.tabService.setSelectedTab('Themes')"
+        />
         <div class="tab-content bg-base-100">
           <app-theme-selector />
         </div>
@@ -115,6 +119,8 @@ import { ThemeSelectorComponent } from '@components/theme-selector.component';
           name="my_tabs_2"
           class="tab"
           aria-label="Authentication"
+          [checked]="this.tabService.selectedTab() === 'Authentication'"
+          (change)="this.tabService.setSelectedTab('Authentication')"
         />
         <div class="tab-content bg-base-100 p-2">
           <!-- Change Password -->
@@ -230,9 +236,11 @@ export class SettingsComponent implements OnInit {
   private authService = inject(AuthService);
   public authState = inject(AuthStateService);
   public toast = inject(ToastService);
+  public tabService = inject(TabService);
 
   // Signals
   isLoading = signal<boolean>(false);
+
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   fieldErrors = signal<{ [key: string]: string } | null>(null);

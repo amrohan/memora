@@ -10,7 +10,7 @@ export interface Theme {
 })
 export class ThemeService {
   private readonly THEME_STORAGE_KEY = 'selected-theme';
-  private readonly DEFAULT_THEME = 'light';
+  private readonly DEFAULT_THEME = 'black';
 
   private themes: Theme[] = [
     { name: 'light', displayName: 'Light' },
