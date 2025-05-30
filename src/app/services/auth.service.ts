@@ -1,6 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, tap, catchError, throwError } from 'rxjs';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpContext,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Auth } from '@models/auth';
 import { ApiResponse, ApiResponseError } from '@models/ApiResponse';
@@ -10,6 +15,13 @@ import { AuthUser, User } from '@models/user';
 export interface LoginSuccessData {
   token: string;
   user: AuthUser;
+}
+
+// Interface for reset password with token
+export interface ResetPasswordWithToken {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 @Injectable({
@@ -49,7 +61,7 @@ export class AuthService {
       })
       .pipe(
         tap((response) => console.log('Reset Password Response:', response)),
-        catchError(this.handleError), // Centralized basic error logging
+        catchError(this.handleError),
       );
   }
 
@@ -60,6 +72,44 @@ export class AuthService {
       >(`${this.apiUrl}/auth/forgot-password`, { email })
       .pipe(
         tap((response) => console.log('Forgot Password Response:', response)),
+        catchError(this.handleError),
+      );
+  }
+
+  resetPasswordWithToken(
+    resetData: ResetPasswordWithToken,
+  ): Observable<ApiResponse<{ message: string }>> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http
+      .post<
+        ApiResponse<{ message: string }>
+      >(`${this.apiUrl}/auth/reset-password-token`, resetData, { headers })
+      .pipe(
+        tap((response) =>
+          console.log('Reset Password with Token Response:', response),
+        ),
+        catchError(this.handleError),
+      );
+  }
+
+  validateResetToken(
+    token: string,
+  ): Observable<ApiResponse<{ valid: boolean; email?: string }>> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    const body = { token };
+    return this.http
+      .post<
+        ApiResponse<{ valid: boolean; email?: string }>
+      >(`${this.apiUrl}/auth/validate-reset-token`, body, { headers })
+      .pipe(
+        tap((response) =>
+          console.log('Validate Reset Token Response:', response),
+        ),
         catchError(this.handleError),
       );
   }

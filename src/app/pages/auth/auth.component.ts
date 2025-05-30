@@ -249,7 +249,7 @@ import { ApiResponse, ApiResponseError, ApiError } from '@models/ApiResponse';
                   <label class="label">
                     <a
                       [routerLink]="['/forgot-password']"
-                      class="label-text-alt link link-hover link-primary"
+                      class="label-text-alt link link-hover mt-2 hover:text-accent"
                     >
                       Forgot password?
                     </a>
@@ -720,8 +720,8 @@ export class AuthComponent implements OnInit {
           } else {
             this.authError.set(
               this.formatApiErrors(response.errors) ||
-                response.message ||
-                'Login failed.',
+              response.message ||
+              'Login failed.',
             );
           }
         },
@@ -730,8 +730,8 @@ export class AuthComponent implements OnInit {
           console.error('Login error:', err);
           this.authError.set(
             this.formatApiErrors(err.errors) ||
-              err.message ||
-              'An error occurred during login.',
+            err.message ||
+            'An error occurred during login.',
           );
         },
       });
@@ -769,16 +769,16 @@ export class AuthComponent implements OnInit {
           } else {
             this.authError.set(
               this.formatApiErrors(response.errors) ||
-                response.message ||
-                'Registration failed.',
+              response.message ||
+              'Registration failed.',
             );
           }
         },
         error: (err: ApiResponseError) => {
           this.authError.set(
             this.formatApiErrors(err.errors) ||
-              err.message ||
-              'An error occurred during registration.',
+            err.message ||
+            'An error occurred during registration.',
           );
         },
       });

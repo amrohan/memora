@@ -110,7 +110,7 @@ import { finalize } from 'rxjs';
         <!-- Back to Login Link -->
         <div class="text-center mt-4">
           <a
-            class="link link-primary text-sm"
+            class="link link-accent hover:link-primary text-sm"
             (click)="onBackToLogin()"
             [class.pointer-events-none]="isLoading"
           >
