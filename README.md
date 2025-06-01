@@ -1,40 +1,41 @@
 # Memora
 
-Memora is a web application designed to manage bookmarks, collections, and tags efficiently. It provides a user-friendly interface for organizing and accessing your saved content.
+Memora is a modern web application designed to help you efficiently manage bookmarks, collections, and tags. It features a clean, intuitive interface that makes organizing and accessing your saved content effortless.
 
 ## Features
 
 - **Authentication**: Secure login and registration system.
-- **Bookmark Management**: Add, edit, and delete bookmarks.
-- **Collections**: Organize bookmarks into collections.
-- **Tags**: Add tags to bookmarks for better categorization.
-- **Search**: Quickly find bookmarks using the search feature.
-- **Responsive Design**: Optimized for both desktop and mobile devices.
+- **Bookmark Management**: Add, edit, and delete bookmarks with ease.
+- **Collections**: Group bookmarks into customizable collections.
+- **Tags**: Use tags for flexible and enhanced categorization.
+- **Search**: Quickly locate bookmarks using the powerful search functionality.
+- **Link Sharing to Memora PWA**: Users can share links directly to the Memora Progressive Web App from their browser or mobile device, and the shared links get saved automatically in the app.
+- **Responsive Design**: Fully optimized for both desktop and mobile devices.
 
 ## Project Structure
 
-The project is built using Angular and follows a modular structure:
+Built with Angular, the project follows a modular architecture:
 
 - `src/app/components`: Reusable UI components.
-- `src/app/core`: Core functionalities like guards, interceptors, and layouts.
-- `src/app/models`: TypeScript models for data structures.
-- `src/app/pages`: Page components for different views (e.g., Dashboard, Bookmarks, Collections).
-- `src/app/services`: Services for handling API calls and state management.
-- `src/environments`: Environment-specific configurations.
+- `src/app/core`: Core logic including guards, interceptors, and layouts.
+- `src/app/models`: TypeScript models representing data structures.
+- `src/app/pages`: Page-level components (Dashboard, Bookmarks, Collections, etc.).
+- `src/app/services`: Services managing API interactions and application state.
+- `src/environments`: Environment-specific configuration files.
 
 ## Prerequisites
 
-Before setting up the project, ensure you have the following installed:
+Ensure you have the following installed before setting up the project:
 
-- [Node.js](https://nodejs.org/) (v16 or higher)
-- [PNPM](https://pnpm.io/) (Package manager)
+- [Node.js](https://nodejs.org/) (v20 or higher)
+- [PNPM](https://pnpm.io/) (package manager)
 
 ## Setup Instructions
 
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/amrohan/memora
    cd memora
    ```
 
@@ -50,12 +51,7 @@ Before setting up the project, ensure you have the following installed:
    pnpm start
    ```
 
-   The application will be available at `http://localhost:4200`.
-
-4. Run tests (optional):
-   ```bash
-   pnpm test
-   ```
+   Access the app at `http://localhost:4200`.
 
 ## Configuration
 
@@ -63,12 +59,12 @@ Before setting up the project, ensure you have the following installed:
 
 #### Development
 
-Set the following variables in `src/environments/environment.development.ts`:
+Configure development environment variables in `src/environments/environment.development.ts`:
 
 ```typescript
 export const environment = {
   production: false,
-  apiUrl: "http://localhost:3000/api", //  where your backend application is runing...
+  apiUrl: "http://localhost:3000/api", // Backend API endpoint
   authTokenKey: "auth_token",
   enableDebug: true,
 };
@@ -76,7 +72,7 @@ export const environment = {
 
 #### Production
 
-Create a `.env` file in the root directory and set the following variables:
+For production, create a `.env` file in the root directory with:
 
 ```
 API_URL=https://your-production-api.com/api
@@ -84,22 +80,26 @@ AUTH_TOKEN_KEY=auth_token
 ENABLE_DEBUG=false
 ```
 
-### Additional Configuration
+### Additional Notes
 
-- Update environment-specific settings in `src/environments/`.
-- Modify `angular.json` for build and project configurations.
+- Update environment configurations in `src/environments/`.
+- Modify build and project settings in `angular.json` as needed.
 
 ## Deployment
 
-To build the project for production:
+To build for production:
 
 ```bash
 pnpm build
 ```
 
-The production-ready files will be available in the `dist/` directory.
+Production-ready files will be located in the `dist/` directory.
+
+## Backend Repository
+
+The backend API supporting this project is available here:
+[https://github.com/amrohan/memora-backend](https://github.com/amrohan/memora-backend)
 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
-\*\*
