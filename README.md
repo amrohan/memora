@@ -12,6 +12,23 @@ Memora is a modern web application designed to help you efficiently manage bookm
 - **Link Sharing to Memora PWA**: Users can share links directly to the Memora Progressive Web App from their browser or mobile device, and the shared links get saved automatically in the app.
 - **Responsive Design**: Fully optimized for both desktop and mobile devices.
 
+---
+
+## Architectural Overview
+
+Memora employs Angular's component-based architecture to deliver a responsive, maintainable, and scalable user interface. The frontend connects to a dedicated backend API (memora-backend) through RESTful endpoints for all data operations.
+
+### Core Functionalities
+
+- **Secure Authentication**: Uses JWT stored in localStorage with HTTP interceptors injecting tokens into API requests automatically.
+- **Bookmark Management**: Supports full CRUD with real-time UI updates via Angular services.
+- **Collections & Tags**: Implements hierarchical collections and multi-label tagging systems using recursive components and centralized state management.
+- **Search**: Utilizes Angular reactive forms with debounce strategies for instant search results across multiple metadata fields.
+- **PWA Support**: Features offline access, background sync, and native install prompts via Angular service workers.
+- **Web Share API Integration**: Allows sharing bookmarks directly from device share dialogs into the Memora app.
+
+---
+
 ## Project Structure
 
 Built with Angular, the project follows a modular architecture:
@@ -23,14 +40,18 @@ Built with Angular, the project follows a modular architecture:
 - `src/app/services`: Services managing API interactions and application state.
 - `src/environments`: Environment-specific configuration files.
 
-## Prerequisites
+---
 
-Ensure you have the following installed before setting up the project:
+## Development Environment Configuration
+
+### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v20 or higher)
 - [PNPM](https://pnpm.io/) (package manager)
+- Angular CLI (v17+)
+- TypeScript (v5+)
 
-## Setup Instructions
+### Setup Instructions
 
 1. Clone the repository:
 
@@ -45,7 +66,18 @@ Ensure you have the following installed before setting up the project:
    pnpm install
    ```
 
-3. Start the development server:
+3. Configure environment variables for development:
+
+   ```typescript
+   // src/environments/environment.development.ts
+   export const environment = {
+     production: false,
+     apiUrl: "http://localhost:3000/api",
+     enableDebug: true,
+   };
+   ```
+
+4. Start the development server with hot reload:
 
    ```bash
    pnpm start
@@ -53,52 +85,111 @@ Ensure you have the following installed before setting up the project:
 
    Access the app at `http://localhost:4200`.
 
-## Configuration
+### Production Deployment Configuration
 
-### Environment Variables
+1. Create `.env` file with production variables:
 
-#### Development
+   ```
+   API_URL=https://your-production-api.com/api
+   ENABLE_DEBUG=false
+   ```
 
-Configure development environment variables in `src/environments/environment.development.ts`:
+2. Build optimized production bundle:
+
+   ```bash
+   pnpm build
+   ```
+
+3. Deploy the generated `dist/memora` directory to your hosting platform.
+
+---
+
+## State Management Strategy
+
+Memora uses service-based state management with RxJS observables. Services like `BookmarkService` and `CollectionService` cache API data locally to minimize network calls and ensure responsive UI updates.
+
+---
+
+## Advanced Features Implementation
+
+### Progressive Web App (PWA) Functionality
+
+- Offline access to bookmarks via cached API responses.
+- Background synchronization of pending changes.
+- Native-like installation prompts compliant with Lighthouse standards.
+
+### Web Share API Integration
+
+Allows users to share bookmarks from any app or browser directly to Memora:
 
 ```typescript
-export const environment = {
-  production: false,
-  apiUrl: "http://localhost:3000/api", // Backend API endpoint
-  authTokenKey: "auth_token",
-  enableDebug: true,
-};
+async shareBookmark(bookmark: Bookmark) {
+  try {
+    await navigator.share({
+      title: bookmark.title,
+      text: bookmark.description,
+      url: bookmark.url
+    });
+  } catch (error) {
+    console.error('Sharing failed:', error);
+  }
+}
 ```
 
-#### Production
+---
 
-For production, create a `.env` file in the root directory with:
+## Performance Optimization Techniques
 
-```
-API_URL=https://your-production-api.com/api
-AUTH_TOKEN_KEY=auth_token
-ENABLE_DEBUG=false
-```
+- Lazy loading of feature modules.
+- Tree shaking and AOT compilation.
+- Compressed assets and image optimization.
+- Use of OnPush change detection for complex components.
+- Virtual scrolling in lists.
+- Debounced input for search.
 
-### Additional Notes
+---
 
-- Update environment configurations in `src/environments/`.
-- Modify build and project settings in `angular.json` as needed.
+## Testing Strategy
 
-## Deployment
+- **Unit Tests**: Jasmine and Karma with coverage targets.
+- **End-to-End Tests**: Cypress for critical user flows.
+- **Performance Checks**: Lighthouse CI integrated in CI pipelines.
 
-To build for production:
+Run tests using:
 
 ```bash
-pnpm build
+pnpm test
 ```
 
-Production-ready files will be located in the `dist/` directory.
+---
 
 ## Backend Repository
 
 The backend API supporting this project is available here:
 [https://github.com/amrohan/memora-backend](https://github.com/amrohan/memora-backend)
+
+---
+
+## Contribution Guidelines
+
+- Branch from `develop`.
+- Add TypeDoc comments for new features.
+- Write/update unit and E2E tests.
+- Follow Angular ESLint and Prettier style.
+- Use conventional commits for PRs.
+- Ensure CI checks pass before merging.
+
+---
+
+## Roadmap and Future Enhancements
+
+- Browser extension for one-click bookmarking.
+- Collaborative collections with sharing permissions.
+- Full-text search powered by Elasticsearch.
+- Cross-device sync via WebSockets.
+- Analytics dashboard for user insights.
+
+---
 
 ## License
 
