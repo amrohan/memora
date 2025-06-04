@@ -1,9 +1,7 @@
-import { httpResource } from '@angular/common/http';
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '@components/modal/modal.component';
 import { TagsCardComponent } from '@components/tags-card/tags-card.component';
-import { ApiResponse } from '@models/ApiResponse';
 import { Tag } from '@models/tags.model';
 import { TagService } from '@services/tag.service';
 import { environment } from 'src/environments/environment';
@@ -40,36 +38,36 @@ import { ToastService } from '@services/toast.service';
           </svg>
           <input
             type="search"
-            [(ngModel)]="searchTerm"
+            [(ngModel)]="tagsService.searchTerm"
             name="tag"
             required
             placeholder="Search tags..."
           />
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="size-4 text-current"
-            >
-              <path
-                d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
-              />
-              <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
-            </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="size-4 text-current"
+          >
+            <path
+              d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+            />
+            <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+          </svg>
 
-
-          Add</button>
+          Add
+        </button>
       </div>
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @for (item of data.value()?.data; track item.id) {
+        @for (item of tagsService.data.value()?.data; track item.id) {
         <app-tags-card
           [tag]="item"
           (handleOnEdit)="handleTagEdit($event)"
@@ -78,7 +76,7 @@ import { ToastService } from '@services/toast.service';
         }
       </article>
       <!-- Skeleton -->
-      @if (data.isLoading()) {
+      @if (tagsService.data.isLoading()) {
       <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
         @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
         <div class="skeleton h-18 w-full"></div>
@@ -86,8 +84,11 @@ import { ToastService } from '@services/toast.service';
       </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if (data.value()?.metadata) {
-        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+        @if (tagsService.data.value()?.metadata) {
+        <app-pagination
+          [(page)]="tagsService.page"
+          [data]="tagsService.data.value()?.metadata"
+        />
         }
       </div>
     </section>
@@ -118,27 +119,16 @@ import { ToastService } from '@services/toast.service';
   `,
 })
 export class TagsComponent implements OnInit {
-  private tagsService = inject(TagService);
+  tagsService = inject(TagService);
   private toast = inject(ToastService);
 
   isEditing = signal<boolean>(false);
   tagName = signal<string>('');
   setTag = signal<Tag | null>(null);
 
-  searchTerm = signal<string>('');
-  pageSize = signal<number>(20);
-  page = signal<number>(1);
-  refresh = signal(0);
-
-  data = httpResource<ApiResponse<Tag[]>>(
-    () =>
-      `${environment.API_URL
-      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
-  );
-
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   openCustomModal() {
     this.customModal().open();
@@ -184,7 +174,7 @@ export class TagsComponent implements OnInit {
     this.tagsService.createTag(tag).subscribe({
       next: (response) => {
         this.toast.success(response.message);
-        this.data.reload();
+        this.tagsService.data.reload();
       },
       error: (error) => {
         this.toast.error(error.error.message);
@@ -208,7 +198,7 @@ export class TagsComponent implements OnInit {
     };
     this.tagsService.updateTag(tag).subscribe({
       next: (response) => {
-        this.data.reload();
+        this.tagsService.data.reload();
         this.toast.success(response.message);
       },
       error: (error) => {
@@ -221,7 +211,7 @@ export class TagsComponent implements OnInit {
     this.tagsService.deleteTag(tagId).subscribe({
       next: (response) => {
         this.toast.success(response.message);
-        this.data.reload();
+        this.tagsService.data.reload();
       },
       error: (error) => {
         this.toast.error(error.error.message);
