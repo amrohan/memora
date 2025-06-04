@@ -118,9 +118,9 @@ import { TabService } from '@services/tab.service';
           type="radio"
           name="my_tabs_2"
           class="tab"
-          aria-label="Authentication"
-          [checked]="this.tabService.selectedTab() === 'Authentication'"
-          (change)="this.tabService.setSelectedTab('Authentication')"
+          aria-label="Security"
+          [checked]="this.tabService.selectedTab() === 'Security'"
+          (change)="this.tabService.setSelectedTab('Security')"
         />
         <div class="tab-content bg-base-100 p-2">
           <!-- Change Password -->
