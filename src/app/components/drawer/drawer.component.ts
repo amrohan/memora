@@ -320,8 +320,8 @@ export class DrawerComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // this.getAllCollections();
-    // this.getAllTags();
+    this.getAllCollections();
+    this.getAllTags();
     const currentItem = this.itemData();
     this.editableItemData.set(currentItem);
     // set selected tags based on the current item

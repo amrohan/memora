@@ -21,8 +21,7 @@ export class TagService {
 
   data = httpResource<ApiResponse<Tag[]>>(
     () =>
-      `${
-        environment.API_URL
+      `${environment.API_URL
       }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 

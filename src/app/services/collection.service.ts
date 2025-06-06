@@ -14,13 +14,12 @@ export class CollectionService {
 
   collectionsData = signal<Collection[]>([]);
   searchTerm = signal<string>('');
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(20);
   page = signal<number>(1);
 
   public data = httpResource<ApiResponse<Collection[]>>(
     () =>
-      `${
-        environment.API_URL
+      `${environment.API_URL
       }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 

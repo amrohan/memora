@@ -24,8 +24,7 @@ export class BookmarkService {
 
   data = httpResource<ApiResponse<Bookmark[]>>(
     () =>
-      `${
-        environment.API_URL
+      `${environment.API_URL
       }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
   );
 
