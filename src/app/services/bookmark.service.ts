@@ -1,5 +1,5 @@
-import { HttpClient, httpResource } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { ApiResponse } from '@models/ApiResponse';
 import { Bookmark } from '@models/bookmark.model';
 import { Observable } from 'rxjs';
@@ -11,22 +11,6 @@ import { environment } from 'src/environments/environment';
 export class BookmarkService {
   private apiUrl = environment.API_URL;
   private http = inject(HttpClient);
-
-  bookmarksData = signal<Bookmark[]>([]);
-
-  searchTerm = signal<string>('');
-  pageSize = signal<number>(20);
-  page = signal<number>(1);
-  collectionId = signal<string>('');
-  tagId = signal<string>('');
-  collectionName = signal<string>('');
-  tagName = signal<string>('');
-
-  data = httpResource<ApiResponse<Bookmark[]>>(
-    () =>
-      `${environment.API_URL
-      }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
-  );
 
   listBookmarks(): Observable<ApiResponse<Bookmark[]>> {
     return this.http.get<ApiResponse<Bookmark[]>>(`${this.apiUrl}/bookmarks`);

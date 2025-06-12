@@ -1,11 +1,18 @@
-import { Component, inject } from "@angular/core";
-import { RouterLink, RouterLinkActive } from "@angular/router";
-import { CollectionService } from "@services/collection.service";
-import { TagService } from "@services/tag.service";
+import { AsyncPipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ApiResponse } from '@models/ApiResponse';
+import { Collection } from '@models/collection.model';
+import { Tag } from '@models/tags.model';
+import { CollectionService } from '@services/collection.service';
+import { TagService } from '@services/tag.service';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
-  selector: "app-side-nav-bar",
-  imports: [RouterLink, RouterLinkActive],
+  selector: 'app-side-nav-bar',
+  imports: [RouterLink, RouterLinkActive, AsyncPipe],
   template: `
     <aside
       class="menu menu-md bg-base-200 rounded-r-md w-60 h-full fixed top-0 left-0 z-10 shadow-lg"
@@ -88,26 +95,23 @@ import { TagService } from "@services/tag.service";
                   All Collections</a
                 >
               </li>
-              @if (collectionService.data.value()?.data?.length) {
-                <li class="menu-title text-xs px-4 pt-2">
-                  <span>Filter by:</span>
-                </li>
-              }
-              @for (
-                collection of collectionService.data.value()?.data;
-                track collection.id
-              ) {
-                <li>
-                  <a
-                    [routerLink]="['/bookmarks']"
-                    [queryParams]="{
+              @if (collections | async) {
+              <li class="menu-title text-xs px-4 pt-2">
+                <span>Filter by:</span>
+              </li>
+              } @for ( collection of (collections | async)?.data; track
+              collection.id ) {
+              <li>
+                <a
+                  [routerLink]="['/bookmarks']"
+                  [queryParams]="{
                       collectionId: collection.id,
                       collectionName: collection.name,
                     }"
-                    [routerLinkActive]="'bg-base-content/10 text-base-content'"
-                    >{{ collection.name }}</a
-                  >
-                </li>
+                  [routerLinkActive]="'bg-base-content/10 text-base-content'"
+                  >{{ collection.name }}</a
+                >
+              </li>
               }
             </ul>
           </details>
@@ -160,19 +164,18 @@ import { TagService } from "@services/tag.service";
                   All Tags</a
                 >
               </li>
-              @if (tagService.data.value()?.data?.length) {
-                <li class="menu-title text-xs px-4 pt-2">
-                  <span>Filter by:</span>
-                </li>
-              }
-              @for (tag of tagService.data.value()?.data; track tag.id) {
-                <li>
-                  <a
-                    [routerLink]="['/bookmarks']"
-                    [queryParams]="{ tagId: tag.id, tagName: tag.name }"
-                    >{{ tag.name }}</a
-                  >
-                </li>
+              @if (tags | async) {
+              <li class="menu-title text-xs px-4 pt-2">
+                <span>Filter by:</span>
+              </li>
+              } @for (tag of (tags | async)?.data; track tag.id) {
+              <li>
+                <a
+                  [routerLink]="['/bookmarks']"
+                  [queryParams]="{ tagId: tag.id, tagName: tag.name }"
+                  >{{ tag.name }}</a
+                >
+              </li>
               }
             </ul>
           </details>
@@ -207,7 +210,15 @@ import { TagService } from "@services/tag.service";
     </aside>
   `,
 })
-export class SideNavBarComponent {
+export class SideNavBarComponent implements OnInit {
   collectionService = inject(CollectionService);
   tagService = inject(TagService);
+
+  collections!: Observable<ApiResponse<Collection[]>>;
+  tags!: Observable<ApiResponse<Tag[]>>;
+
+  ngOnInit() {
+    this.collections = this.collectionService.getUserCollections();
+    this.tags = this.tagService.listUserTags();
+  }
 }

@@ -1,7 +1,9 @@
+import { httpResource } from '@angular/common/http';
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '@components/modal/modal.component';
 import { TagsCardComponent } from '@components/tags-card/tags-card.component';
+import { ApiResponse } from '@models/ApiResponse';
 import { Tag } from '@models/tags.model';
 import { TagService } from '@services/tag.service';
 import { environment } from 'src/environments/environment';
@@ -38,7 +40,7 @@ import { ToastService } from '@services/toast.service';
           </svg>
           <input
             type="search"
-            [(ngModel)]="tagsService.searchTerm"
+            [(ngModel)]="searchTerm"
             name="tag"
             required
             placeholder="Search tags..."
@@ -67,7 +69,7 @@ import { ToastService } from '@services/toast.service';
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @for (item of tagsService.data.value()?.data; track item.id) {
+        @for (item of data.value()?.data; track item.id) {
         <app-tags-card
           [tag]="item"
           (handleOnEdit)="handleTagEdit($event)"
@@ -76,7 +78,7 @@ import { ToastService } from '@services/toast.service';
         }
       </article>
       <!-- Skeleton -->
-      @if (tagsService.data.isLoading()) {
+      @if (data.isLoading()) {
       <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
         @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
         <div class="skeleton h-18 w-full"></div>
@@ -84,11 +86,8 @@ import { ToastService } from '@services/toast.service';
       </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if (tagsService.data.value()?.metadata) {
-        <app-pagination
-          [(page)]="tagsService.page"
-          [data]="tagsService.data.value()?.metadata"
-        />
+        @if (data.value()?.metadata) {
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -119,12 +118,24 @@ import { ToastService } from '@services/toast.service';
   `,
 })
 export class TagsComponent implements OnInit {
-  tagsService = inject(TagService);
+  private tagsService = inject(TagService);
   private toast = inject(ToastService);
 
   isEditing = signal<boolean>(false);
   tagName = signal<string>('');
   setTag = signal<Tag | null>(null);
+
+  searchTerm = signal<string>('');
+  pageSize = signal<number>(20);
+  page = signal<number>(1);
+  refresh = signal(0);
+
+  data = httpResource<ApiResponse<Tag[]>>(
+    () =>
+      `${
+        environment.API_URL
+      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+  );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
@@ -174,7 +185,7 @@ export class TagsComponent implements OnInit {
     this.tagsService.createTag(tag).subscribe({
       next: (response) => {
         this.toast.success(response.message);
-        this.tagsService.data.reload();
+        this.data.reload();
       },
       error: (error) => {
         this.toast.error(error.error.message);
@@ -198,7 +209,7 @@ export class TagsComponent implements OnInit {
     };
     this.tagsService.updateTag(tag).subscribe({
       next: (response) => {
-        this.tagsService.data.reload();
+        this.data.reload();
         this.toast.success(response.message);
       },
       error: (error) => {
@@ -211,7 +222,7 @@ export class TagsComponent implements OnInit {
     this.tagsService.deleteTag(tagId).subscribe({
       next: (response) => {
         this.toast.success(response.message);
-        this.tagsService.data.reload();
+        this.data.reload();
       },
       error: (error) => {
         this.toast.error(error.error.message);

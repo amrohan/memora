@@ -1,9 +1,11 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CollectionCardComponent } from '@components/collection-card/collection-card.component';
 import { ModalComponent } from '@components/modal/modal.component';
 import { CollectionService } from '@services/collection.service';
 import { Collection } from '@models/collection.model';
 import { FormsModule } from '@angular/forms';
+import { ApiResponse } from '@models/ApiResponse';
+import { httpResource } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { PaginationComponent } from '../../components/pagination.component';
 import { ToastService } from '@services/toast.service';
@@ -39,7 +41,7 @@ import { ToastService } from '@services/toast.service';
           </svg>
           <input
             type="search"
-            [(ngModel)]="collectionService.searchTerm"
+            [(ngModel)]="searchTerm"
             name="collection"
             required
             placeholder="Search collection..."
@@ -66,7 +68,7 @@ import { ToastService } from '@services/toast.service';
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @for (item of collectionService.data.value()?.data; track item.id) {
+        @for (item of data.value()?.data; track item.id) {
         <app-collection-card
           [collection]="item"
           (handleOnEdit)="handleCollectionEdit($event)"
@@ -75,7 +77,7 @@ import { ToastService } from '@services/toast.service';
         }
       </article>
 
-      @if (collectionService.data.value()?.data?.length === 0) {
+      @if (data.value()?.data?.length === 0) {
       <p class="text-center text-base-content">No collections found</p>
       } @if (validationError() !== null) {
       <p class="text-center text-red-500">
@@ -83,7 +85,7 @@ import { ToastService } from '@services/toast.service';
       </p>
       }
       <!-- Skeleton -->
-      @if (collectionService.data.isLoading()) {
+      @if (data.isLoading()) {
       <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
         @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
         <div class="skeleton h-18 w-full"></div>
@@ -91,11 +93,8 @@ import { ToastService } from '@services/toast.service';
       </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if (collectionService.data.value()?.metadata) {
-        <app-pagination
-          [(page)]="collectionService.page"
-          [data]="collectionService.data.value()?.metadata"
-        />
+        @if (data.value()?.metadata) {
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -125,13 +124,24 @@ import { ToastService } from '@services/toast.service';
   `,
 })
 export class CollectionsComponent {
-  collectionService = inject(CollectionService);
+  private collectionService = inject(CollectionService);
   private toast = inject(ToastService);
 
   isEditing = signal<boolean>(false);
   setCollection = signal<Collection | null>(null);
   collectionName = signal<string>('');
   validationError = signal<string | null>(null);
+
+  searchTerm = signal<string>('');
+  pageSize = signal<number>(10);
+  page = signal<number>(1);
+
+  data = httpResource<ApiResponse<Collection[]>>(
+    () =>
+      `${
+        environment.API_URL
+      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+  );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
@@ -223,6 +233,6 @@ export class CollectionsComponent {
     this.collectionName.set('');
     this.isEditing.set(false);
     this.setCollection.set(null);
-    this.collectionService.data.reload();
+    this.data.reload();
   }
 }

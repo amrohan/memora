@@ -6,6 +6,8 @@ import { Bookmark } from '@models/bookmark.model';
 import { ApiResponse } from '@models/ApiResponse';
 import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
 import { FormsModule } from '@angular/forms';
+import { httpResource } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 import { PaginationComponent } from '../../components/pagination.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingComponent } from '../../components/loading.component';
@@ -42,7 +44,7 @@ import { ToastService } from '@services/toast.service';
             type="search"
             class="grow"
             placeholder="Search bookmarks..."
-            [(ngModel)]="bookMarkService.searchTerm"
+            [(ngModel)]="searchTerm"
           />
         </label>
         <button class="btn btn-primary" (click)="openCustomModal()">
@@ -67,18 +69,14 @@ import { ToastService } from '@services/toast.service';
       </div>
 
       <!-- Filter -->
-      @if (bookMarkService.collectionName() || bookMarkService.tagName()) {
+      @if (collectionName() || tagName()) {
       <div class="h-12 flex justify-start items-center gap-2">
         <p class="text-base-content text-sm">Filters:</p>
         <button
           class="btn btn-active btn-primary btn-xs"
           (click)="clearQueryParams()"
         >
-          {{
-            bookMarkService.collectionName()
-              ? bookMarkService.collectionName()
-              : bookMarkService.tagName()
-          }}
+          {{ collectionName() ? collectionName() : tagName() }}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -99,7 +97,7 @@ import { ToastService } from '@services/toast.service';
       }
 
       <main class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        @for (item of bookMarkService.data.value()?.data; track item.id) {
+        @for (item of data.value()?.data; track item.id) {
         <app-bookmark-card
           [bookmark]="item"
           (handleOnEdit)="handleBookmarkEdit($event)"
@@ -108,7 +106,7 @@ import { ToastService } from '@services/toast.service';
         }
       </main>
 
-      @if (bookMarkService.data.value()?.data?.length === 0) {
+      @if (data.value()?.data?.length === 0) {
       <div
         class="col-span-1 sm:col-span-2 h-96 flex justify-center items-center"
       >
@@ -119,7 +117,7 @@ import { ToastService } from '@services/toast.service';
       }
 
       <!--Loading -->
-      @if (bookMarkService.data.isLoading()) {
+      @if (data.isLoading()) {
       <div
         class="w-full grid grid-cols-1 md:grid-cols-3 md:gap-4 gap-4 animate-fade"
       >
@@ -137,11 +135,8 @@ import { ToastService } from '@services/toast.service';
       </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if (bookMarkService.data.value()?.metadata) {
-        <app-pagination
-          [(page)]="bookMarkService.page"
-          [data]="bookMarkService.data.value()?.metadata"
-        />
+        @if (data.value()?.metadata) {
+        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -218,17 +213,32 @@ export class BookmarksComponent implements OnInit {
   selectedItemData = signal<Bookmark | null>(null);
   isAddingBookmark = signal(false);
 
-  bookMarkService = inject(BookmarkService);
+  searchTerm = signal<string>('');
+  pageSize = signal<number>(20);
+  page = signal<number>(1);
+  collectionId = signal<string>('');
+  tagId = signal<string>('');
+  collectionName = signal<string>('');
+  tagName = signal<string>('');
+
+  data = httpResource<ApiResponse<Bookmark[]>>(
+    () =>
+      `${
+        environment.API_URL
+      }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+  );
+
+  private bookMarkService = inject(BookmarkService);
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private toast = inject(ToastService);
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
-      this.bookMarkService.collectionName.set(params['collectionName']);
-      this.bookMarkService.tagName.set(params['tagName']);
-      this.bookMarkService.collectionId.set(params['collectionId']);
-      this.bookMarkService.tagId.set(params['tagId']);
+      this.collectionName.set(params['collectionName']);
+      this.tagName.set(params['tagName']);
+      this.collectionId.set(params['collectionId']);
+      this.tagId.set(params['tagId']);
     });
   }
 
@@ -264,27 +274,25 @@ export class BookmarksComponent implements OnInit {
   bookmarkDelete(bookmark: Bookmark) {
     this.bookMarkService.deleteBookmark(bookmark.id).subscribe({
       next: (res) => {
-        this.bookMarkService.data.update(
-          (prev: ApiResponse<Bookmark[]> | undefined) => {
-            if (!prev?.data || !Array.isArray(prev.data)) {
-              this.toast.warn(
-                'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
-              );
-              return prev;
-            }
-
-            const updatedDataArray = prev.data.filter(
-              (item) => item.id !== bookmark.id
+        this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
+          if (!prev?.data || !Array.isArray(prev.data)) {
+            this.toast.warn(
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
             );
-            return {
-              ...prev,
-              data: updatedDataArray,
-              metadata: prev.metadata
-                ? { ...prev.metadata, totalCount: prev.metadata.totalCount - 1 }
-                : null,
-            };
+            return prev;
           }
-        );
+
+          const updatedDataArray = prev.data.filter(
+            (item) => item.id !== bookmark.id
+          );
+          return {
+            ...prev,
+            data: updatedDataArray,
+            metadata: prev.metadata
+              ? { ...prev.metadata, totalCount: prev.metadata.totalCount - 1 }
+              : null,
+          };
+        });
         this.selectedItemId.set(null);
         this.selectedItemData.set(null);
         this.isDrawerOpen.set(false);
@@ -301,24 +309,22 @@ export class BookmarksComponent implements OnInit {
   handleItemSaved(data: Bookmark): void {
     this.bookMarkService.updateBookmark(data).subscribe({
       next: (res) => {
-        this.bookMarkService.data.update(
-          (prev: ApiResponse<Bookmark[]> | undefined) => {
-            if (!prev?.data || !Array.isArray(prev.data)) {
-              this.toast.warn(
-                'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
-              );
-              return prev;
-            }
-
-            const updatedDataArray = prev.data.map((item) =>
-              item.id === data.id ? { ...item, ...data } : item
+        this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
+          if (!prev?.data || !Array.isArray(prev.data)) {
+            this.toast.warn(
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
             );
-            return {
-              ...prev,
-              data: updatedDataArray,
-            };
+            return prev;
           }
-        );
+
+          const updatedDataArray = prev.data.map((item) =>
+            item.id === data.id ? { ...item, ...data } : item
+          );
+          return {
+            ...prev,
+            data: updatedDataArray,
+          };
+        });
         this.selectedItemId.set(null);
         this.selectedItemData.set(null);
         this.isDrawerOpen.set(false);
@@ -348,27 +354,25 @@ export class BookmarksComponent implements OnInit {
           return;
         }
 
-        this.bookMarkService.data.update(
-          (prev: ApiResponse<Bookmark[]> | undefined) => {
-            if (!prev?.data || !Array.isArray(prev.data)) {
-              this.toast.warn(
-                'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
-              );
-              return prev;
-            }
-
-            const updatedDataArray: Bookmark[] = [newBookmark, ...prev.data];
-            this.handleBookmarkEdit(newBookmark);
-            return {
-              ...prev,
-              data: updatedDataArray, // Override the data property
-              // Optional: You might want to update metadata like totalCount if applicable
-              metadata: prev.metadata
-                ? { ...prev.metadata, totalCount: prev.metadata.totalCount + 1 }
-                : null,
-            };
+        this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
+          if (!prev?.data || !Array.isArray(prev.data)) {
+            this.toast.warn(
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
+            );
+            return prev;
           }
-        );
+
+          const updatedDataArray: Bookmark[] = [newBookmark, ...prev.data];
+          this.handleBookmarkEdit(newBookmark);
+          return {
+            ...prev,
+            data: updatedDataArray, // Override the data property
+            // Optional: You might want to update metadata like totalCount if applicable
+            metadata: prev.metadata
+              ? { ...prev.metadata, totalCount: prev.metadata.totalCount + 1 }
+              : null,
+          };
+        });
       },
       error: (error) => {
         this.toast.error(error.error.message);
