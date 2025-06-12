@@ -7,7 +7,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   imports: [RouterLink, RouterLinkActive],
   template: `
     <div
-      class="dock fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t border-base-300 bg-base-100 shadow-t-lg md:hidden"
+      class="dock fixed bottom-0 left-0 right-0  flex h-16 items-center justify-around border-t border-base-300 bg-base-100 shadow-t-lg md:hidden"
     >
       <!-- Bookmarks -->
       <a
