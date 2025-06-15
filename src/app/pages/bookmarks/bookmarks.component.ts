@@ -70,73 +70,73 @@ import { ToastService } from '@services/toast.service';
 
       <!-- Filter -->
       @if (collectionName() || tagName()) {
-      <div class="h-12 flex justify-start items-center gap-2">
-        <p class="text-base-content text-sm">Filters:</p>
-        <button
-          class="btn btn-active btn-primary btn-xs"
-          (click)="clearQueryParams()"
-        >
-          {{ collectionName() ? collectionName() : tagName() }}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="size-3.5"
+        <div class="h-12 flex justify-start items-center gap-2">
+          <p class="text-base-content text-sm">Filters:</p>
+          <button
+            class="btn btn-active btn-primary btn-xs"
+            (click)="clearQueryParams()"
           >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </svg>
-        </button>
-      </div>
+            {{ collectionName() ? collectionName() : tagName() }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-3.5"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
       }
 
       <main class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         @for (item of data.value()?.data; track item.id) {
-        <app-bookmark-card
-          [bookmark]="item"
-          (handleOnEdit)="handleBookmarkEdit($event)"
-          (handleOnDelete)="bookmarkDelete($event)"
-        />
+          <app-bookmark-card
+            [bookmark]="item"
+            (handleOnEdit)="handleBookmarkEdit($event)"
+            (handleOnDelete)="bookmarkDelete($event)"
+          />
         }
       </main>
 
       @if (data.value()?.data?.length === 0) {
-      <div
-        class="col-span-1 sm:col-span-2 h-96 flex justify-center items-center"
-      >
-        <p class="text-center text-gray-500 text-sm">
-          No recods found. Please add a bookmark.
-        </p>
-      </div>
+        <div
+          class="col-span-1 sm:col-span-2 h-96 flex justify-center items-center"
+        >
+          <p class="text-center text-gray-500 text-sm">
+            No recods found. Please add a bookmark.
+          </p>
+        </div>
       }
 
       <!--Loading -->
       @if (data.isLoading()) {
-      <div
-        class="w-full grid grid-cols-1 md:grid-cols-3 md:gap-4 gap-4 animate-fade"
-      >
-        @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
-        <div class="flex w-full flex-col gap-2">
-          <div class="skeleton h-10 w-full"></div>
-          <div class="skeleton h-4 w-full"></div>
-          <div class="skeleton h-4 w-full"></div>
-          <div class=" flex justify-between items-center mt-6">
-            <div class="skeleton h-4 w-28"></div>
-            <div class="skeleton h-4 w-28"></div>
-          </div>
+        <div
+          class="w-full grid grid-cols-1 md:grid-cols-3 md:gap-4 gap-4 animate-fade"
+        >
+          @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track $index) {
+            <div class="flex w-full flex-col gap-2">
+              <div class="skeleton h-10 w-full"></div>
+              <div class="skeleton h-4 w-full"></div>
+              <div class="skeleton h-4 w-full"></div>
+              <div class=" flex justify-between items-center mt-6">
+                <div class="skeleton h-4 w-28"></div>
+                <div class="skeleton h-4 w-28"></div>
+              </div>
+            </div>
+          }
         </div>
-        }
-      </div>
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+          <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
         }
       </div>
     </section>
@@ -189,18 +189,18 @@ import { ToastService } from '@services/toast.service';
     </app-modal>
 
     @if (isDrawerOpen()) {
-    <app-drawer
-      [isOpen]="isDrawerOpen()"
-      [itemData]="selectedItemData()"
-      (drawerClosed)="handleDrawerClosed()"
-      (itemSaved)="handleItemSaved($event)"
-      (itemVisit)="handleItemVisit($event)"
-    />
+      <app-drawer
+        [isOpen]="isDrawerOpen()"
+        [itemData]="selectedItemData()"
+        (drawerClosed)="handleDrawerClosed()"
+        (itemSaved)="handleItemSaved($event)"
+        (itemVisit)="handleItemVisit($event)"
+      />
     }
 
     <!-- Loading screen      -->
     @if (isAddingBookmark()) {
-    <app-loading />
+      <app-loading />
     }
   `,
 })
@@ -223,9 +223,8 @@ export class BookmarksComponent implements OnInit {
 
   data = httpResource<ApiResponse<Bookmark[]>>(
     () =>
-      `${
-        environment.API_URL
-      }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+      `${environment.API_URL
+      }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
   private bookMarkService = inject(BookmarkService);
@@ -277,13 +276,13 @@ export class BookmarksComponent implements OnInit {
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
-              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.',
             );
             return prev;
           }
 
           const updatedDataArray = prev.data.filter(
-            (item) => item.id !== bookmark.id
+            (item) => item.id !== bookmark.id,
           );
           return {
             ...prev,
@@ -312,13 +311,13 @@ export class BookmarksComponent implements OnInit {
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
-              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.',
             );
             return prev;
           }
 
           const updatedDataArray = prev.data.map((item) =>
-            item.id === data.id ? { ...item, ...data } : item
+            item.id === data.id ? { ...item, ...data } : item,
           );
           return {
             ...prev,
@@ -357,7 +356,7 @@ export class BookmarksComponent implements OnInit {
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
-              'Cannot remove bookmark optimistically: previous data state is invalid or missing.'
+              'Cannot remove bookmark optimistically: previous data state is invalid or missing.',
             );
             return prev;
           }

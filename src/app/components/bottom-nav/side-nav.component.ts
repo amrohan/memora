@@ -1,6 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { httpResource } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ApiResponse } from '@models/ApiResponse';
 import { Collection } from '@models/collection.model';
@@ -8,7 +7,6 @@ import { Tag } from '@models/tags.model';
 import { CollectionService } from '@services/collection.service';
 import { TagService } from '@services/tag.service';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-side-nav-bar',
@@ -96,22 +94,25 @@ import { environment } from 'src/environments/environment.development';
                 >
               </li>
               @if (collections | async) {
-              <li class="menu-title text-xs px-4 pt-2">
-                <span>Filter by:</span>
-              </li>
-              } @for ( collection of (collections | async)?.data; track
-              collection.id ) {
-              <li>
-                <a
-                  [routerLink]="['/bookmarks']"
-                  [queryParams]="{
+                <li class="menu-title text-xs px-4 pt-2">
+                  <span>Filter by:</span>
+                </li>
+              }
+              @for (
+                collection of (collections | async)?.data;
+                track collection.id
+              ) {
+                <li>
+                  <a
+                    [routerLink]="['/bookmarks']"
+                    [queryParams]="{
                       collectionId: collection.id,
                       collectionName: collection.name,
                     }"
-                  [routerLinkActive]="'bg-base-content/10 text-base-content'"
-                  >{{ collection.name }}</a
-                >
-              </li>
+                    [routerLinkActive]="'bg-base-content/10 text-base-content'"
+                    >{{ collection.name }}</a
+                  >
+                </li>
               }
             </ul>
           </details>
@@ -165,17 +166,18 @@ import { environment } from 'src/environments/environment.development';
                 >
               </li>
               @if (tags | async) {
-              <li class="menu-title text-xs px-4 pt-2">
-                <span>Filter by:</span>
-              </li>
-              } @for (tag of (tags | async)?.data; track tag.id) {
-              <li>
-                <a
-                  [routerLink]="['/bookmarks']"
-                  [queryParams]="{ tagId: tag.id, tagName: tag.name }"
-                  >{{ tag.name }}</a
-                >
-              </li>
+                <li class="menu-title text-xs px-4 pt-2">
+                  <span>Filter by:</span>
+                </li>
+              }
+              @for (tag of (tags | async)?.data; track tag.id) {
+                <li>
+                  <a
+                    [routerLink]="['/bookmarks']"
+                    [queryParams]="{ tagId: tag.id, tagName: tag.name }"
+                    >{{ tag.name }}</a
+                  >
+                </li>
               }
             </ul>
           </details>
