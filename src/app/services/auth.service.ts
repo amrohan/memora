@@ -76,6 +76,35 @@ export class AuthService {
       );
   }
 
+  authenticateByAccessCode(
+    email: string,
+  ): Observable<ApiResponse<{ message: string }>> {
+    return this.http
+      .post<
+        ApiResponse<{ message: string }>
+      >(`${this.apiUrl}/auth/generate-access-code`, { email })
+      .pipe(
+        tap((response) =>
+          console.log('Generate access code Response:', response),
+        ),
+        catchError(this.handleError),
+      );
+  }
+
+  verifyAccessCode(
+    email: string,
+    accessCode: string,
+  ): Observable<ApiResponse<LoginSuccessData>> {
+    return this.http
+      .post<
+        ApiResponse<LoginSuccessData>
+      >(`${this.apiUrl}/auth/verify-access-code`, { email, accessCode })
+      .pipe(
+        tap((response) => console.log('Forgot Password Response:', response)),
+        catchError(this.handleError),
+      );
+  }
+
   resetPasswordWithToken(
     resetData: ResetPasswordWithToken,
   ): Observable<ApiResponse<{ message: string }>> {

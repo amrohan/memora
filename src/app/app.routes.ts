@@ -86,19 +86,34 @@ export const routes: Routes = [
   {
     path: 'forgot-password',
     loadComponent: () =>
-      import('./pages/auth/forgot-password.component').then((m) => m.ForgotPasswordComponent,
+      import('./pages/auth/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent,
       ),
   },
   {
     path: 'reset-password/:token',
-    loadComponent: () => import('./pages/auth/reset-password.component').then(m => m.ResetPasswordComponent)
+    loadComponent: () =>
+      import('./pages/auth/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
   },
   {
     path: 'reset-password',
-    loadComponent: () => import('./pages/auth/reset-password.component').then(m => m.ResetPasswordComponent)
+    loadComponent: () =>
+      import('./pages/auth/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
+  },
+  {
+    path: 'generate-access-code',
+    loadComponent: () =>
+      import('./pages/auth/access-auth-token.component').then(
+        (m) => m.AccessTokenAuthComponent,
+      ),
   },
   {
     path: '**',
-    redirectTo: 'bookmarks', pathMatch: 'full',
+    redirectTo: 'bookmarks',
+    pathMatch: 'full',
   },
 ];
