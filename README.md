@@ -48,7 +48,7 @@ Built with Angular, the project follows a modular architecture:
 
 - [Node.js](https://nodejs.org/) (v20 or higher)
 - [PNPM](https://pnpm.io/) (package manager)
-- Angular CLI (v17+)
+- Angular CLI (v20 or higher)
 - TypeScript (v5+)
 
 ### Setup Instructions
