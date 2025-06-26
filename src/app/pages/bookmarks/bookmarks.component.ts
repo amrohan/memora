@@ -8,19 +8,20 @@ import {
   ViewChild,
   viewChild,
 } from '@angular/core';
-import { ModalComponent } from '@components/modal/modal.component';
-import { DrawerComponent } from '@components/drawer/drawer.component';
-import { BookmarkService } from '@services/bookmark.service';
-import { Bookmark } from '@models/bookmark.model';
-import { ApiResponse } from '@models/ApiResponse';
-import { BookmarkCardComponent } from '@components/bookmark-card/bookmark-card.component';
-import { FormsModule } from '@angular/forms';
-import { httpResource } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { PaginationComponent } from '../../components/pagination.component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingComponent } from '../../components/loading.component';
-import { ToastService } from '@services/toast.service';
+import {ModalComponent} from '@components/modal/modal.component';
+import {DrawerComponent} from '@components/drawer/drawer.component';
+import {BookmarkService} from '@services/bookmark.service';
+import {Bookmark} from '@models/bookmark.model';
+import {ApiResponse} from '@models/ApiResponse';
+import {BookmarkCardComponent} from '@components/bookmark-card/bookmark-card.component';
+import {FormsModule} from '@angular/forms';
+import {httpResource} from '@angular/common/http';
+import {environment} from 'src/environments/environment';
+import {PaginationComponent} from '@components/pagination.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {LoadingComponent} from '@components/loading.component';
+import {ToastService} from '@services/toast.service';
+import {SearchComponent} from '@components/search.component';
 
 @Component({
   selector: 'app-bookmarks',
@@ -31,32 +32,12 @@ import { ToastService } from '@services/toast.service';
     FormsModule,
     PaginationComponent,
     LoadingComponent,
+    SearchComponent,
   ],
   template: `
     <section class="mb-36 mt-10">
       <div class="h-16 flex justify-end items-start gap-2">
-        <label class="input input-bordered flex items-center gap-2">
-          <svg
-            class="h-[1em] opacity-50"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
-          </svg>
-          <input
-            #searchRef
-            type="search"
-            class="grow"
-            placeholder="Search bookmarks..."
-            [(ngModel)]="searchTerm"
-          />
-        </label>
+        <app-search (searchChange)="searchTerm.set($event)" placeHolder="Search bookmarks... "/>
         <button class="btn btn-primary" (click)="openCustomModal()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -70,9 +51,9 @@ import { ToastService } from '@services/toast.service';
             stroke-linejoin="round"
             class="size-4 text-current"
           >
-            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-            <line x1="12" x2="12" y1="7" y2="13" />
-            <line x1="15" x2="9" y1="10" y2="10" />
+            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+            <line x1="12" x2="12" y1="7" y2="13"/>
+            <line x1="15" x2="9" y1="10" y2="10"/>
           </svg>
           Add
         </button>
@@ -99,8 +80,8 @@ import { ToastService } from '@services/toast.service';
               stroke-linejoin="round"
               class="size-3.5"
             >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
+              <path d="M18 6 6 18"/>
+              <path d="m6 6 12 12"/>
             </svg>
           </button>
         </div>
@@ -146,7 +127,7 @@ import { ToastService } from '@services/toast.service';
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-          <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+          <app-pagination [(page)]="page" [data]="data.value()?.metadata"/>
         }
       </div>
     </section>
@@ -212,7 +193,7 @@ import { ToastService } from '@services/toast.service';
 
     <!-- Loading screen      -->
     @if (isAddingBookmark()) {
-      <app-loading />
+      <app-loading/>
     }
   `,
 })
@@ -235,12 +216,12 @@ export class BookmarksComponent implements OnInit {
 
   data = httpResource<ApiResponse<Bookmark[]>>(
     () =>
-      `${environment.API_URL
+      `${
+        environment.API_URL
       }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
   @ViewChild('urlInput') urlInputRef!: ElementRef<HTMLInputElement>;
-  @ViewChild('searchRef') searchRef!: ElementRef<HTMLInputElement>;
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -248,17 +229,9 @@ export class BookmarksComponent implements OnInit {
       if (this.isDrawerOpen()) {
         this.toggleDrawer();
       } else {
-        this.searchRef.nativeElement.blur();
         this.customModal()?.close();
       }
     }
-    if (!this.customModal().isOpen()) {
-      if (event.key === '/') {
-        event.preventDefault();
-        this.searchRef.nativeElement.focus();
-      }
-    }
-
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       this.openCustomModal();
@@ -330,7 +303,7 @@ export class BookmarksComponent implements OnInit {
             ...prev,
             data: updatedDataArray,
             metadata: prev.metadata
-              ? { ...prev.metadata, totalCount: prev.metadata.totalCount - 1 }
+              ? {...prev.metadata, totalCount: prev.metadata.totalCount - 1}
               : null,
           };
         });
@@ -347,6 +320,7 @@ export class BookmarksComponent implements OnInit {
   handleDrawerClosed(): void {
     this.toggleDrawer();
   }
+
   handleItemSaved(data: Bookmark): void {
     this.bookMarkService.updateBookmark(data).subscribe({
       next: (res) => {
@@ -359,7 +333,7 @@ export class BookmarksComponent implements OnInit {
           }
 
           const updatedDataArray = prev.data.map((item) =>
-            item.id === data.id ? { ...item, ...data } : item,
+            item.id === data.id ? {...item, ...data} : item,
           );
           return {
             ...prev,
@@ -375,6 +349,7 @@ export class BookmarksComponent implements OnInit {
       },
     });
   }
+
   handleItemVisit(id: string): void {
     /* ... */
   }
@@ -409,7 +384,7 @@ export class BookmarksComponent implements OnInit {
             ...prev,
             data: updatedDataArray, // Override the data property
             metadata: prev.metadata
-              ? { ...prev.metadata, totalCount: prev.metadata.totalCount + 1 }
+              ? {...prev.metadata, totalCount: prev.metadata.totalCount + 1}
               : null,
           };
         });

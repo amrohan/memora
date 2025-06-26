@@ -1,18 +1,24 @@
-import { Component, HostListener } from '@angular/core';
+import {
+  Component,
+  signal,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 
 @Component({
   selector: 'app-shortcut-help',
   standalone: true,
   template: `
     <button
-      class="btn  btn-circle"
+      class="btn btn-circle"
       (click)="toggleModal()"
       aria-label="Keyboard Shortcuts"
     >
       <span class="text-lg font-bold">?</span>
     </button>
 
-    <dialog class="modal" [open]="showModal">
+    <dialog #dialogRef class="modal" (close)="onDialogClose()">
       <div class="modal-box">
         <h3 class="font-bold text-lg mb-4">Keyboard Shortcuts</h3>
 
@@ -22,7 +28,7 @@ import { Component, HostListener } from '@angular/core';
             <kbd class="kbd kbd-sm">/</kbd>
           </li>
           <li class="flex items-center justify-between">
-            <span>Open Add Bookmark Modal</span>
+            <span>Open Add Modal</span>
             <div class="flex justify-end items-center gap-2">
               <kbd class="kbd kbd-sm">Ctrl</kbd> +
               <kbd class="kbd kbd-sm">K</kbd>
@@ -40,7 +46,7 @@ import { Component, HostListener } from '@angular/core';
 
         <div class="modal-action mt-6">
           <form method="dialog">
-            <button class="btn" (click)="closeModal()">Close</button>
+            <button class="btn">Close</button>
           </form>
         </div>
       </div>
@@ -48,20 +54,29 @@ import { Component, HostListener } from '@angular/core';
   `,
 })
 export class ShortcutHelpComponent {
-  showModal = false;
+  readonly showModal = signal(false);
+  @ViewChild('dialogRef')
+  dialog!: ElementRef<HTMLDialogElement>;
 
-  @HostListener('window:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
+
+  toggleModal() {
+    if (this.showModal()) {
       this.closeModal();
+    } else {
+      this.openModal();
     }
   }
 
-  toggleModal() {
-    this.showModal = !this.showModal;
+  openModal() {
+    this.dialog.nativeElement.showModal();
+    this.showModal.set(true);
   }
 
   closeModal() {
-    this.showModal = false;
+    this.dialog.nativeElement.close();
+  }
+
+  onDialogClose() {
+    this.showModal.set(false);
   }
 }

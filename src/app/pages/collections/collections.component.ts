@@ -1,14 +1,15 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
-import { CollectionCardComponent } from '@components/collection-card/collection-card.component';
-import { ModalComponent } from '@components/modal/modal.component';
-import { CollectionService } from '@services/collection.service';
-import { Collection } from '@models/collection.model';
-import { FormsModule } from '@angular/forms';
-import { ApiResponse } from '@models/ApiResponse';
-import { httpResource } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { PaginationComponent } from '../../components/pagination.component';
-import { ToastService } from '@services/toast.service';
+import {Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild, viewChild} from '@angular/core';
+import {CollectionCardComponent} from '@components/collection-card/collection-card.component';
+import {ModalComponent} from '@components/modal/modal.component';
+import {CollectionService} from '@services/collection.service';
+import {Collection} from '@models/collection.model';
+import {FormsModule} from '@angular/forms';
+import {ApiResponse} from '@models/ApiResponse';
+import {httpResource} from '@angular/common/http';
+import {environment} from 'src/environments/environment';
+import {PaginationComponent} from '../../components/pagination.component';
+import {ToastService} from '@services/toast.service';
+import {SearchComponent} from '@components/search.component';
 
 @Component({
   selector: 'app-collections',
@@ -18,35 +19,12 @@ import { ToastService } from '@services/toast.service';
     ModalComponent,
     FormsModule,
     PaginationComponent,
+    SearchComponent,
   ],
   template: `
     <section class="mb-36 mt-10">
       <div class="h-16 flex justify-end items-start gap-2">
-        <label class="input">
-          <svg
-            class="h-[1em] opacity-50"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <g
-              stroke-linejoin="round"
-              stroke-linecap="round"
-              stroke-width="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </g>
-          </svg>
-          <input
-            type="search"
-            [(ngModel)]="searchTerm"
-            name="collection"
-            required
-            placeholder="Search collection..."
-          />
-        </label>
+        <app-search (searchChange)="searchTerm.set($event)" placeHolder="Search collection... "/>
         <button class="btn btn-primary" (click)="openCustomModal()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -69,32 +47,33 @@ import { ToastService } from '@services/toast.service';
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
         @for (item of data.value()?.data; track item.id) {
-        <app-collection-card
-          [collection]="item"
-          (handleOnEdit)="handleCollectionEdit($event)"
-          (handleOnDelete)="collectionDelete($event)"
-        />
+          <app-collection-card
+            [collection]="item"
+            (handleOnEdit)="handleCollectionEdit($event)"
+            (handleOnDelete)="collectionDelete($event)"
+          />
         }
       </article>
 
       @if (data.value()?.data?.length === 0) {
-      <p class="text-center text-base-content">No collections found</p>
-      } @if (validationError() !== null) {
-      <p class="text-center text-red-500">
-        {{ validationError() }}
-      </p>
+        <p class="text-center text-base-content">No collections found</p>
+      }
+      @if (validationError() !== null) {
+        <p class="text-center text-red-500">
+          {{ validationError() }}
+        </p>
       }
       <!-- Skeleton -->
       @if (data.isLoading()) {
-      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
-        @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
-        <div class="skeleton h-18 w-full"></div>
-        }
-      </div>
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
+          @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+            <div class="skeleton h-18 w-full"></div>
+          }
+        </div>
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+          <app-pagination [(page)]="page" [data]="data.value()?.metadata"/>
         }
       </div>
     </section>
@@ -106,12 +85,14 @@ import { ToastService } from '@services/toast.service';
       [cancelText]="'Discard'"
       [showCloseButton]="true"
       (confirmed)="handleConfirm()"
+      (keydown.enter)="handleConfirm()"
       (closed)="handleClose()"
     >
       <form class="form-control ">
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Collection</legend>
           <input
+            #collectionInput
             type="text"
             placeholder="Enter collection name..."
             [(ngModel)]="collectionName"
@@ -140,10 +121,28 @@ export class CollectionsComponent {
     () =>
       `${
         environment.API_URL
-      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
   customModal = viewChild.required<ModalComponent>('customModal');
+
+
+  @ViewChild('collectionInput') collectionInputRef!: ElementRef<HTMLInputElement>;
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      if (this.customModal().isOpen()) {
+        this.customModal()?.close();
+      } else {
+        this.customModal()?.close();
+      }
+    }
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.openCustomModal();
+    }
+  }
 
   collectionDelete(item: Collection) {
     this.collectionService.deleteCollection(item.id).subscribe({
@@ -163,8 +162,12 @@ export class CollectionsComponent {
     this.collectionName.set(item.name);
     this.openCustomModal();
   }
+
   openCustomModal() {
     this.customModal().open();
+    setTimeout(() => {
+      this.collectionInputRef?.nativeElement.focus();
+    }, 100);
   }
 
   handleConfirm() {
@@ -212,6 +215,7 @@ export class CollectionsComponent {
       },
     });
   }
+
   editCollection() {
     const data = this.setCollection();
     if (!data) {
@@ -228,6 +232,7 @@ export class CollectionsComponent {
       },
     });
   }
+
   onSuccessAddOrUpdate() {
     this.customModal().close();
     this.collectionName.set('');
@@ -235,4 +240,6 @@ export class CollectionsComponent {
     this.setCollection.set(null);
     this.data.reload();
   }
+
+  protected readonly console = console;
 }

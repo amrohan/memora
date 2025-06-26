@@ -1,14 +1,24 @@
-import { httpResource } from '@angular/common/http';
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ModalComponent } from '@components/modal/modal.component';
-import { TagsCardComponent } from '@components/tags-card/tags-card.component';
-import { ApiResponse } from '@models/ApiResponse';
-import { Tag } from '@models/tags.model';
-import { TagService } from '@services/tag.service';
-import { environment } from 'src/environments/environment';
-import { PaginationComponent } from '../../components/pagination.component';
-import { ToastService } from '@services/toast.service';
+import {httpResource} from '@angular/common/http';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+  viewChild,
+} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {ModalComponent} from '@components/modal/modal.component';
+import {TagsCardComponent} from '@components/tags-card/tags-card.component';
+import {ApiResponse} from '@models/ApiResponse';
+import {Tag} from '@models/tags.model';
+import {TagService} from '@services/tag.service';
+import {environment} from 'src/environments/environment';
+import {PaginationComponent} from '../../components/pagination.component';
+import {ToastService} from '@services/toast.service';
+import {SearchComponent} from '@components/search.component';
 
 @Component({
   selector: 'app-tags',
@@ -17,35 +27,12 @@ import { ToastService } from '@services/toast.service';
     ModalComponent,
     FormsModule,
     PaginationComponent,
+    SearchComponent,
   ],
   template: `
     <section class="mb-36 mt-10">
       <div class="h-16 flex justify-end items-start gap-2">
-        <label class="input">
-          <svg
-            class="h-[1em] opacity-50"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <g
-              stroke-linejoin="round"
-              stroke-linecap="round"
-              stroke-width="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </g>
-          </svg>
-          <input
-            type="search"
-            [(ngModel)]="searchTerm"
-            name="tag"
-            required
-            placeholder="Search tags..."
-          />
-        </label>
+        <app-search (searchChange)="searchTerm.set($event)" placeHolder="Search tags... "/>
         <button class="btn btn-primary" (click)="openCustomModal()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +47,7 @@ import { ToastService } from '@services/toast.service';
             <path
               d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
             />
-            <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+            <circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>
           </svg>
 
           Add
@@ -70,24 +57,24 @@ import { ToastService } from '@services/toast.service';
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
         @for (item of data.value()?.data; track item.id) {
-        <app-tags-card
-          [tag]="item"
-          (handleOnEdit)="handleTagEdit($event)"
-          (handleOnDelete)="handleTagDelete($event)"
-        />
+          <app-tags-card
+            [tag]="item"
+            (handleOnEdit)="handleTagEdit($event)"
+            (handleOnDelete)="handleTagDelete($event)"
+          />
         }
       </article>
       <!-- Skeleton -->
       @if (data.isLoading()) {
-      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
-        @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
-        <div class="skeleton h-18 w-full"></div>
-        }
-      </div>
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
+          @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+            <div class="skeleton h-18 w-full"></div>
+          }
+        </div>
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-        <app-pagination [(page)]="page" [data]="data.value()?.metadata" />
+          <app-pagination [(page)]="page" [data]="data.value()?.metadata"/>
         }
       </div>
     </section>
@@ -100,12 +87,14 @@ import { ToastService } from '@services/toast.service';
       [cancelText]="'Discard'"
       [showCloseButton]="true"
       (confirmed)="handleConfirm()"
+      (keydown.enter)="handleConfirm()"
       (closed)="handleClose()"
     >
       <div class="form-control ">
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tag</legend>
           <input
+            #tagInput
             type="text"
             [(ngModel)]="tagName"
             name="tagName"
@@ -134,22 +123,48 @@ export class TagsComponent implements OnInit {
     () =>
       `${
         environment.API_URL
-      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`
+      }/tags?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-  ngOnInit(): void {}
+  @ViewChild('tagInput') tagInputRef!: ElementRef<HTMLInputElement>;
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      if (this.customModal().isOpen()) {
+        this.customModal()?.close();
+      } else {
+        this.customModal()?.close();
+      }
+    }
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.openCustomModal();
+    }
+  }
+
+  ngOnInit(): void {
+  }
 
   openCustomModal() {
     this.customModal().open();
+    setTimeout(() => {
+      this.tagInputRef?.nativeElement.focus();
+    }, 100);
   }
+
   handleTagEdit(tag: Tag) {
     this.isEditing.set(true);
     this.tagName.set(tag.name);
     this.setTag.set(tag);
     this.customModal().open();
+    setTimeout(() => {
+      this.tagInputRef?.nativeElement.focus();
+    }, 100);
   }
+
   handleTagDelete(tag: Tag) {
     this.deleteTag(tag.id);
   }
