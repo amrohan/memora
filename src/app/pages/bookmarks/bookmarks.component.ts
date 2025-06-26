@@ -1,4 +1,13 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+  viewChild,
+} from '@angular/core';
 import { ModalComponent } from '@components/modal/modal.component';
 import { DrawerComponent } from '@components/drawer/drawer.component';
 import { BookmarkService } from '@services/bookmark.service';
@@ -41,6 +50,7 @@ import { ToastService } from '@services/toast.service';
             <path d="m21 21-4.3-4.3"></path>
           </svg>
           <input
+            #searchRef
             type="search"
             class="grow"
             placeholder="Search bookmarks..."
@@ -148,6 +158,7 @@ import { ToastService } from '@services/toast.service';
       [cancelText]="'Discard'"
       [showCloseButton]="true"
       (confirmed)="handleConfirm()"
+      (keydown.enter)="handleConfirm()"
       (closed)="handleClose()"
     >
       <!-- Modal content -->
@@ -174,6 +185,7 @@ import { ToastService } from '@services/toast.service';
             ></path>
           </svg>
           <input
+            #urlInput
             type="url"
             class="grow"
             name="url"
@@ -227,6 +239,32 @@ export class BookmarksComponent implements OnInit {
       }/bookmarks?collectionId=${this.collectionId()}&tagId=${this.tagId()}&search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
   );
 
+  @ViewChild('urlInput') urlInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('searchRef') searchRef!: ElementRef<HTMLInputElement>;
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      if (this.isDrawerOpen()) {
+        this.toggleDrawer();
+      } else {
+        this.searchRef.nativeElement.blur();
+        this.customModal()?.close();
+      }
+    }
+    if (!this.customModal().isOpen()) {
+      if (event.key === '/') {
+        event.preventDefault();
+        this.searchRef.nativeElement.focus();
+      }
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.openCustomModal();
+    }
+  }
+
   private bookMarkService = inject(BookmarkService);
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
@@ -243,6 +281,9 @@ export class BookmarksComponent implements OnInit {
 
   openCustomModal() {
     this.customModal().open();
+    setTimeout(() => {
+      this.urlInputRef?.nativeElement.focus();
+    }, 100);
   }
 
   handleConfirm() {
@@ -262,6 +303,7 @@ export class BookmarksComponent implements OnInit {
 
   handleClose() {
     this.isEditing.set(false);
+    this.bookMarkUrl.set('');
   }
 
   handleBookmarkEdit(e: Bookmark): void {
@@ -366,7 +408,6 @@ export class BookmarksComponent implements OnInit {
           return {
             ...prev,
             data: updatedDataArray, // Override the data property
-            // Optional: You might want to update metadata like totalCount if applicable
             metadata: prev.metadata
               ? { ...prev.metadata, totalCount: prev.metadata.totalCount + 1 }
               : null,

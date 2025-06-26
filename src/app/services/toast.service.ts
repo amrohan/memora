@@ -2,10 +2,10 @@ import { Injectable, computed, signal } from '@angular/core';
 
 export interface Toast {
   id: string;
-  title?: string | null; // Title is now optional and nullable
+  title?: string | null;
   message: string;
   type: 'success' | 'error' | 'info' | 'warn';
-  duration?: number; // milliseconds
+  duration?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -13,12 +13,11 @@ export class ToastService {
   private _toasts = signal<Toast[]>([]);
   readonly toasts = computed(() => this._toasts());
 
-  // Generic show: title can be null
   show(
     title: string | null = null,
     message: string,
     type: Toast['type'] = 'info',
-    duration = 3000
+    duration = 3000,
   ) {
     const id = crypto.randomUUID();
     const newToast: Toast = { id, title, message, type, duration };
@@ -26,7 +25,6 @@ export class ToastService {
     setTimeout(() => this.dismiss(id), duration);
   }
 
-  // Convenience methods
   success(message: string, title: string | null = 'Success', duration = 5000) {
     this.show(title, message, 'success', duration);
   }
