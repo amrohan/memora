@@ -23,7 +23,7 @@ import {Observable} from 'rxjs';
             <h1 class="text-2xl font-semibold">Memora</h1>
           </div>
         </li>
-        <div class="max-h-screen overflow-scroll">
+        <div class="max-h-screen overflow-auto">
           <li>
             <a
               routerLink="/bookmarks"
