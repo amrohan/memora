@@ -7,7 +7,7 @@ import {FormsModule} from '@angular/forms';
 import {ApiResponse} from '@models/ApiResponse';
 import {httpResource} from '@angular/common/http';
 import {environment} from 'src/environments/environment';
-import {PaginationComponent} from '../../components/pagination.component';
+import {PaginationComponent} from '@components/pagination.component';
 import {ToastService} from '@services/toast.service';
 import {SearchComponent} from '@components/search.component';
 

@@ -16,7 +16,7 @@ import {ApiResponse} from '@models/ApiResponse';
 import {Tag} from '@models/tags.model';
 import {TagService} from '@services/tag.service';
 import {environment} from 'src/environments/environment';
-import {PaginationComponent} from '../../components/pagination.component';
+import {PaginationComponent} from '@components/pagination.component';
 import {ToastService} from '@services/toast.service';
 import {SearchComponent} from '@components/search.component';
 
