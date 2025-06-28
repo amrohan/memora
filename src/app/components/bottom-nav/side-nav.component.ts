@@ -18,7 +18,7 @@ import {Observable} from 'rxjs';
       <ul class="pt-2 ">
         <li>
           <div
-            class="h-16 flex items-center justify-center border-b border-base-300"
+            class="h-16 flex items-center justify-center"
           >
             <h1 class="text-2xl font-semibold">Memora</h1>
           </div>
