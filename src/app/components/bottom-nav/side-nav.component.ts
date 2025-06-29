@@ -2,10 +2,11 @@ import {Component, inject} from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {CollectionService} from '@services/collection.service';
 import {TagService} from '@services/tag.service';
+import {PaginationComponent} from '@components/pagination.component';
 
 @Component({
   selector: 'app-side-nav-bar',
-  imports: [RouterLink, RouterLinkActive,],
+  imports: [RouterLink, RouterLinkActive, PaginationComponent,],
   template: `
     <aside
       class="menu menu-md bg-base-200 rounded-r-md w-60 h-full fixed top-0 left-0 z-10 shadow-lg overflow-hidden"
@@ -106,6 +107,12 @@ import {TagService} from '@services/tag.service';
                     >
                   </li>
                 }
+                <li>
+                  <app-pagination btnSize="btn-xs btn-active w-34" [showSummary]="false"
+                                  [page]="collectionService.metaData()?.page!"
+                                  (pageChange)="collectionService.page.set($event)"
+                                  [data]="collectionService.metaData()!"/>
+                </li>
               </ul>
             </details>
           </li>
@@ -171,6 +178,12 @@ import {TagService} from '@services/tag.service';
                     >
                   </li>
                 }
+                <li>
+                  <app-pagination btnSize="btn-xs btn-active w-34" [showSummary]="false"
+                                  [page]="tagService.metaData()?.page!"
+                                  (pageChange)="tagService.page.set($event)"
+                                  [data]="tagService.metaData()!"/>
+                </li>
               </ul>
             </details>
           </li>

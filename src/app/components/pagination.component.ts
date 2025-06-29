@@ -1,80 +1,85 @@
-import {Component, computed, input, model, output} from '@angular/core';
+import {Component, computed, input, model, signal} from '@angular/core';
 import {ApiResponseMetadata} from '@models/ApiResponse';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-pagination',
+  imports: [
+    NgClass
+  ],
   template: `
-    <div class="mx-auto flex items-center justify-center h-24">
-      <!-- RENDER TRADITIONAL PAGINATION UI -->
-      @if (mode() === 'pagination' && totalPages() > 0) {
-        @if (totalPages() > 1) {
-          <div class="join">
-            <!-- Previous Button -->
-            <button
-              class="join-item btn"
-              aria-label="Previous Page"
-              (click)="previousPage()"
-              [disabled]="!hasPreviousPage()"
-            >
-              «
-            </button>
-
-            <!-- Page Number Buttons -->
-            @for (pageNum of visiblePageNumbers(); track $index) {
-              @if (typeof pageNum === 'number') {
-                <button
-                  class="join-item btn"
-                  [class.btn-active]="pageNum === page()"
-                  (click)="goToPage(pageNum)"
-                >
-                  {{ pageNum }}
-                </button>
-              } @else {
-                <!-- Ellipsis Placeholder -->
-                <button class="join-item btn btn-disabled pointer-events-none">
-                  ...
-                </button>
-              }
-            }
-            <!-- Next Button -->
-            <button
-              class="join-item btn"
-              aria-label="Next Page"
-              (click)="nextPage()"
-              [disabled]="!hasNextPage()"
-            >
-              »
-            </button>
-          </div>
-        } @else {
-          <div class="text-sm text-base-content/70">
-            All items shown on this page.
-          </div>
-        }
-      }
-
-      <!-- RENDER "LOAD MORE" UI -->
-      @if (mode() === 'loadMore') {
-        @if (hasNextPage()) {
+    <!--    <div class="mx-auto flex items-center justify-center h-24">-->
+    <!-- RENDER TRADITIONAL PAGINATION UI -->
+    @if (mode() === 'pagination' && totalPages() > 0) {
+      @if (totalPages() > 1) {
+        <div class="join">
+          <!-- Previous Button -->
           <button
-            class="btn "
-            (click)="nextPage()"
-            [disabled]="isLoading()"
+            class="join-item btn"
+            aria-label="Previous Page"
+            (click)="previousPage()"
+            [disabled]="!hasPreviousPage()"
           >
-            @if (isLoading()) {
-              <span class="loading loading-spinner"></span>
-              Loading...
-            } @else {
-              Load More
-            }
+            «
           </button>
-        } @else if (totalCount() > 0) {
-          <div class="text-sm text-base-content/70">
-            You've reached the end. All {{ totalCount() }} items shown.
-          </div>
-        }
+
+          <!-- Page Number Buttons -->
+          @for (pageNum of visiblePageNumbers(); track $index) {
+            @if (typeof pageNum === 'number') {
+              <button
+                class="join-item btn"
+                [class.btn-active]="pageNum === page()"
+                (click)="goToPage(pageNum)"
+              >
+                {{ pageNum }}
+              </button>
+            } @else {
+              <!-- Ellipsis Placeholder -->
+              <button class="join-item btn btn-disabled pointer-events-none">
+                ...
+              </button>
+            }
+          }
+          <!-- Next Button -->
+          <button
+            class="join-item btn"
+            aria-label="Next Page"
+            (click)="nextPage()"
+            [disabled]="!hasNextPage()"
+          >
+            »
+          </button>
+        </div>
+      } @else {
+        <div class="text-sm text-base-content/70">
+          All items shown on this page.
+        </div>
       }
-    </div>
+    }
+
+    <!-- RENDER "LOAD MORE" UI -->
+    @if (mode() === 'loadMore') {
+      @if (hasNextPage()) {
+        <button
+          class="btn"
+          [ngClass]="btnSize()"
+          (click)="nextPage()"
+          [disabled]="isLoading()"
+        >
+          @if (isLoading()) {
+            <span class="loading loading-spinner"></span>
+            Loading...
+          } @else {
+            Load More
+          }
+        </button>
+      } @else if (totalCount() > 0 && showSummary()) {
+        <div class="text-sm text-base-content/70">
+          You've reached the end. All {{ totalCount() }} items shown.
+        </div>
+      }
+    }
+    <!--    </div>-->
   `,
 })
 export class PaginationComponent {
@@ -82,6 +87,8 @@ export class PaginationComponent {
   page = model.required<number>();
 
   mode = input<'pagination' | 'loadMore'>('loadMore');
+  btnSize = input<string>('btn-default');
+  showSummary = input<boolean>(true)
 
   isLoading = input<boolean>(false);
 
