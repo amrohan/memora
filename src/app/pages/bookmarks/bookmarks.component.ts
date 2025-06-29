@@ -16,6 +16,7 @@ import {ApiResponse} from '@models/ApiResponse';
 import {BookmarkCardComponent} from '@components/bookmark-card/bookmark-card.component';
 import {FormsModule} from '@angular/forms';
 import {httpResource} from '@angular/common/http';
+// @ts-ignore
 import {environment} from 'src/environments/environment';
 import {PaginationComponent} from '@components/pagination.component';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -127,7 +128,7 @@ import {SearchComponent} from '@components/search.component';
       }
       <div class="flex justify-center items-center mt-4">
         @if (data.value()?.metadata) {
-          <app-pagination [(page)]="page" [data]="data.value()?.metadata"/>
+          <app-pagination mode="pagination" [(page)]="page" [data]="data.value()?.metadata"/>
         }
       </div>
     </section>

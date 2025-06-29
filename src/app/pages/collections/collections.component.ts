@@ -1,12 +1,17 @@
-import {Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild, viewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  signal,
+  ViewChild,
+  viewChild,
+} from '@angular/core';
 import {CollectionCardComponent} from '@components/collection-card/collection-card.component';
 import {ModalComponent} from '@components/modal/modal.component';
 import {CollectionService} from '@services/collection.service';
 import {Collection} from '@models/collection.model';
 import {FormsModule} from '@angular/forms';
-import {ApiResponse} from '@models/ApiResponse';
-import {httpResource} from '@angular/common/http';
-import {environment} from 'src/environments/environment';
 import {PaginationComponent} from '@components/pagination.component';
 import {ToastService} from '@services/toast.service';
 import {SearchComponent} from '@components/search.component';
@@ -24,7 +29,10 @@ import {SearchComponent} from '@components/search.component';
   template: `
     <section class="mb-36 mt-10">
       <div class="h-16 flex justify-end items-start gap-2">
-        <app-search (searchChange)="searchTerm.set($event)" placeHolder="Search collection... "/>
+        <app-search
+          (searchChange)="collectionService.searchTerm.set($event)"
+          placeHolder="Search collection... "
+        />
         <button class="btn btn-primary" (click)="openCustomModal()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +54,7 @@ import {SearchComponent} from '@components/search.component';
       <article
         class="grid place-content-between items-start gap-4 grid-cols-1 md:grid-cols-3"
       >
-        @for (item of data.value()?.data; track item.id) {
+        @for (item of collectionService.paginatedCollections(); track item.id) {
           <app-collection-card
             [collection]="item"
             (handleOnEdit)="handleCollectionEdit($event)"
@@ -55,7 +63,7 @@ import {SearchComponent} from '@components/search.component';
         }
       </article>
 
-      @if (data.value()?.data?.length === 0) {
+      @if (collectionService.paginatedCollections().length === 0) {
         <p class="text-center text-base-content">No collections found</p>
       }
       @if (validationError() !== null) {
@@ -64,7 +72,7 @@ import {SearchComponent} from '@components/search.component';
         </p>
       }
       <!-- Skeleton -->
-      @if (data.isLoading()) {
+      @if (collectionService.isLoading() && !collectionService.paginatedCollections().length) {
         <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-2 animate-fade">
           @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
             <div class="skeleton h-18 w-full"></div>
@@ -72,8 +80,10 @@ import {SearchComponent} from '@components/search.component';
         </div>
       }
       <div class="flex justify-center items-center mt-4">
-        @if (data.value()?.metadata) {
-          <app-pagination [(page)]="page" [data]="data.value()?.metadata"/>
+        @if (collectionService.metaData()!) {
+          <app-pagination [page]="collectionService.metaData()?.page!"
+                          (pageChange)="collectionService.page.set($event)"
+                          [data]="collectionService.metaData()!"/>
         }
       </div>
     </section>
@@ -105,7 +115,7 @@ import {SearchComponent} from '@components/search.component';
   `,
 })
 export class CollectionsComponent {
-  private collectionService = inject(CollectionService);
+  collectionService = inject(CollectionService);
   private toast = inject(ToastService);
 
   isEditing = signal<boolean>(false);
@@ -113,21 +123,20 @@ export class CollectionsComponent {
   collectionName = signal<string>('');
   validationError = signal<string | null>(null);
 
-  searchTerm = signal<string>('');
-  pageSize = signal<number>(10);
-  page = signal<number>(1);
-
-  data = httpResource<ApiResponse<Collection[]>>(
-    () =>
-      `${
-        environment.API_URL
-      }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
-  );
+  // searchTerm = signal<string>('');
+  // pageSize = signal<number>(10);
+  // page = signal<number>(1);
+  //
+  // data = httpResource<ApiResponse<Collection[]>>(
+  //   () =>
+  //     `${environment.API_URL
+  //     }/collections?search=${this.searchTerm()}&page=${this.page()}&pageSize=${this.pageSize()}`,
+  // );
 
   customModal = viewChild.required<ModalComponent>('customModal');
 
-
-  @ViewChild('collectionInput') collectionInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('collectionInput')
+  collectionInputRef!: ElementRef<HTMLInputElement>;
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -142,6 +151,24 @@ export class CollectionsComponent {
       event.preventDefault();
       this.openCustomModal();
     }
+  }
+
+  constructor() {
+    // effect(() => {
+    //   const newData = this.data.value()?.data;
+    //   if (newData && newData.length > 0) {
+    //     this.collectionService.collectionStore.update((prev) => {
+    //       const combined = [...prev, ...newData];
+    //
+    //       const unique = Array.from(
+    //         new Map(combined.map((item) => [item.id, item])).values(),
+    //       );
+    //
+    //       return unique;
+    //     });
+    //   }
+    //   this.console.log(this.collectionService.collectionStore());
+    // });
   }
 
   collectionDelete(item: Collection) {
@@ -238,7 +265,7 @@ export class CollectionsComponent {
     this.collectionName.set('');
     this.isEditing.set(false);
     this.setCollection.set(null);
-    this.data.reload();
+    // this.data.reload();
   }
 
   protected readonly console = console;

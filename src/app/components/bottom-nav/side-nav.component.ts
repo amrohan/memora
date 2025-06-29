@@ -1,25 +1,18 @@
-import {AsyncPipe} from '@angular/common';
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
-import {ApiResponse} from '@models/ApiResponse';
-import {Collection} from '@models/collection.model';
-import {Tag} from '@models/tags.model';
 import {CollectionService} from '@services/collection.service';
 import {TagService} from '@services/tag.service';
-import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-side-nav-bar',
-  imports: [RouterLink, RouterLinkActive, AsyncPipe],
+  imports: [RouterLink, RouterLinkActive,],
   template: `
     <aside
       class="menu menu-md bg-base-200 rounded-r-md w-60 h-full fixed top-0 left-0 z-10 shadow-lg overflow-hidden"
     >
       <ul class="pt-2 ">
         <li>
-          <div
-            class="h-16 flex items-center justify-center"
-          >
+          <div class="h-16 flex items-center justify-center">
             <h1 class="text-2xl font-semibold">Memora</h1>
           </div>
         </li>
@@ -93,21 +86,22 @@ import {Observable} from 'rxjs';
                     All Collections</a
                   >
                 </li>
-                @if (collections | async) {
+                @if (collectionService.sideBarStore().length > 1) {
                   <li class="menu-title text-xs px-4 pt-2">
                     <span>Filter by:</span>
                   </li>
                 }
-                @for (collection of (collections | async)?.data;
-                  track collection.id) {
+                @for (collection of collectionService.sideBarStore(); track collection.id) {
                   <li>
                     <a
                       [routerLink]="['/bookmarks']"
                       [queryParams]="{
-                      collectionId: collection.id,
-                      collectionName: collection.name,
-                    }"
-                      [routerLinkActive]="'bg-base-content/10 text-base-content'"
+                        collectionId: collection.id,
+                        collectionName: collection.name,
+                      }"
+                      [routerLinkActive]="
+                        'bg-base-content/10 text-base-content'
+                      "
                     >{{ collection.name }}</a
                     >
                   </li>
@@ -163,12 +157,12 @@ import {Observable} from 'rxjs';
                     All Tags</a
                   >
                 </li>
-                @if (tags | async) {
+                @if (tagService.tags().length > 1) {
                   <li class="menu-title text-xs px-4 pt-2">
                     <span>Filter by:</span>
                   </li>
                 }
-                @for (tag of (tags | async)?.data; track tag.id) {
+                @for (tag of tagService.tags(); track tag.id) {
                   <li>
                     <a
                       [routerLink]="['/bookmarks']"
@@ -180,7 +174,6 @@ import {Observable} from 'rxjs';
               </ul>
             </details>
           </li>
-
         </div>
         <div class="absolute bottom-0 w-full bg-base-200 z-10 h-14">
           <li>
@@ -206,23 +199,17 @@ import {Observable} from 'rxjs';
                 />
                 <circle cx="12" cy="12" r="3"/>
               </svg>
-              Settings</a>
+              Settings</a
+            >
           </li>
         </div>
       </ul>
-
     </aside>
   `,
 })
-export class SideNavBarComponent implements OnInit {
+export class SideNavBarComponent {
   collectionService = inject(CollectionService);
   tagService = inject(TagService);
 
-  collections!: Observable<ApiResponse<Collection[]>>;
-  tags!: Observable<ApiResponse<Tag[]>>;
 
-  ngOnInit() {
-    this.collections = this.collectionService.getUserCollections();
-    this.tags = this.tagService.listUserTags();
-  }
 }
