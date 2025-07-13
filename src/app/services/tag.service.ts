@@ -1,12 +1,18 @@
-import {HttpClient} from '@angular/common/http';
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {toObservable} from '@angular/core/rxjs-interop';
-import {ApiResponse, ApiResponseMetadata} from '@models/ApiResponse';
-import {Tag} from '@models/tags.model';
+import { HttpClient } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { ApiResponse, ApiResponseMetadata } from '@models/ApiResponse';
+import { Tag } from '@models/tags.model';
 // @ts-ignore
-import {environment} from 'src/environments/environment';
-import {combineLatest, Observable, of} from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { combineLatest, Observable, of } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +27,7 @@ export class TagService {
   private readonly isLoadingState = signal(false);
 
   readonly searchTerm = signal<string>('');
-  readonly pageSize = signal<number>(10);
+  readonly pageSize = signal<number>(50);
   readonly page = signal<number>(1);
 
   readonly tags = this.allTags.asReadonly();
@@ -34,7 +40,7 @@ export class TagService {
     const debouncedSearchTerm$ = toObservable(this.searchTerm).pipe(
       debounceTime(300),
       tap(() => this.page.set(1)),
-      distinctUntilChanged()
+      distinctUntilChanged(),
     );
 
     const page$ = toObservable(this.page);
@@ -46,14 +52,20 @@ export class TagService {
       pageSize: pageSize$,
     });
 
-    params$.pipe(
-      switchMap(({search, page, pageSize}) =>
-        this.fetchPaginatedTags(search, page, pageSize)
+    params$
+      .pipe(
+        switchMap(({ search, page, pageSize }) =>
+          this.fetchPaginatedTags(search, page, pageSize),
+        ),
       )
-    ).subscribe();
+      .subscribe();
   }
 
-  private fetchPaginatedTags(search: string, page: number, pageSize: number): Observable<ApiResponse<Tag[]>> {
+  private fetchPaginatedTags(
+    search: string,
+    page: number,
+    pageSize: number,
+  ): Observable<ApiResponse<Tag[]>> {
     this.isLoadingState.set(true);
 
     if (page === 1) {
@@ -67,12 +79,14 @@ export class TagService {
         next: (res) => {
           const newData = res.data ?? [];
           if (newData.length > 0) {
-            this.paginatedTagsState.update(current =>
-              page > 1 ? [...current, ...newData] : newData
+            this.paginatedTagsState.update((current) =>
+              page > 1 ? [...current, ...newData] : newData,
             );
             this.allTags.update((currentAll) => {
               const combined = [...currentAll, ...newData];
-              return Array.from(new Map(combined.map(item => [item.id, item])).values());
+              return Array.from(
+                new Map(combined.map((item) => [item.id, item])).values(),
+              );
             });
           }
           this.metaDataState.set(res.metadata);
@@ -80,12 +94,12 @@ export class TagService {
         },
         error: () => {
           this.isLoadingState.set(false);
-        }
+        },
       }),
       catchError((err) => {
-        console.error("Failed to fetch tags:", err);
+        console.error('Failed to fetch tags:', err);
         return of();
-      })
+      }),
     );
   }
 
@@ -94,36 +108,39 @@ export class TagService {
     this.paginatedTagsState.update(updateFn);
   }
 
-
   createTag(tag: Partial<Tag>): Observable<ApiResponse<Tag>> {
     return this.http.post<ApiResponse<Tag>>(`${this.apiUrl}/tags`, tag).pipe(
-      tap(res => {
+      tap((res) => {
         if (res.data) {
-          this._updateStores(tags => [res.data!, ...tags]);
+          this._updateStores((tags) => [res.data!, ...tags]);
         }
-      })
+      }),
     );
   }
 
   updateTag(tag: Tag): Observable<ApiResponse<Tag>> {
-    return this.http.put<ApiResponse<Tag>>(`${this.apiUrl}/tags/${tag.id}`, tag).pipe(
-      tap(res => {
-        if (res.data) {
-          const updatedTag = res.data;
-          this._updateStores(tags =>
-            tags.map(t => (t.id === updatedTag.id ? updatedTag : t))
-          );
-        }
-      })
-    );
+    return this.http
+      .put<ApiResponse<Tag>>(`${this.apiUrl}/tags/${tag.id}`, tag)
+      .pipe(
+        tap((res) => {
+          if (res.data) {
+            const updatedTag = res.data;
+            this._updateStores((tags) =>
+              tags.map((t) => (t.id === updatedTag.id ? updatedTag : t)),
+            );
+          }
+        }),
+      );
   }
 
   deleteTag(tagId: string): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/tags/${tagId}`).pipe(
-      tap(() => {
-        this._updateStores(tags => tags.filter(t => t.id !== tagId));
-      })
-    );
+    return this.http
+      .delete<ApiResponse<void>>(`${this.apiUrl}/tags/${tagId}`)
+      .pipe(
+        tap(() => {
+          this._updateStores((tags) => tags.filter((t) => t.id !== tagId));
+        }),
+      );
   }
 
   getTagById(tagId: string): Observable<ApiResponse<Tag>> {

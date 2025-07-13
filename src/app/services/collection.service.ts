@@ -1,13 +1,19 @@
-import {HttpClient} from '@angular/common/http';
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {ApiResponse, ApiResponseMetadata} from '@models/ApiResponse';
-import {Collection} from '@models/collection.model';
-import {Observable, of} from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators';
-import {toObservable} from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { ApiResponse, ApiResponseMetadata } from '@models/ApiResponse';
+import { Collection } from '@models/collection.model';
+import { Observable, of } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
+import { toObservable } from '@angular/core/rxjs-interop';
 // @ts-ignore
-import {environment} from 'src/environments/environment';
-import {combineLatest} from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { combineLatest } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +28,7 @@ export class CollectionService {
   private readonly isLoadingState = signal(false);
 
   readonly searchTerm = signal<string>('');
-  readonly pageSize = signal<number>(10);
+  readonly pageSize = signal<number>(50);
   readonly page = signal<number>(1);
 
   readonly sideBarStore = this.allCollections.asReadonly();
@@ -35,7 +41,7 @@ export class CollectionService {
     const debouncedSearchTerm$ = toObservable(this.searchTerm).pipe(
       debounceTime(300),
       tap(() => this.page.set(1)),
-      distinctUntilChanged()
+      distinctUntilChanged(),
     );
 
     const page$ = toObservable(this.page);
@@ -47,14 +53,20 @@ export class CollectionService {
       pageSize: pageSize$,
     });
 
-    params$.pipe(
-      switchMap(({search, page, pageSize}) =>
-        this.fetchPaginatedCollections(search, page, pageSize)
+    params$
+      .pipe(
+        switchMap(({ search, page, pageSize }) =>
+          this.fetchPaginatedCollections(search, page, pageSize),
+        ),
       )
-    ).subscribe();
+      .subscribe();
   }
 
-  private fetchPaginatedCollections(search: string, page: number, pageSize: number): Observable<ApiResponse<Collection[]>> {
+  private fetchPaginatedCollections(
+    search: string,
+    page: number,
+    pageSize: number,
+  ): Observable<ApiResponse<Collection[]>> {
     this.isLoadingState.set(true);
 
     if (page === 1) {
@@ -68,12 +80,14 @@ export class CollectionService {
         next: (res) => {
           const newData = res.data ?? [];
           if (newData.length > 0) {
-            this.paginatedCollectionsState.update(current =>
-              page > 1 ? [...current, ...newData] : newData
+            this.paginatedCollectionsState.update((current) =>
+              page > 1 ? [...current, ...newData] : newData,
             );
             this.allCollections.update((currentAll) => {
               const combined = [...currentAll, ...newData];
-              return Array.from(new Map(combined.map(item => [item.id, item])).values());
+              return Array.from(
+                new Map(combined.map((item) => [item.id, item])).values(),
+              );
             });
           }
           this.metaDataState.set(res.metadata);
@@ -81,12 +95,12 @@ export class CollectionService {
         },
         error: () => {
           this.isLoadingState.set(false);
-        }
+        },
       }),
       catchError((err) => {
-        console.error("Failed to fetch collections:", err);
+        console.error('Failed to fetch collections:', err);
         return of();
-      })
+      }),
     );
   }
 
@@ -95,45 +109,66 @@ export class CollectionService {
     this.paginatedCollectionsState.update(updateFn);
   }
 
-
-  createCollection(collection: Partial<Collection>): Observable<ApiResponse<Collection>> {
-    return this.http.post<ApiResponse<Collection>>(`${this.apiUrl}/collections`, collection).pipe(
-      tap(res => {
-        if (res.data) {
-          this._updateStores(collections => [res.data!, ...collections]);
-        }
-      })
-    );
+  createCollection(
+    collection: Partial<Collection>,
+  ): Observable<ApiResponse<Collection>> {
+    return this.http
+      .post<ApiResponse<Collection>>(`${this.apiUrl}/collections`, collection)
+      .pipe(
+        tap((res) => {
+          if (res.data) {
+            this._updateStores((collections) => [res.data!, ...collections]);
+          }
+        }),
+      );
   }
 
-  updateCollection(collection: Collection): Observable<ApiResponse<Collection>> {
-    return this.http.put<ApiResponse<Collection>>(`${this.apiUrl}/collections/${collection.id}`, collection).pipe(
-      tap(res => {
-        if (res.data) {
-          const updatedCollection = res.data;
-          this._updateStores(collections =>
-            collections.map(c => c.id === updatedCollection.id ? updatedCollection : c)
-          );
-        }
-      })
-    );
+  updateCollection(
+    collection: Collection,
+  ): Observable<ApiResponse<Collection>> {
+    return this.http
+      .put<
+        ApiResponse<Collection>
+      >(`${this.apiUrl}/collections/${collection.id}`, collection)
+      .pipe(
+        tap((res) => {
+          if (res.data) {
+            const updatedCollection = res.data;
+            this._updateStores((collections) =>
+              collections.map((c) =>
+                c.id === updatedCollection.id ? updatedCollection : c,
+              ),
+            );
+          }
+        }),
+      );
   }
 
   deleteCollection(collectionId: string): Observable<ApiResponse<Collection>> {
-    return this.http.delete<ApiResponse<Collection>>(`${this.apiUrl}/collections/${collectionId}`).pipe(
-      tap(() => {
-        this._updateStores(collections =>
-          collections.filter(c => c.id !== collectionId)
-        );
-      })
-    );
+    return this.http
+      .delete<
+        ApiResponse<Collection>
+      >(`${this.apiUrl}/collections/${collectionId}`)
+      .pipe(
+        tap(() => {
+          this._updateStores((collections) =>
+            collections.filter((c) => c.id !== collectionId),
+          );
+        }),
+      );
   }
 
   getCollectionById(collectionId: string): Observable<ApiResponse<Collection>> {
-    return this.http.get<ApiResponse<Collection>>(`${this.apiUrl}/collections/${collectionId}`);
+    return this.http.get<ApiResponse<Collection>>(
+      `${this.apiUrl}/collections/${collectionId}`,
+    );
   }
 
-  getBookmarksByCollection(collectionId: string): Observable<ApiResponse<Collection[]>> {
-    return this.http.get<ApiResponse<Collection[]>>(`${this.apiUrl}/collections/${collectionId}/bookmarks`);
+  getBookmarksByCollection(
+    collectionId: string,
+  ): Observable<ApiResponse<Collection[]>> {
+    return this.http.get<ApiResponse<Collection[]>>(
+      `${this.apiUrl}/collections/${collectionId}/bookmarks`,
+    );
   }
 }
