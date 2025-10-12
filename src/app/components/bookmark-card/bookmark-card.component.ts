@@ -63,16 +63,16 @@ import { Router } from '@angular/router';
             </div>
             }
             <div class="flex flex-col items-start ">
-            <div class="text-base font-medium line-clamp-1">
-              <a
-                [href]="bookmark().url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="hover:underline underline-offset-1 decoration-wavy decoration-accent"
-              >
-                {{ bookmark().title || 'Untitled' }}
-              </a>
-            </div>
+              <div class="text-base font-medium line-clamp-1">
+                <a
+                  [href]="bookmark().url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:underline underline-offset-1 decoration-wavy decoration-accent"
+                >
+                  {{ bookmark().title || 'Untitled' }}
+                </a>
+              </div>
               <!-- Link -->
               <a
                 [href]="bookmark().url"
@@ -114,9 +114,13 @@ import { Router } from '@angular/router';
                 tabindex="0"
                 class="animte-fade z-10 menu w-44 absolute p-2 shadow bg-base-100 rounded-box -left-38 border border-base-content/20"
               >
-                <li><a class="p-2.5 md:p-2" (click)="onEdit(bookmark())">Edit</a></li>
                 <li>
-                  <a (click)="onDelete(bookmark())" class="text-error p-2.5 md:p-2"
+                  <a class="p-2.5 md:p-2" (click)="onEdit(bookmark())">Edit</a>
+                </li>
+                <li>
+                  <a
+                    (click)="onDelete(bookmark())"
+                    class="text-error p-2.5 md:p-2"
                     >Delete</a
                   >
                 </li>
@@ -134,7 +138,9 @@ import { Router } from '@angular/router';
               {{ bookmark().description }}
             </p>
             } @else {
-            <p class="text-xs text-base-content/50 line-clamp-2 min-h-10 italic">
+            <p
+              class="text-xs text-base-content/50 line-clamp-2 min-h-10 italic"
+            >
               No description
             </p>
             }
