@@ -1,6 +1,5 @@
 import {
   Component,
-  computed,
   ElementRef,
   HostListener,
   inject,
@@ -300,7 +299,7 @@ export class BookmarksComponent implements OnInit {
 
   bookmarkDelete(bookmark: Bookmark) {
     this.bookMarkService.deleteBookmark(bookmark.id).subscribe({
-      next: (res) => {
+      next: () => {
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
@@ -336,7 +335,7 @@ export class BookmarksComponent implements OnInit {
 
   handleItemSaved(data: Bookmark): void {
     this.bookMarkService.updateBookmark(data).subscribe({
-      next: (res) => {
+      next: () => {
         this.data.update((prev: ApiResponse<Bookmark[]> | undefined) => {
           if (!prev?.data || !Array.isArray(prev.data)) {
             this.toast.warn(
@@ -364,6 +363,7 @@ export class BookmarksComponent implements OnInit {
   }
 
   handleItemVisit(id: string): void {
+    console.log(id);
     /* ... */
   }
 

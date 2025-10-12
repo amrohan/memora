@@ -338,6 +338,7 @@ export class BookmarkCardComponent {
       const urlObj = new URL(this.bookmark().url);
       return urlObj.hostname;
     } catch (e) {
+      console.log(e);
       return this.bookmark().url;
     }
   });
