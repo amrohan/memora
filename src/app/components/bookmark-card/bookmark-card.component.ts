@@ -86,7 +86,7 @@ import { Router } from '@angular/router';
           </div>
 
           <div class="flex gap-1 items-start">
-            <div #dropdownTrigger class=" relative">
+            <div #dropdownTrigger class="relative">
               <button
                 (click)="isDropdownOpen.set(!isDropdownOpen())"
                 tabindex="0"
@@ -116,6 +116,11 @@ import { Router } from '@angular/router';
               >
                 <li>
                   <a class="p-2.5 md:p-2" (click)="onEdit(bookmark())">Edit</a>
+                </li>
+                <li>
+                  <a class="p-2.5 md:p-2" (click)="onShare(bookmark())"
+                    >Share</a
+                  >
                 </li>
                 <li>
                   <a
@@ -218,82 +223,6 @@ import { Router } from '@angular/router';
           {{ bookmark().createdAt | date : 'MMM d yyyy' }}
         </div>
       </div>
-
-      <!-- Touch-friendly overlay version for larger screens only -->
-      <!-- <div
-        class="absolute inset-0 bg-base-300/30 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex items-center justify-center gap-3 backdrop-blur-sm"
-      >
-        <button
-          class="btn btn-circle btn-sm btn-ghost"
-          (click)="onEdit(bookmark())"
-          title="Edit"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-            ></path>
-            <path
-              d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-            ></path>
-          </svg>
-        </button>
-        <a
-          [href]="bookmark().url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-circle btn-sm btn-primary"
-          title="Visit"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-            ></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-        <button
-          class="btn btn-circle btn-sm btn-ghost text-error"
-          (click)="onDelete(bookmark())"
-          title="Delete"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path
-              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-            ></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
-          </svg>
-        </button>
-      </div> -->
     </div>
   `,
 })
@@ -348,14 +277,34 @@ export class BookmarkCardComponent {
     this.handleOnEdit.emit(bookmark);
   }
 
+  async onShare(bookmark: Bookmark): Promise<void> {
+    this.isDropdownOpen.set(false);
+    const shareData = {
+      title: bookmark.title || 'Untitled Bookmark',
+      url: bookmark.url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(bookmark.url);
+        alert('Link copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy link.');
+      }
+    }
+  }
+
   onDelete(bookmark: Bookmark): void {
     this.isDropdownOpen.set(false);
     this.handleOnDelete.emit(bookmark);
   }
-
-  // onVisit(bookmark: Bookmark): void {
-  //   this.handleOnVisit.emit(bookmark.id);
-  // }
 
   navigateToTag(tagId: string, tagName: string): void {
     this.tagClick.emit({ id: tagId, name: tagName });
