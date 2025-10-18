@@ -47,15 +47,13 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="name"
                 />
-                @if (
-                  settingsForm.get('name')?.invalid &&
-                  settingsForm.get('name')?.touched
-                ) {
-                  <label class="label">
-                    <span class="label-text-alt text-error"
-                      >Please enter a valid name</span
-                    >
-                  </label>
+                @if ( settingsForm.get('name')?.invalid &&
+                settingsForm.get('name')?.touched ) {
+                <label class="label">
+                  <span class="label-text-alt text-error"
+                    >Please enter a valid name</span
+                  >
+                </label>
                 }
               </div>
 
@@ -69,22 +67,19 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="email"
                 />
-                @if (
-                  settingsForm.get('email')?.invalid &&
-                  settingsForm.get('email')?.touched
-                ) {
-                  <label class="label">
-                    <span class="label-text-alt text-error"
-                      >Please enter a valid email address</span
-                    >
-                  </label>
-                }
-                @if (fieldErrors()?.['email']) {
-                  <label class="label">
-                    <span class="label-text-alt text-error">{{
+                @if ( settingsForm.get('email')?.invalid &&
+                settingsForm.get('email')?.touched ) {
+                <label class="label">
+                  <span class="label-text-alt text-error"
+                    >Please enter a valid email address</span
+                  >
+                </label>
+                } @if (fieldErrors()?.['email']) {
+                <label class="label">
+                  <span class="label-text-alt text-error">{{
                       fieldErrors()?.['email']
-                    }}</span>
-                  </label>
+                  }}</span>
+                </label>
                 }
               </div>
 
@@ -95,9 +90,8 @@ import { TabService } from '@services/tab.service';
                   [disabled]="settingsForm.invalid || isLoading()"
                 >
                   @if (isLoading()) {
-                    <span class="loading loading-spinner loading-sm"></span>
-                  }
-                  Save Changes
+                  <span class="loading loading-spinner loading-sm"></span>
+                  } Save Changes
                 </button>
               </div>
             </form>
@@ -105,7 +99,11 @@ import { TabService } from '@services/tab.service';
         </div>
 
         <!-- Themes -->
-        <input type="radio" name="my_tabs_2" class="tab" aria-label="Themes"
+        <input
+          type="radio"
+          name="my_tabs_2"
+          class="tab"
+          aria-label="Themes"
           [checked]="this.tabService.selectedTab() === 'Themes'"
           (change)="this.tabService.setSelectedTab('Themes')"
         />
@@ -139,15 +137,13 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="currentPassword"
                 />
-                @if (
-                  settingsForm.get('currentPassword')?.invalid &&
-                  settingsForm.get('currentPassword')?.touched
-                ) {
-                  <label class="label">
-                    <span class="label-text-alt text-error"
-                      >Please enter your current password</span
-                    >
-                  </label>
+                @if ( settingsForm.get('currentPassword')?.invalid &&
+                settingsForm.get('currentPassword')?.touched ) {
+                <label class="label">
+                  <span class="label-text-alt text-error"
+                    >Please enter your current password</span
+                  >
+                </label>
                 }
               </div>
 
@@ -161,15 +157,13 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="newPassword"
                 />
-                @if (
-                  settingsForm.get('newPassword')?.invalid &&
-                  settingsForm.get('newPassword')?.touched
-                ) {
-                  <label class="label">
-                    <span class="label-text-alt text-error"
-                      >Please enter a new password</span
-                    >
-                  </label>
+                @if ( settingsForm.get('newPassword')?.invalid &&
+                settingsForm.get('newPassword')?.touched ) {
+                <label class="label">
+                  <span class="label-text-alt text-error"
+                    >Please enter a new password</span
+                  >
+                </label>
                 }
               </div>
 
@@ -183,22 +177,19 @@ import { TabService } from '@services/tab.service';
                   placeholder="Confirm your new password"
                   formControlName="confirmNewPassword"
                 />
-                @if (
-                  settingsForm.get('confirmNewPassword')?.invalid &&
-                  settingsForm.get('confirmNewPassword')?.touched
-                ) {
-                  <label class="label">
-                    <span class="label-text-alt text-error"
-                      >Please confirm your new password</span
-                    >
-                  </label>
-                }
-                @if (fieldErrors()?.['confirmNewPassword']) {
-                  <label class="label">
-                    <span class="label-text-alt text-error">{{
+                @if ( settingsForm.get('confirmNewPassword')?.invalid &&
+                settingsForm.get('confirmNewPassword')?.touched ) {
+                <label class="label">
+                  <span class="label-text-alt text-error"
+                    >Please confirm your new password</span
+                  >
+                </label>
+                } @if (fieldErrors()?.['confirmNewPassword']) {
+                <label class="label">
+                  <span class="label-text-alt text-error">{{
                       fieldErrors()?.['confirmNewPassword']
-                    }}</span>
-                  </label>
+                  }}</span>
+                </label>
                 }
               </div>
 
@@ -209,23 +200,12 @@ import { TabService } from '@services/tab.service';
                   [disabled]="isLoading()"
                 >
                   @if (isLoading()) {
-                    <span class="loading loading-spinner loading-sm"></span>
-                  }
-                  Change Password
+                  <span class="loading loading-spinner loading-sm"></span>
+                  } Change Password
                 </button>
               </div>
             </form>
           </fieldset>
-
-          <div class="flex w-full flex-col">
-            <div class="divider">OR</div>
-
-            <div class="card rounded-box grid h-20 place-items-center">
-              <button class="btn btn-error " (click)="authState.logout()">
-                Logout
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -238,7 +218,6 @@ export class SettingsComponent implements OnInit {
   public toast = inject(ToastService);
   public tabService = inject(TabService);
 
-  // Signals
   isLoading = signal<boolean>(false);
 
   successMessage = signal<string | null>(null);
@@ -272,7 +251,7 @@ export class SettingsComponent implements OnInit {
       error: () => {
         this.toast.error('Failed to load user data. Please try again later.');
         this.errorMessage.set(
-          'Failed to load user data. Please try again later.',
+          'Failed to load user data. Please try again later.'
         );
         this.isLoading.set(false);
       },
@@ -304,7 +283,7 @@ export class SettingsComponent implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
         this.toast.error(
-          err.error?.message || 'Failed to update profile. Please try again.',
+          err.error?.message || 'Failed to update profile. Please try again.'
         );
         this.errorMessage.set(err.message || 'Update failed');
       },
@@ -352,15 +331,15 @@ export class SettingsComponent implements OnInit {
           this.isLoading.set(false);
           if (error.error?.errors) {
             this.toast.error(
-              error.error?.errors[0]?.message || 'Failed to change password.',
+              error.error?.errors[0]?.message || 'Failed to change password.'
             );
             this.handleErrors(error.error);
           } else {
             this.toast.error(
-              error.error?.message || 'Failed to change password.',
+              error.error?.message || 'Failed to change password.'
             );
             this.errorMessage.set(
-              error.error?.message || 'Failed to change password.',
+              error.error?.message || 'Failed to change password.'
             );
           }
         },

@@ -719,7 +719,7 @@ export class AuthComponent implements OnInit {
 
     this.authService
       .login({ email: this.email, password: this.password })
-      .pipe(finalize(() => this.isLoading.set(false))) // Ensure isLoading is reset
+      .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response: ApiResponse<LoginSuccessData>) => {
           if (

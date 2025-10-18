@@ -1,17 +1,18 @@
-import {Component, inject} from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
-import {CollectionService} from '@services/collection.service';
-import {TagService} from '@services/tag.service';
-import {PaginationComponent} from '@components/pagination.component';
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CollectionService } from '@services/collection.service';
+import { TagService } from '@services/tag.service';
+import { PaginationComponent } from '@components/pagination.component';
+import { AuthStateService } from '@services/auth-state.service';
 
 @Component({
   selector: 'app-side-nav-bar',
-  imports: [RouterLink, RouterLinkActive, PaginationComponent,],
+  imports: [RouterLink, RouterLinkActive, PaginationComponent],
   template: `
     <aside
-      class="menu menu-md bg-base-200 rounded-r-md w-60 h-full fixed top-0 left-0 z-10 shadow-lg overflow-hidden"
+      class="menu menu-md bg-base-200 rounded-r-md w-60 h-full fixed top-0 left-0 z-10 shadow-lg"
     >
-      <ul class="pt-2 ">
+      <ul class="pt-2">
         <li>
           <div class="h-16 flex items-center justify-center">
             <h1 class="text-2xl font-semibold">Memora</h1>
@@ -36,7 +37,7 @@ import {PaginationComponent} from '@components/pagination.component';
                 stroke-linejoin="round"
                 class="size-4"
               >
-                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
               </svg>
               Bookmarks</a
             >
@@ -79,39 +80,40 @@ import {PaginationComponent} from '@components/pagination.component';
                       stroke-linejoin="round"
                       class="size-4"
                     >
-                      <rect width="7" height="7" x="3" y="3" rx="1"/>
-                      <rect width="7" height="7" x="14" y="3" rx="1"/>
-                      <rect width="7" height="7" x="14" y="14" rx="1"/>
-                      <rect width="7" height="7" x="3" y="14" rx="1"/>
+                      <rect width="7" height="7" x="3" y="3" rx="1" />
+                      <rect width="7" height="7" x="14" y="3" rx="1" />
+                      <rect width="7" height="7" x="14" y="14" rx="1" />
+                      <rect width="7" height="7" x="3" y="14" rx="1" />
                     </svg>
                     All Collections</a
                   >
                 </li>
                 @if (collectionService.sideBarStore().length > 1) {
-                  <li class="menu-title text-xs px-4 pt-2">
-                    <span>Filter by:</span>
-                  </li>
-                }
-                @for (collection of collectionService.sideBarStore(); track collection.id) {
-                  <li>
-                    <a
-                      [routerLink]="['/bookmarks']"
-                      [queryParams]="{
+                <li class="menu-title text-xs px-4 pt-2">
+                  <span>Filter by:</span>
+                </li>
+                } @for (collection of collectionService.sideBarStore(); track
+                collection.id) {
+                <li>
+                  <a
+                    [routerLink]="['/bookmarks']"
+                    [queryParams]="{
                         collectionId: collection.id,
                         collectionName: collection.name,
                       }"
-                      [routerLinkActive]="
-                        'bg-base-content/10 text-base-content'
-                      "
+                    [routerLinkActive]="'bg-base-content/10 text-base-content'"
                     >{{ collection.name }}</a
-                    >
-                  </li>
+                  >
+                </li>
                 }
                 <li>
-                  <app-pagination btnSize="btn-xs btn-active w-34" [showSummary]="false"
-                                  [page]="collectionService.metaData()?.page!"
-                                  (pageChange)="collectionService.page.set($event)"
-                                  [data]="collectionService.metaData()!"/>
+                  <app-pagination
+                    btnSize="btn-xs btn-active w-34"
+                    [showSummary]="false"
+                    [page]="collectionService.metaData()?.page!"
+                    (pageChange)="collectionService.page.set($event)"
+                    [data]="collectionService.metaData()!"
+                  />
                 </li>
               </ul>
             </details>
@@ -133,7 +135,7 @@ import {PaginationComponent} from '@components/pagination.component';
                   <path
                     d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
                   />
-                  <circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>
+                  <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
                 </svg>
                 Tags
               </summary>
@@ -156,45 +158,43 @@ import {PaginationComponent} from '@components/pagination.component';
                       stroke-linejoin="round"
                       class="size-4"
                     >
-                      <rect width="7" height="7" x="3" y="3" rx="1"/>
-                      <rect width="7" height="7" x="14" y="3" rx="1"/>
-                      <rect width="7" height="7" x="14" y="14" rx="1"/>
-                      <rect width="7" height="7" x="3" y="14" rx="1"/>
+                      <rect width="7" height="7" x="3" y="3" rx="1" />
+                      <rect width="7" height="7" x="14" y="3" rx="1" />
+                      <rect width="7" height="7" x="14" y="14" rx="1" />
+                      <rect width="7" height="7" x="3" y="14" rx="1" />
                     </svg>
                     All Tags</a
                   >
                 </li>
                 @if (tagService.tags().length > 1) {
-                  <li class="menu-title text-xs px-4 pt-2">
-                    <span>Filter by:</span>
-                  </li>
-                }
-                @for (tag of tagService.tags(); track tag.id) {
-                  <li>
-                    <a
-                      [routerLink]="['/bookmarks']"
-                      [queryParams]="{ tagId: tag.id, tagName: tag.name }"
+                <li class="menu-title text-xs px-4 pt-2">
+                  <span>Filter by:</span>
+                </li>
+                } @for (tag of tagService.tags(); track tag.id) {
+                <li>
+                  <a
+                    [routerLink]="['/bookmarks']"
+                    [queryParams]="{ tagId: tag.id, tagName: tag.name }"
                     >{{ tag.name }}</a
-                    >
-                  </li>
+                  >
+                </li>
                 }
                 <li>
-                  <app-pagination btnSize="btn-xs btn-active w-34" [showSummary]="false"
-                                  [page]="tagService.metaData()?.page!"
-                                  (pageChange)="tagService.page.set($event)"
-                                  [data]="tagService.metaData()!"/>
+                  <app-pagination
+                    btnSize="btn-xs btn-active w-34"
+                    [showSummary]="false"
+                    [page]="tagService.metaData()?.page!"
+                    (pageChange)="tagService.page.set($event)"
+                    [data]="tagService.metaData()!"
+                  />
                 </li>
               </ul>
             </details>
           </li>
         </div>
         <div class="absolute bottom-0 w-full bg-base-200 z-10 h-14">
-          <li>
-            <a
-              routerLink="/settings"
-              [routerLinkActive]="'bg-base-content/10 text-base-content'"
-              class="font-medium"
-            >
+          <li class="relative">
+            <button (click)="handleMenuClick()" class="font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -210,10 +210,84 @@ import {PaginationComponent} from '@components/pagination.component';
                 <path
                   d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
                 />
-                <circle cx="12" cy="12" r="3"/>
+                <circle cx="12" cy="12" r="3" />
               </svg>
-              Settings</a
+              Settings
+            </button>
+
+            @if(isMenuActive()){
+            <div
+              class="absolute left-48 -top-40 z-50 card bg-base-100 shadow-xl w-64 border border-base-200"
             >
+              <div class="card-body p-3">
+                <!-- Profile Header -->
+                <div
+                  class="flex items-center gap-3 border-b border-base-300 pb-3"
+                >
+                  <div class="avatar">
+                    <div
+                      class="w-10 rounded-full ring ring-primary/20 ring-offset-base-100 ring-offset-2"
+                    >
+                      <img
+                        src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
+                        alt="User Avatar"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex flex-col">
+                    <p class="font-semibold text-sm text-base-content">
+                      {{ authStateService.currentUser()?.name || 'User' }}
+                    </p>
+                    <p class="text-xs text-base-content/70 truncate">
+                      {{
+                        authStateService.currentUser()?.email ||
+                          'example@email.com'
+                      }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Menu Items -->
+                <ul class="menu menu-sm w-full p-0 m-0 my-1">
+                  <li>
+                    <a
+                      (click)="handleMenuClick()"
+                      routerLink="/settings"
+                      class="flex items-center justify-start gap-2"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="size-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                        />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      Settings
+                    </a>
+                  </li>
+                </ul>
+
+                <!-- Divider -->
+                <div class="divider my-2"></div>
+
+                <!-- Logout Button -->
+                <button
+                  (click)="authStateService.logout()"
+                  class="btn btn-error btn-sm w-full"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+            }
           </li>
         </div>
       </ul>
@@ -223,6 +297,10 @@ import {PaginationComponent} from '@components/pagination.component';
 export class SideNavBarComponent {
   collectionService = inject(CollectionService);
   tagService = inject(TagService);
+  authStateService = inject(AuthStateService);
+  isMenuActive = signal(false);
 
-
+  handleMenuClick() {
+    this.isMenuActive.update((menu) => !menu);
+  }
 }
