@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 
 export interface Theme {
   name: string;
@@ -10,44 +10,44 @@ export interface Theme {
 })
 export class ThemeService {
   private readonly THEME_STORAGE_KEY = 'selected-theme';
-  private readonly DEFAULT_THEME = 'black';
+  private readonly DEFAULT_THEME = 'cupcake';
 
   private themes: Theme[] = [
-    { name: 'light', displayName: 'Light' },
-    { name: 'dark', displayName: 'Dark' },
-    { name: 'cupcake', displayName: 'Cupcake' },
-    { name: 'bumblebee', displayName: 'Bumblebee' },
-    { name: 'emerald', displayName: 'Emerald' },
-    { name: 'corporate', displayName: 'Corporate' },
-    { name: 'synthwave', displayName: 'Synthwave' },
-    { name: 'retro', displayName: 'Retro' },
-    { name: 'cyberpunk', displayName: 'Cyberpunk' },
-    { name: 'valentine', displayName: 'Valentine' },
-    { name: 'halloween', displayName: 'Halloween' },
-    { name: 'garden', displayName: 'Garden' },
-    { name: 'forest', displayName: 'Forest' },
-    { name: 'aqua', displayName: 'Aqua' },
-    { name: 'lofi', displayName: 'Lo-Fi' },
-    { name: 'pastel', displayName: 'Pastel' },
-    { name: 'fantasy', displayName: 'Fantasy' },
-    { name: 'wireframe', displayName: 'Wireframe' },
-    { name: 'black', displayName: 'Black' },
-    { name: 'luxury', displayName: 'Luxury' },
-    { name: 'dracula', displayName: 'Dracula' },
-    { name: 'cmyk', displayName: 'CMYK' },
-    { name: 'autumn', displayName: 'Autumn' },
-    { name: 'business', displayName: 'Business' },
-    { name: 'acid', displayName: 'Acid' },
-    { name: 'lemonade', displayName: 'Lemonade' },
-    { name: 'night', displayName: 'Night' },
-    { name: 'coffee', displayName: 'Coffee' },
-    { name: 'winter', displayName: 'Winter' },
-    { name: 'dim', displayName: 'Dim' },
-    { name: 'nord', displayName: 'Nord' },
-    { name: 'sunset', displayName: 'Sunset' },
-    { name: 'caramellatte', displayName: 'Caramel Latte' },
-    { name: 'abyss', displayName: 'Abyss' },
-    { name: 'silk', displayName: 'Silk' },
+    {name: 'light', displayName: 'Light'},
+    {name: 'dark', displayName: 'Dark'},
+    {name: 'cupcake', displayName: 'Cupcake'},
+    {name: 'bumblebee', displayName: 'Bumblebee'},
+    {name: 'emerald', displayName: 'Emerald'},
+    {name: 'corporate', displayName: 'Corporate'},
+    {name: 'synthwave', displayName: 'Synthwave'},
+    {name: 'retro', displayName: 'Retro'},
+    {name: 'cyberpunk', displayName: 'Cyberpunk'},
+    {name: 'valentine', displayName: 'Valentine'},
+    {name: 'halloween', displayName: 'Halloween'},
+    {name: 'garden', displayName: 'Garden'},
+    {name: 'forest', displayName: 'Forest'},
+    {name: 'aqua', displayName: 'Aqua'},
+    {name: 'lofi', displayName: 'Lo-Fi'},
+    {name: 'pastel', displayName: 'Pastel'},
+    {name: 'fantasy', displayName: 'Fantasy'},
+    {name: 'wireframe', displayName: 'Wireframe'},
+    {name: 'black', displayName: 'Black'},
+    {name: 'luxury', displayName: 'Luxury'},
+    {name: 'dracula', displayName: 'Dracula'},
+    {name: 'cmyk', displayName: 'CMYK'},
+    {name: 'autumn', displayName: 'Autumn'},
+    {name: 'business', displayName: 'Business'},
+    {name: 'acid', displayName: 'Acid'},
+    {name: 'lemonade', displayName: 'Lemonade'},
+    {name: 'night', displayName: 'Night'},
+    {name: 'coffee', displayName: 'Coffee'},
+    {name: 'winter', displayName: 'Winter'},
+    {name: 'dim', displayName: 'Dim'},
+    {name: 'nord', displayName: 'Nord'},
+    {name: 'sunset', displayName: 'Sunset'},
+    {name: 'caramellatte', displayName: 'Caramel Latte'},
+    {name: 'abyss', displayName: 'Abyss'},
+    {name: 'silk', displayName: 'Silk'},
   ];
 
   public currentTheme = signal(this.getStoredTheme());
