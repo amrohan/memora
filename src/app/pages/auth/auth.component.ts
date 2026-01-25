@@ -1,11 +1,11 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
-import { AuthService, LoginSuccessData } from '@services/auth.service';
-import { AuthStateService } from '@services/auth-state.service';
-import { ApiResponse, ApiResponseError, ApiError } from '@models/ApiResponse';
-import { ThemeService } from '@services/theme.service';
+import {Component, inject, signal, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {Router, RouterLink} from '@angular/router';
+import {finalize} from 'rxjs';
+import {AuthService, LoginSuccessData} from '@services/auth.service';
+import {AuthStateService} from '@services/auth-state.service';
+import {ApiResponse, ApiResponseError, ApiError} from '@models/ApiResponse';
+import {ThemeService} from '@services/theme.service';
 
 @Component({
   selector: 'app-auth',
@@ -100,8 +100,11 @@ import { ThemeService } from '@services/theme.service';
                 Welcome Back
               </h1>
               <p class="text-center text-base-content/80 mb-6">
-                @if (activeTab() === 'login') { Sign in to continue your journey
-                } @else { Create an account to get started }
+                @if (activeTab() === 'login') {
+                  Sign in to continue your journey
+                } @else {
+                  Create an account to get started
+                }
               </p>
             </div>
 
@@ -127,10 +130,10 @@ import { ThemeService } from '@services/theme.service';
 
             <!-- Login Form -->
             @if (activeTab() === 'login') {
-            <form (submit)="handleLogin(); $event.preventDefault()">
-              <!-- Email Input -->
-              <div class="form-control">
-                <label class="label" for="login-email">
+              <form (submit)="handleLogin(); $event.preventDefault()">
+                <!-- Email Input -->
+                <div class="form-control">
+                  <label class="label" for="login-email">
                   <span class="label-text flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -149,23 +152,23 @@ import { ThemeService } from '@services/theme.service';
                     </svg>
                     Email
                   </span>
-                </label>
-                <input
-                  id="login-email"
-                  type="email"
-                  placeholder="email@example.com"
-                  class="input input-bordered w-full"
-                  [(ngModel)]="email"
-                  name="login_email"
-                  required
-                  autocomplete="email"
-                  [disabled]="isLoading()"
-                />
-              </div>
+                  </label>
+                  <input
+                    id="login-email"
+                    type="email"
+                    placeholder="email@example.com"
+                    class="input input-bordered w-full"
+                    [(ngModel)]="email"
+                    name="login_email"
+                    required
+                    autocomplete="email"
+                    [disabled]="isLoading()"
+                  />
+                </div>
 
-              <!-- Password Input -->
-              <div class="form-control mt-4">
-                <label class="label" for="login-password">
+                <!-- Password Input -->
+                <div class="form-control mt-4">
+                  <label class="label" for="login-password">
                   <span class="label-text flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -189,172 +192,175 @@ import { ThemeService } from '@services/theme.service';
                     </svg>
                     Password
                   </span>
-                </label>
-                <div class="relative">
-                  <input
-                    id="login-password"
-                    [type]="passwordVisible() ? 'text' : 'password'"
-                    placeholder="Password"
-                    class="input input-bordered w-full pr-10"
-                    [(ngModel)]="password"
-                    name="login_password"
-                    required
-                    autocomplete="current-password"
-                    [disabled]="isLoading()"
-                  />
+                  </label>
+                  <div class="relative">
+                    <input
+                      id="login-password"
+                      [type]="passwordVisible() ? 'text' : 'password'"
+                      placeholder="Password"
+                      class="input input-bordered w-full pr-10"
+                      [(ngModel)]="password"
+                      name="login_password"
+                      required
+                      autocomplete="current-password"
+                      [disabled]="isLoading()"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm absolute top-0 right-0 h-full px-3"
+                      (click)="togglePasswordVisibility()"
+                      aria-label="Toggle password visibility"
+                      [disabled]="isLoading()"
+                    >
+                      @if (passwordVisible()) {
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="w-5 h-5"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      } @else {
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="w-5 h-5"
+                        >
+                          <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                          ></path>
+                          <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                      }
+                    </button>
+                  </div>
+                  <label class="label">
+                    <a
+                      [routerLink]="['/forgot-password']"
+                      class="label-text-alt link link-hover mt-2 hover:text-accent"
+                    >
+                      Forgot password?
+                    </a>
+                  </label>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-control mt-6">
                   <button
-                    type="button"
-                    class="btn btn-ghost btn-sm absolute top-0 right-0 h-full px-3"
-                    (click)="togglePasswordVisibility()"
-                    aria-label="Toggle password visibility"
-                    [disabled]="isLoading()"
+                    type="submit"
+                    class="btn btn-primary w-full"
+                    [disabled]="isLoading() || !email || !password"
                   >
-                    @if (passwordVisible()) {
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                      ></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
+                    @if (isLoading()) {
+                      <span class="loading loading-spinner loading-sm"></span>
+                      Logging in...
                     } @else {
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
-                      ></path>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </svg>
+                      Login
                     }
                   </button>
                 </div>
-                <label class="label">
-                  <a
-                    [routerLink]="['/forgot-password']"
-                    class="label-text-alt link link-hover mt-2 hover:text-accent"
-                  >
-                    Forgot password?
-                  </a>
-                </label>
-              </div>
 
-              <!-- Submit Button -->
-              <div class="form-control mt-6">
-                <button
-                  type="submit"
+                <div class="divider">OR</div>
+
+                <a
                   class="btn btn-primary w-full"
-                  [disabled]="isLoading() || !email || !password"
+                  [routerLink]="['/generate-access-code']"
                 >
-                  @if (isLoading()) {
-                  <span class="loading loading-spinner loading-sm"></span>
-                  Logging in... } @else { Login }
-                </button>
-              </div>
-
-              <div class="divider">OR</div>
-
-              <a
-                class="btn btn-primary w-full"
-                [routerLink]="['/generate-access-code']"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="w-5 h-5"
-                >
-                  <path
-                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-                  ></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-                Magic Login
-              </a>
-
-              <!-- Social Login Buttons -->
-              <!-- <div class="divider my-6">OR</div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <button class="btn btn-outline" type="button">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
                     viewBox="0 0 24 24"
-                    class="mr-2"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"
-                    ></path>
-                  </svg>
-                  Google
-                </button>
-                <button class="btn btn-outline" type="button">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    class="mr-2"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.699 1.028 1.592 1.028 2.683 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"
-                    ></path>
-                  </svg>
-                  GitHub
-                </button>
-              </div> -->
-
-              <!-- Login Error Message -->
-              @if (authError()) {
-              <div role="alert" class="alert alert-error mt-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="stroke-current shrink-0 h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{{ authError() }}</span>
-              </div>
-              }
-            </form>
+                    class="w-5 h-5"
+                  >
+                    <path
+                      d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                    ></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  Magic Login
+                </a>
+
+                <!-- Social Login Buttons -->
+                <!-- <div class="divider my-6">OR</div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <button class="btn btn-outline" type="button">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      class="mr-2"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"
+                      ></path>
+                    </svg>
+                    Google
+                  </button>
+                  <button class="btn btn-outline" type="button">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      class="mr-2"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.699 1.028 1.592 1.028 2.683 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"
+                      ></path>
+                    </svg>
+                    GitHub
+                  </button>
+                </div> -->
+
+                <!-- Login Error Message -->
+                @if (authError()) {
+                  <div role="alert" class="alert alert-error mt-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="stroke-current shrink-0 h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{ authError() }}</span>
+                  </div>
+                }
+              </form>
             }
 
             <!-- Register Form -->
             @if (activeTab() === 'register') {
-            <form (submit)="handleRegister(); $event.preventDefault()">
-              <!-- Email Input -->
-              <div class="form-control">
-                <label class="label" for="register-email">
+              <form (submit)="handleRegister(); $event.preventDefault()">
+                <!-- Email Input -->
+                <div class="form-control">
+                  <label class="label" for="register-email">
                   <span class="label-text flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -373,23 +379,23 @@ import { ThemeService } from '@services/theme.service';
                     </svg>
                     Email
                   </span>
-                </label>
-                <input
-                  id="register-email"
-                  type="email"
-                  placeholder="email@example.com"
-                  class="input input-bordered w-full"
-                  [(ngModel)]="email"
-                  name="register_email"
-                  required
-                  autocomplete="email"
-                  [disabled]="isLoading()"
-                />
-              </div>
+                  </label>
+                  <input
+                    id="register-email"
+                    type="email"
+                    placeholder="email@example.com"
+                    class="input input-bordered w-full"
+                    [(ngModel)]="email"
+                    name="register_email"
+                    required
+                    autocomplete="email"
+                    [disabled]="isLoading()"
+                  />
+                </div>
 
-              <!-- Password Input -->
-              <div class="form-control mt-4">
-                <label class="label" for="register-password">
+                <!-- Password Input -->
+                <div class="form-control mt-4">
+                  <label class="label" for="register-password">
                   <span class="label-text flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -413,67 +419,67 @@ import { ThemeService } from '@services/theme.service';
                     </svg>
                     Password
                   </span>
-                </label>
-                <div class="relative">
-                  <input
-                    id="register-password"
-                    [type]="passwordVisible() ? 'text' : 'password'"
-                    placeholder="Password (min 6 chars recommended)"
-                    class="input input-bordered w-full pr-10"
-                    [(ngModel)]="password"
-                    name="register_password"
-                    required
-                    autocomplete="new-password"
-                    [disabled]="isLoading()"
-                    minlength="6"
-                  />
-                  <button
-                    type="button"
-                    class="btn btn-ghost btn-sm absolute top-0 right-0 h-full px-3"
-                    (click)="togglePasswordVisibility()"
-                    aria-label="Toggle password visibility"
-                    [disabled]="isLoading()"
-                  >
-                    @if (passwordVisible()) {
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-5 h-5"
+                  </label>
+                  <div class="relative">
+                    <input
+                      id="register-password"
+                      [type]="passwordVisible() ? 'text' : 'password'"
+                      placeholder="Password (min 6 chars recommended)"
+                      class="input input-bordered w-full pr-10"
+                      [(ngModel)]="password"
+                      name="register_password"
+                      required
+                      autocomplete="new-password"
+                      [disabled]="isLoading()"
+                      minlength="6"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm absolute top-0 right-0 h-full px-3"
+                      (click)="togglePasswordVisibility()"
+                      aria-label="Toggle password visibility"
+                      [disabled]="isLoading()"
                     >
-                      <path
-                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                      ></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                    } @else {
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
-                      ></path>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </svg>
-                    }
-                  </button>
+                      @if (passwordVisible()) {
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="w-5 h-5"
+                        >
+                          <path
+                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                          ></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      } @else {
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="w-5 h-5"
+                        >
+                          <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                          ></path>
+                          <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                      }
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Confirm Password Input -->
-              <div class="form-control mt-4">
-                <label class="label" for="confirm-password">
+                <!-- Confirm Password Input -->
+                <div class="form-control mt-4">
+                  <label class="label" for="confirm-password">
                   <span class="label-text flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -498,89 +504,89 @@ import { ThemeService } from '@services/theme.service';
                     </svg>
                     Confirm Password
                   </span>
-                </label>
-                <input
-                  id="confirm-password"
-                  [type]="passwordVisible() ? 'text' : 'password'"
-                  placeholder="Confirm Password"
-                  class="input input-bordered w-full"
-                  [class.input-error]="
+                  </label>
+                  <input
+                    id="confirm-password"
+                    [type]="passwordVisible() ? 'text' : 'password'"
+                    placeholder="Confirm Password"
+                    class="input input-bordered w-full"
+                    [class.input-error]="
                     password !== confirmPassword && !!confirmPassword
                   "
-                  [(ngModel)]="confirmPassword"
-                  name="confirmPassword"
-                  required
-                  autocomplete="new-password"
-                  [disabled]="isLoading()"
-                />
-              </div>
+                    [(ngModel)]="confirmPassword"
+                    name="confirmPassword"
+                    required
+                    autocomplete="new-password"
+                    [disabled]="isLoading()"
+                  />
+                </div>
 
-              <!-- Password Strength Indicator -->
-              @if (password) {
-              <div class="mt-2">
-                <label class="label">
-                  <span class="label-text-alt">Password Strength</span>
-                </label>
-                <progress
-                  class="progress w-full"
-                  [class.progress-error]="password.length < 6"
-                  [class.progress-warning]="
+                <!-- Password Strength Indicator -->
+                @if (password) {
+                  <div class="mt-2">
+                    <label class="label">
+                      <span class="label-text-alt">Password Strength</span>
+                    </label>
+                    <progress
+                      class="progress w-full"
+                      [class.progress-error]="password.length < 6"
+                      [class.progress-warning]="
                     password.length >= 6 && password.length < 8
                   "
-                  [class.progress-success]="password.length >= 8"
-                  [value]="password.length > 10 ? 100 : password.length * 10"
-                  max="100"
-                ></progress>
-              </div>
-              }
+                      [class.progress-success]="password.length >= 8"
+                      [value]="password.length > 10 ? 100 : password.length * 10"
+                      max="100"
+                    ></progress>
+                  </div>
+                }
 
-              <!-- Password Mismatch Warning -->
-              @if (password !== confirmPassword && confirmPassword) {
-              <div
-                role="alert"
-                class="alert alert-warning mt-4 py-2 px-3 text-sm"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="stroke-current shrink-0 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                <span>Passwords do not match.</span>
-              </div>
-              }
+                <!-- Password Mismatch Warning -->
+                @if (password !== confirmPassword && confirmPassword) {
+                  <div
+                    role="alert"
+                    class="alert alert-warning mt-4 py-2 px-3 text-sm"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="stroke-current shrink-0 h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    <span>Passwords do not match.</span>
+                  </div>
+                }
 
-              <!-- Terms & Conditions Checkbox -->
-              <div class="form-control mt-4">
-                <label class="label cursor-pointer justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    class="checkbox checkbox-primary"
-                    [(ngModel)]="termsAccepted"
-                    name="termsAccepted"
-                  />
-                  <span class="label-text whitespace-normal break-words">
+                <!-- Terms & Conditions Checkbox -->
+                <div class="form-control mt-4">
+                  <label class="label cursor-pointer justify-start gap-2">
+                    <input
+                      type="checkbox"
+                      class="checkbox checkbox-primary"
+                      [(ngModel)]="termsAccepted"
+                      name="termsAccepted"
+                    />
+                    <span class="label-text whitespace-normal break-words">
                     I agree to the
                     <a href="#" class="link link-primary">Terms of Service</a>
                     and
                     <a href="#" class="link link-primary">Privacy Policy</a>
                   </span>
-                </label>
-              </div>
+                  </label>
+                </div>
 
-              <!-- Submit Button -->
-              <div class="form-control mt-6">
-                <button
-                  type="submit"
-                  class="btn btn-primary w-full"
-                  [disabled]="
+                <!-- Submit Button -->
+                <div class="form-control mt-6">
+                  <button
+                    type="submit"
+                    class="btn btn-primary w-full"
+                    [disabled]="
                     isLoading() ||
                     password !== confirmPassword ||
                     !password ||
@@ -588,16 +594,41 @@ import { ThemeService } from '@services/theme.service';
                     password.length < 6 ||
                     !termsAccepted
                   "
-                >
-                  @if (isLoading()) {
-                  <span class="loading loading-spinner loading-sm"></span>
-                  Registering... } @else { Create Account }
-                </button>
-              </div>
+                  >
+                    @if (isLoading()) {
+                      <span class="loading loading-spinner loading-sm"></span>
+                      Registering...
+                    } @else {
+                      Create Account
+                    }
+                  </button>
+                </div>
 
-              <!-- Registration Error Message -->
-              @if (authError()) {
-              <div role="alert" class="alert alert-error mt-4">
+                <!-- Registration Error Message -->
+                @if (authError()) {
+                  <div role="alert" class="alert alert-error mt-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="stroke-current shrink-0 h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{ authError() }}</span>
+                  </div>
+                }
+              </form>
+            }
+
+            <!-- General Success Message -->
+            @if (successMessage()) {
+              <div role="alert" class="alert alert-success mt-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="stroke-current shrink-0 h-6 w-6"
@@ -608,33 +639,11 @@ import { ThemeService } from '@services/theme.service';
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>{{ authError() }}</span>
+                <span>{{ successMessage() }}</span>
               </div>
-              }
-            </form>
-            }
-
-            <!-- General Success Message -->
-            @if (successMessage()) {
-            <div role="alert" class="alert alert-success mt-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{{ successMessage() }}</span>
-            </div>
             }
 
             <!-- Footer -->
@@ -718,7 +727,7 @@ export class AuthComponent implements OnInit {
     this.isLoading.set(true);
 
     this.authService
-      .login({ email: this.email, password: this.password })
+      .login({email: this.email, password: this.password})
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response: ApiResponse<LoginSuccessData>) => {
@@ -736,18 +745,16 @@ export class AuthComponent implements OnInit {
           } else {
             this.authError.set(
               this.formatApiErrors(response.errors) ||
-                response.message ||
-                'Login failed.'
+              response.message ||
+              'Login failed.'
             );
           }
         },
         error: (err: ApiResponseError) => {
-          // Type hint based on service's catchError
-          console.error('Login error:', err);
           this.authError.set(
             this.formatApiErrors(err.errors) ||
-              err.message ||
-              'An error occurred during login.'
+            err.message ||
+            'An error occurred during login.'
           );
         },
       });
@@ -772,7 +779,7 @@ export class AuthComponent implements OnInit {
     this.isLoading.set(true);
 
     this.authService
-      .register({ email: this.email, password: this.password })
+      .register({email: this.email, password: this.password})
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response: ApiResponse<any>) => {
@@ -785,16 +792,16 @@ export class AuthComponent implements OnInit {
           } else {
             this.authError.set(
               this.formatApiErrors(response.errors) ||
-                response.message ||
-                'Registration failed.'
+              response.message ||
+              'Registration failed.'
             );
           }
         },
         error: (err: ApiResponseError) => {
           this.authError.set(
             this.formatApiErrors(err.errors) ||
-              err.message ||
-              'An error occurred during registration.'
+            err.message ||
+            'An error occurred during registration.'
           );
         },
       });

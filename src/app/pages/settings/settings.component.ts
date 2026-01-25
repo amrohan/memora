@@ -1,18 +1,18 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { User } from '@models/user';
-import { ApiResponse } from '@models/ApiResponse';
-import { AuthService } from '@services/auth.service';
-import { AuthStateService } from '@services/auth-state.service';
-import { ToastService } from '@services/toast.service';
-import { HeaderComponent } from '../../components/header/header.component';
-import { ThemeSelectorComponent } from '@components/theme-selector.component';
-import { TabService } from '@services/tab.service';
+import {User} from '@models/user';
+import {ApiResponse} from '@models/ApiResponse';
+import {AuthService} from '@services/auth.service';
+import {AuthStateService} from '@services/auth-state.service';
+import {ToastService} from '@services/toast.service';
+import {HeaderComponent} from '../../components/header/header.component';
+import {ThemeSelectorComponent} from '@components/theme-selector.component';
+import {TabService} from '@services/tab.service';
 
 @Component({
   selector: 'app-settings',
@@ -20,7 +20,14 @@ import { TabService } from '@services/tab.service';
   imports: [ReactiveFormsModule, HeaderComponent, ThemeSelectorComponent],
   template: `
     <section class="mb-26">
-      <app-header headerName="Settings" />
+      <app-header headerName="Settings">
+        <button
+          class="btn btn-error btn-xs md:btn-sm"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+      </app-header>
       <!-- name of each tab group should be unique -->
       <div class="tabs tabs-border">
         <input
@@ -47,13 +54,13 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="name"
                 />
-                @if ( settingsForm.get('name')?.invalid &&
-                settingsForm.get('name')?.touched ) {
-                <label class="label">
+                @if (settingsForm.get('name')?.invalid &&
+                settingsForm.get('name')?.touched) {
+                  <label class="label">
                   <span class="label-text-alt text-error"
-                    >Please enter a valid name</span
+                  >Please enter a valid name</span
                   >
-                </label>
+                  </label>
                 }
               </div>
 
@@ -67,19 +74,20 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="email"
                 />
-                @if ( settingsForm.get('email')?.invalid &&
-                settingsForm.get('email')?.touched ) {
-                <label class="label">
+                @if (settingsForm.get('email')?.invalid &&
+                settingsForm.get('email')?.touched) {
+                  <label class="label">
                   <span class="label-text-alt text-error"
-                    >Please enter a valid email address</span
+                  >Please enter a valid email address</span
                   >
-                </label>
-                } @if (fieldErrors()?.['email']) {
-                <label class="label">
+                  </label>
+                }
+                @if (fieldErrors()?.['email']) {
+                  <label class="label">
                   <span class="label-text-alt text-error">{{
                       fieldErrors()?.['email']
-                  }}</span>
-                </label>
+                    }}</span>
+                  </label>
                 }
               </div>
 
@@ -90,7 +98,7 @@ import { TabService } from '@services/tab.service';
                   [disabled]="settingsForm.invalid || isLoading()"
                 >
                   @if (isLoading()) {
-                  <span class="loading loading-spinner loading-sm"></span>
+                    <span class="loading loading-spinner loading-sm"></span>
                   } Save Changes
                 </button>
               </div>
@@ -108,7 +116,7 @@ import { TabService } from '@services/tab.service';
           (change)="this.tabService.setSelectedTab('Themes')"
         />
         <div class="tab-content bg-base-100">
-          <app-theme-selector />
+          <app-theme-selector/>
         </div>
 
         <!-- Authentication -->
@@ -137,13 +145,13 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="currentPassword"
                 />
-                @if ( settingsForm.get('currentPassword')?.invalid &&
-                settingsForm.get('currentPassword')?.touched ) {
-                <label class="label">
+                @if (settingsForm.get('currentPassword')?.invalid &&
+                settingsForm.get('currentPassword')?.touched) {
+                  <label class="label">
                   <span class="label-text-alt text-error"
-                    >Please enter your current password</span
+                  >Please enter your current password</span
                   >
-                </label>
+                  </label>
                 }
               </div>
 
@@ -157,13 +165,13 @@ import { TabService } from '@services/tab.service';
                   class="input input-bordered w-full"
                   formControlName="newPassword"
                 />
-                @if ( settingsForm.get('newPassword')?.invalid &&
-                settingsForm.get('newPassword')?.touched ) {
-                <label class="label">
+                @if (settingsForm.get('newPassword')?.invalid &&
+                settingsForm.get('newPassword')?.touched) {
+                  <label class="label">
                   <span class="label-text-alt text-error"
-                    >Please enter a new password</span
+                  >Please enter a new password</span
                   >
-                </label>
+                  </label>
                 }
               </div>
 
@@ -177,19 +185,20 @@ import { TabService } from '@services/tab.service';
                   placeholder="Confirm your new password"
                   formControlName="confirmNewPassword"
                 />
-                @if ( settingsForm.get('confirmNewPassword')?.invalid &&
-                settingsForm.get('confirmNewPassword')?.touched ) {
-                <label class="label">
+                @if (settingsForm.get('confirmNewPassword')?.invalid &&
+                settingsForm.get('confirmNewPassword')?.touched) {
+                  <label class="label">
                   <span class="label-text-alt text-error"
-                    >Please confirm your new password</span
+                  >Please confirm your new password</span
                   >
-                </label>
-                } @if (fieldErrors()?.['confirmNewPassword']) {
-                <label class="label">
+                  </label>
+                }
+                @if (fieldErrors()?.['confirmNewPassword']) {
+                  <label class="label">
                   <span class="label-text-alt text-error">{{
                       fieldErrors()?.['confirmNewPassword']
-                  }}</span>
-                </label>
+                    }}</span>
+                  </label>
                 }
               </div>
 
@@ -200,7 +209,7 @@ import { TabService } from '@services/tab.service';
                   [disabled]="isLoading()"
                 >
                   @if (isLoading()) {
-                  <span class="loading loading-spinner loading-sm"></span>
+                    <span class="loading loading-spinner loading-sm"></span>
                   } Change Password
                 </button>
               </div>
@@ -306,7 +315,7 @@ export class SettingsComponent implements OnInit {
     }
 
     if (form.value.newPassword !== form.value.confirmNewPassword) {
-      this.fieldErrors.set({ confirmNewPassword: 'Passwords do not match.' });
+      this.fieldErrors.set({confirmNewPassword: 'Passwords do not match.'});
       return;
     }
 
@@ -357,5 +366,10 @@ export class SettingsComponent implements OnInit {
     } else {
       this.errorMessage.set(response.message || 'An unknown error occurred');
     }
+  }
+
+  logout() {
+    this.authState.logout();
+    this.toast.success('Logged out successfully');
   }
 }

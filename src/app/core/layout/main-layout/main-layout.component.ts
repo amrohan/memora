@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { BottomDockComponent } from '@components/bottom-nav/bottom-dock.component';
-import { SideNavBarComponent } from '@components/bottom-nav/side-nav.component';
+import {Component, inject} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+import {BottomDockComponent} from '@components/bottom-nav/bottom-dock.component';
+import {SideNavBarComponent} from '@components/bottom-nav/side-nav.component';
+import {AuthStateService} from '@services/auth-state.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -9,13 +10,17 @@ import { SideNavBarComponent } from '@components/bottom-nav/side-nav.component';
   imports: [RouterOutlet, BottomDockComponent, SideNavBarComponent],
   template: `
     <section class="flex h-screen antialiased ">
-      <app-side-nav-bar class="hidden md:block" />
+      @defer (when authStateService.isAuthenticated()) {
+        <app-side-nav-bar class="hidden md:block"/>
+      }
       <main class="flex-1 overflow-y-auto p-4 md:p-6 md:ml-60 pb-20 md:pb-4">
-        <router-outlet />
+        <router-outlet/>
       </main>
 
-      <app-bottom-dock />
+      <app-bottom-dock/>
     </section>
   `,
 })
-export class MainLayoutComponent {}
+export class MainLayoutComponent {
+  authStateService = inject(AuthStateService);
+}
