@@ -649,10 +649,12 @@ import {ThemeService} from '@services/theme.service';
             <!-- Footer -->
             <div class="mt-8 text-center text-sm text-base-content/70">
               <p>© {{ currentYear }} Memora. All rights reserved.</p>
-              <p class="mt-1">
-                Need help?
-                <a href="#" class="link link-primary">Contact Support</a>
-              </p>
+              <a
+                href="mailto:hq.memora@gmail.com?subject=Support%20Request"
+                class="link link-primary"
+              >
+                Contact Support
+              </a>
             </div>
           </div>
         </div>
