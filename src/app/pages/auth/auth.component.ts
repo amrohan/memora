@@ -61,14 +61,14 @@ import {ThemeService} from '@services/theme.service';
             >
               <div class="stat">
                 <div class="stat-title">Bookmarks</div>
-                <div class="stat-value">2.6K</div>
+                <div class="stat-value">3.6K</div>
                 <div class="stat-desc">↗︎ Saved so far</div>
               </div>
 
               <div class="stat">
                 <div class="stat-title">Users</div>
-                <div class="stat-value">1.2K</div>
-                <div class="stat-desc">Feb 1st - Apr 1st</div>
+                <div class="stat-value">2.2K</div>
+                <div class="stat-desc ">+120 in last 30 days</div>
               </div>
             </div>
           </div>
@@ -648,7 +648,7 @@ import {ThemeService} from '@services/theme.service';
 
             <!-- Footer -->
             <div class="mt-8 text-center text-sm text-base-content/70">
-              <p>© 2025 Memora. All rights reserved.</p>
+              <p>© {{ currentYear }} Memora. All rights reserved.</p>
               <p class="mt-1">
                 Need help?
                 <a href="#" class="link link-primary">Contact Support</a>
@@ -668,6 +668,7 @@ export class AuthComponent implements OnInit {
   private theme = inject(ThemeService);
   private router = inject(Router);
 
+  currentYear = new Date().getFullYear();
   activeTab = signal<'login' | 'register'>('login');
   isLoading = signal(false);
   authError = signal<string | null>(null);
